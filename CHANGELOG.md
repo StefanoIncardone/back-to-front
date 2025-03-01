@@ -7,3 +7,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ## 0.1.0 -
+
+- Implemented x86_64 registers enums
