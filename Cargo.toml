@@ -12,8 +12,8 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-# unicode-width = "0.2.0"
-# unicode-segmentation = "1.12.0"
+unicode-width = "0.2.0"
+unicode-segmentation = "1.12.0"
 
 [profile.dev]
 debug = "full"
@@ -53,11 +53,11 @@ unused_must_use = "forbid"
 nursery = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 restriction = { level = "warn", priority = -1 }
-cargo = { level = "forbid", priority = -1 }
+cargo = { level = "warn", priority = -1 }
 
 # still not convinced on the benefits of either approaches
-self_named_module_files = "warn"
-mod_module_files = "allow"
+self_named_module_files = "allow"
+mod_module_files = "warn"
 
 module_name_repetitions = "allow" # unrealiable
 struct_field_names = "allow" # unreliable
@@ -65,7 +65,7 @@ struct_field_names = "allow" # unreliable
 # improve readability and self documenting code
 implicit_return = "forbid"
 needless_return = "allow"
-unseparated_literal_suffix = "forbid"
+unseparated_literal_suffix = "warn"
 separated_literal_suffix = "allow"
 semicolon_inside_block = "forbid"
 semicolon_outside_block = "allow"
@@ -75,6 +75,8 @@ pub_with_shorthand = "allow"
 absolute_paths = "allow"
 match_same_arms = "allow" # used for a more descriptive formatting of match arms, might get removed
 unnested_or_patterns = "allow"
+arbitrary_source_item_ordering = "allow" # why is this even a thing?
+let_underscore_untyped = "allow" # what's the point in forcing me to type a discarded value?
 
 # factoring into smaller components is not the solution
 too_many_lines = "allow"
@@ -108,8 +110,6 @@ undocumented_unsafe_blocks = "allow" # trust me
 missing_errors_doc = "allow" # will be changed to "warn" in the future when it comes time to document everything
 as_conversions = "allow" # do as i say please
 cast_lossless = "allow" # do as i say please
-cast_possible_truncation = "allow" # do as i say please
-cast_sign_loss = "allow" # do as i say please
 question_mark_used = "allow" # needlessly advocates for a macro instead of a language feature
 verbose_file_reads = "allow"
 single_match_else = "allow" # avoid forgetting to change the consumer when signatures change
@@ -118,6 +118,7 @@ large_stack_frames = "warn"
 zero_prefixed_literal = "allow"
 no_effect_underscore_binding = "warn"
 len_without_is_empty = "allow"
+allow_attributes_without_reason = "allow"
 
 # doesn't solve the problem, i.e.:
 # ```rust
@@ -130,12 +131,15 @@ len_without_is_empty = "allow"
 default_numeric_fallback = "allow"
 
 # i prefer imperative programming
+comparison_chain = "allow"
+checked_conversions = "allow"
+needless_range_loop = "allow"
 option_if_let_else = "allow"
 if_then_some_else_none = "allow"
 manual_map = "allow"
 manual_unwrap_or = "allow"
 manual_let_else = "warn"
 equatable_if_let = "allow"
-comparison_chain = "allow"
-checked_conversions = "allow"
-needless_range_loop = "allow"
+len_zero = "allow"
+manual_swap = "allow"
+ptr_as_ptr = "allow"

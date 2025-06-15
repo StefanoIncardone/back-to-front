@@ -8,4 +8,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ## 0.1.0 -
 
-- Implemented x86_64 registers enums
+### Added
+
+- `Span` struct
+- x86_64 registers enums

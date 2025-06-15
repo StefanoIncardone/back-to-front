@@ -1,7 +1,3 @@
-// TODO(stefano): find a way to provide a `const fn into(self) -> ...`
-// TODO(stefano): find a way to provide a `unsafe fn into(self) -> Reg8h`
-// IDEA(stefano): consider removing `Into` implementations
-
 use core::fmt::Display;
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -287,6 +283,7 @@ impl Into<Reg8l> for Reg64 {
 
 impl Reg64 {
     /// # Safety
+    ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
@@ -298,6 +295,7 @@ impl Reg64 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
+    ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
     #[must_use]
     #[inline(always)]
@@ -307,7 +305,7 @@ impl Reg64 {
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
-    #[inline(always)]
+    #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         #[allow(clippy::enum_glob_use, reason = "conciseness")]
@@ -404,6 +402,7 @@ impl Into<Reg8l> for Reg32 {
 
 impl Reg32 {
     /// # Safety
+    ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
@@ -415,6 +414,7 @@ impl Reg32 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
+    ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
     #[must_use]
     #[inline(always)]
@@ -424,7 +424,7 @@ impl Reg32 {
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
-    #[inline(always)]
+    #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         #[allow(clippy::enum_glob_use, reason = "conciseness")]
@@ -521,6 +521,7 @@ impl Into<Reg8l> for Reg16 {
 
 impl Reg16 {
     /// # Safety
+    ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
@@ -532,6 +533,7 @@ impl Reg16 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
+    ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
     #[must_use]
     #[inline(always)]
@@ -541,7 +543,7 @@ impl Reg16 {
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
-    #[inline(always)]
+    #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         #[allow(clippy::enum_glob_use, reason = "conciseness")]
@@ -638,6 +640,7 @@ impl Into<Reg16> for Reg8l {
 
 impl Reg8l {
     /// # Safety
+    ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
@@ -649,6 +652,7 @@ impl Reg8l {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
+    ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
     #[must_use]
     #[inline(always)]
@@ -658,7 +662,7 @@ impl Reg8l {
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[must_use]
-    #[inline(always)]
+    #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         #[allow(clippy::enum_glob_use, reason = "conciseness")]
