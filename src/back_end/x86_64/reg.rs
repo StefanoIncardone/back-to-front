@@ -308,7 +308,7 @@ impl Reg64 {
     #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use, reason = "conciseness")]
+        #[allow(clippy::enum_glob_use)]
         use Reg64::*;
         return match self {
             Rax | Rbx | Rcx | Rdx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -427,7 +427,7 @@ impl Reg32 {
     #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use, reason = "conciseness")]
+        #[allow(clippy::enum_glob_use)]
         use Reg32::*;
         return match self {
             Eax | Ebx | Ecx | Edx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -546,7 +546,7 @@ impl Reg16 {
     #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use, reason = "conciseness")]
+        #[allow(clippy::enum_glob_use)]
         use Reg16::*;
         return match self {
             Ax | Bx | Cx | Dx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -665,7 +665,7 @@ impl Reg8l {
     #[inline]
     #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use, reason = "conciseness")]
+        #[allow(clippy::enum_glob_use)]
         use Reg8l::*;
         return match self {
             Al | Bl | Cl | Dl => Some(unsafe { self.as_Reg8h_unsafe() }),
