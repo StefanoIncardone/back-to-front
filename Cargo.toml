@@ -11,10 +11,6 @@ repository = "https://github.com/StefanoIncardone/back-to-front"
 readme = "README.md"
 license = "MIT"
 
-[dependencies]
-unicode-width = "0.2.0"
-unicode-segmentation = "1.12.0"
-
 [profile.dev]
 debug = "full"
 opt-level = 0
@@ -143,3 +139,5 @@ equatable_if_let = "allow"
 len_zero = "allow"
 manual_swap = "allow"
 ptr_as_ptr = "allow"
+get_last_with_len = "allow"
+get_first = "allow"
