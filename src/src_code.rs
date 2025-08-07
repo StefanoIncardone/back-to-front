@@ -1,5 +1,6 @@
 use crate::offset32;
 
+// IDEA(stefano): make generic over the type of start and end
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 pub struct Span {
     /// Inclusive and less that or equal to [`Self::end()`]

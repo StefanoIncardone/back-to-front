@@ -10,5 +10,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ### Added
 
+- Ascii digit checking and parsing of tally counters, binary, octal, decimal, hexadecimal and
+    custom bases
 - `Span` struct
 - x86_64 registers enums
