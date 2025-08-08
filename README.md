@@ -22,10 +22,10 @@ machines and combination of components.
 ## Getting started
 
 The language is written in [Rust](https://www.rust-lang.org/) version
-[1.81.0](https://releases.rs/docs/1.81.0/) using [cargo](https://doc.rust-lang.org/cargo/) as the
+[1.89.0](https://releases.rs/docs/1.89.0/) using [cargo](https://doc.rust-lang.org/cargo/) as the
 build system.
 
-1. Checking if Rust and cargo are installed and up to version 1.81.0:
+1. Checking if Rust and cargo are installed and up to the previously specified version:
 
     ```shell
     cargo --version

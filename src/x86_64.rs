@@ -1,5 +1,6 @@
 use core::fmt::Display;
 
+#[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Reg64 {
@@ -13,8 +14,8 @@ pub enum Reg64 {
     Rbp = 6,
     Rsp = 7,
 
-    R8 = 8,
-    R9 = 9,
+    R8  = 8,
+    R9  = 9,
     R10 = 10,
     R11 = 11,
     R12 = 12,
@@ -25,6 +26,7 @@ pub enum Reg64 {
 
 impl Display for Reg64 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        #[rustfmt::skip]
         return match self {
             Self::Rax => write!(f, "rax"),
             Self::Rbx => write!(f, "rbx"),
@@ -36,8 +38,8 @@ impl Display for Reg64 {
             Self::Rbp => write!(f, "rbp"),
             Self::Rsp => write!(f, "rsp"),
 
-            Self::R8 => write!(f, "r8"),
-            Self::R9 => write!(f, "r9"),
+            Self::R8  => write!(f, "r8"),
+            Self::R9  => write!(f, "r9"),
             Self::R10 => write!(f, "r10"),
             Self::R11 => write!(f, "r11"),
             Self::R12 => write!(f, "r12"),
@@ -48,21 +50,22 @@ impl Display for Reg64 {
     }
 }
 
+#[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Reg32 {
-    Eax = Reg64::Rax as u8,
-    Ebx = Reg64::Rbx as u8,
-    Ecx = Reg64::Rcx as u8,
-    Edx = Reg64::Rdx as u8,
+    Eax  = Reg64::Rax as u8,
+    Ebx  = Reg64::Rbx as u8,
+    Ecx  = Reg64::Rcx as u8,
+    Edx  = Reg64::Rdx as u8,
 
-    Esi = Reg64::Rsi as u8,
-    Edi = Reg64::Rdi as u8,
-    Ebp = Reg64::Rbp as u8,
-    Esp = Reg64::Rsp as u8,
+    Esi  = Reg64::Rsi as u8,
+    Edi  = Reg64::Rdi as u8,
+    Ebp  = Reg64::Rbp as u8,
+    Esp  = Reg64::Rsp as u8,
 
-    R8d = Reg64::R8 as u8,
-    R9d = Reg64::R9 as u8,
+    R8d  = Reg64::R8 as u8,
+    R9d  = Reg64::R9 as u8,
     R10d = Reg64::R10 as u8,
     R11d = Reg64::R11 as u8,
     R12d = Reg64::R12 as u8,
@@ -73,19 +76,20 @@ pub enum Reg32 {
 
 impl Display for Reg32 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        #[rustfmt::skip]
         return match self {
-            Self::Eax => write!(f, "eax"),
-            Self::Ebx => write!(f, "ebx"),
-            Self::Ecx => write!(f, "ecx"),
-            Self::Edx => write!(f, "edx"),
+            Self::Eax  => write!(f, "eax"),
+            Self::Ebx  => write!(f, "ebx"),
+            Self::Ecx  => write!(f, "ecx"),
+            Self::Edx  => write!(f, "edx"),
 
-            Self::Esi => write!(f, "esi"),
-            Self::Edi => write!(f, "edi"),
-            Self::Ebp => write!(f, "ebp"),
-            Self::Esp => write!(f, "esp"),
+            Self::Esi  => write!(f, "esi"),
+            Self::Edi  => write!(f, "edi"),
+            Self::Ebp  => write!(f, "ebp"),
+            Self::Esp  => write!(f, "esp"),
 
-            Self::R8d => write!(f, "r8d"),
-            Self::R9d => write!(f, "r9d"),
+            Self::R8d  => write!(f, "r8d"),
+            Self::R9d  => write!(f, "r9d"),
             Self::R10d => write!(f, "r10d"),
             Self::R11d => write!(f, "r11d"),
             Self::R12d => write!(f, "r12d"),
@@ -96,21 +100,22 @@ impl Display for Reg32 {
     }
 }
 
+#[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Reg16 {
-    Ax = Reg64::Rax as u8,
-    Bx = Reg64::Rbx as u8,
-    Cx = Reg64::Rcx as u8,
-    Dx = Reg64::Rdx as u8,
+    Ax   = Reg64::Rax as u8,
+    Bx   = Reg64::Rbx as u8,
+    Cx   = Reg64::Rcx as u8,
+    Dx   = Reg64::Rdx as u8,
 
-    Si = Reg64::Rsi as u8,
-    Di = Reg64::Rdi as u8,
-    Bp = Reg64::Rbp as u8,
-    Sp = Reg64::Rsp as u8,
+    Si   = Reg64::Rsi as u8,
+    Di   = Reg64::Rdi as u8,
+    Bp   = Reg64::Rbp as u8,
+    Sp   = Reg64::Rsp as u8,
 
-    R8w = Reg64::R8 as u8,
-    R9w = Reg64::R9 as u8,
+    R8w  = Reg64::R8 as u8,
+    R9w  = Reg64::R9 as u8,
     R10w = Reg64::R10 as u8,
     R11w = Reg64::R11 as u8,
     R12w = Reg64::R12 as u8,
@@ -121,19 +126,20 @@ pub enum Reg16 {
 
 impl Display for Reg16 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        #[rustfmt::skip]
         return match self {
-            Self::Ax => write!(f, "ax"),
-            Self::Bx => write!(f, "bx"),
-            Self::Cx => write!(f, "cx"),
-            Self::Dx => write!(f, "dx"),
+            Self::Ax   => write!(f, "ax"),
+            Self::Bx   => write!(f, "bx"),
+            Self::Cx   => write!(f, "cx"),
+            Self::Dx   => write!(f, "dx"),
 
-            Self::Si => write!(f, "si"),
-            Self::Di => write!(f, "di"),
-            Self::Bp => write!(f, "bp"),
-            Self::Sp => write!(f, "sp"),
+            Self::Si   => write!(f, "si"),
+            Self::Di   => write!(f, "di"),
+            Self::Bp   => write!(f, "bp"),
+            Self::Sp   => write!(f, "sp"),
 
-            Self::R8w => write!(f, "r8w"),
-            Self::R9w => write!(f, "r9w"),
+            Self::R8w  => write!(f, "r8w"),
+            Self::R9w  => write!(f, "r9w"),
             Self::R10w => write!(f, "r10w"),
             Self::R11w => write!(f, "r11w"),
             Self::R12w => write!(f, "r12w"),
@@ -144,21 +150,22 @@ impl Display for Reg16 {
     }
 }
 
+#[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Reg8l {
-    Al = Reg64::Rax as u8,
-    Bl = Reg64::Rbx as u8,
-    Cl = Reg64::Rcx as u8,
-    Dl = Reg64::Rdx as u8,
+    Al   = Reg64::Rax as u8,
+    Bl   = Reg64::Rbx as u8,
+    Cl   = Reg64::Rcx as u8,
+    Dl   = Reg64::Rdx as u8,
 
-    Sil = Reg64::Rsi as u8,
-    Dil = Reg64::Rdi as u8,
-    Bpl = Reg64::Rbp as u8,
-    Spl = Reg64::Rsp as u8,
+    Sil  = Reg64::Rsi as u8,
+    Dil  = Reg64::Rdi as u8,
+    Bpl  = Reg64::Rbp as u8,
+    Spl  = Reg64::Rsp as u8,
 
-    R8b = Reg64::R8 as u8,
-    R9b = Reg64::R9 as u8,
+    R8b  = Reg64::R8 as u8,
+    R9b  = Reg64::R9 as u8,
     R10b = Reg64::R10 as u8,
     R11b = Reg64::R11 as u8,
     R12b = Reg64::R12 as u8,
@@ -169,19 +176,20 @@ pub enum Reg8l {
 
 impl Display for Reg8l {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        #[rustfmt::skip]
         return match self {
-            Self::Al => write!(f, "al"),
-            Self::Bl => write!(f, "bl"),
-            Self::Cl => write!(f, "cl"),
-            Self::Dl => write!(f, "dl"),
+            Self::Al   => write!(f, "al"),
+            Self::Bl   => write!(f, "bl"),
+            Self::Cl   => write!(f, "cl"),
+            Self::Dl   => write!(f, "dl"),
 
-            Self::Sil => write!(f, "sil"),
-            Self::Dil => write!(f, "dil"),
-            Self::Bpl => write!(f, "bpl"),
-            Self::Spl => write!(f, "spl"),
+            Self::Sil  => write!(f, "sil"),
+            Self::Dil  => write!(f, "dil"),
+            Self::Bpl  => write!(f, "bpl"),
+            Self::Spl  => write!(f, "spl"),
 
-            Self::R8b => write!(f, "r8b"),
-            Self::R9b => write!(f, "r9b"),
+            Self::R8b  => write!(f, "r8b"),
+            Self::R9b  => write!(f, "r9b"),
             Self::R10b => write!(f, "r10b"),
             Self::R11b => write!(f, "r11b"),
             Self::R12b => write!(f, "r12b"),
@@ -300,15 +308,15 @@ impl Reg64 {
     #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
-        return self.as_Reg8h_unsafe();
+        return unsafe { self.as_Reg8h_unsafe() };
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
+    #[expect(clippy::allow_attributes, reason = "false positive")]
+    #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use)]
         use Reg64::*;
         return match self {
             Rax | Rbx | Rcx | Rdx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -419,15 +427,15 @@ impl Reg32 {
     #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
-        return self.as_Reg8h_unsafe();
+        return unsafe { self.as_Reg8h_unsafe() };
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
+    #[expect(clippy::allow_attributes, reason = "false positive")]
+    #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use)]
         use Reg32::*;
         return match self {
             Eax | Ebx | Ecx | Edx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -538,15 +546,15 @@ impl Reg16 {
     #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
-        return self.as_Reg8h_unsafe();
+        return unsafe { self.as_Reg8h_unsafe() };
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
+    #[expect(clippy::allow_attributes, reason = "false positive")]
+    #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use)]
         use Reg16::*;
         return match self {
             Ax | Bx | Cx | Dx => Some(unsafe { self.as_Reg8h_unsafe() }),
@@ -657,15 +665,15 @@ impl Reg8l {
     #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
-        return self.as_Reg8h_unsafe();
+        return unsafe { self.as_Reg8h_unsafe() };
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
+    #[expect(clippy::allow_attributes, reason = "false positive")]
+    #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
-        #[allow(clippy::enum_glob_use)]
         use Reg8l::*;
         return match self {
             Al | Bl | Cl | Dl => Some(unsafe { self.as_Reg8h_unsafe() }),

@@ -12,7 +12,7 @@
 # control_brace_style = "AlwaysSameLine" # unstable
 disable_all_formatting = false
 # doc_comment_code_block_width = 100 # unstable
-edition = "2021"
+edition = "2024"
 # empty_item_single_line = true # unstable
 # enum_discrim_align_threshold = 0 # unstable
 # error_on_line_overflow = false # unstable

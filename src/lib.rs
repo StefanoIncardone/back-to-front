@@ -1,6 +1,6 @@
-pub mod x86_64;
 pub mod digit;
 pub mod src_code;
+pub mod x86_64;
 
 #[expect(non_camel_case_types, reason = "alias to a primitive type")]
 pub type utf32 = char;
