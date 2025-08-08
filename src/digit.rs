@@ -1,9 +1,11 @@
 use crate::{ascii, utf32};
+use core::ops::RangeInclusive;
 
 pub trait Ascii {}
 impl Ascii for ascii {}
 impl Ascii for utf32 {}
 
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct AsciiRange<I: Ascii> {
     pub start: I,
     pub end: I,
@@ -43,6 +45,22 @@ impl Base {
         Self::HEXADECIMAL_LOWERCASE_RANGE,
     ];
 
+    pub const BINARY_RANGE_OPS:                RangeInclusive<utf32> = RangeInclusive::new('0', '1');
+    pub const OCTAL_RANGE_OPS:                 RangeInclusive<utf32> = RangeInclusive::new('0', '8');
+    pub const DECIMAL_RANGE_OPS:               RangeInclusive<utf32> = RangeInclusive::new('0', '9');
+    pub const HEXADECIMAL_DIGIT_RANGE_OPS:     RangeInclusive<utf32> = Self::DECIMAL_RANGE_OPS;
+    pub const HEXADECIMAL_UPPERCASE_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new('A', 'F');
+    pub const HEXADECIMAL_LOWERCASE_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new('a', 'f');
+
+    pub const BINARY_RANGES_OPS:      [RangeInclusive<utf32>; 1] = [Self::BINARY_RANGE_OPS];
+    pub const OCTAL_RANGES_OPS:       [RangeInclusive<utf32>; 1] = [Self::OCTAL_RANGE_OPS];
+    pub const DECIMAL_RANGES_OPS:     [RangeInclusive<utf32>; 1] = [Self::DECIMAL_RANGE_OPS];
+    pub const HEXADECIMAL_RANGES_OPS: [RangeInclusive<utf32>; 3] = [
+        Self::HEXADECIMAL_DIGIT_RANGE_OPS,
+        Self::HEXADECIMAL_UPPERCASE_RANGE_OPS,
+        Self::HEXADECIMAL_LOWERCASE_RANGE_OPS,
+    ];
+
     #[must_use]
     #[inline]
     pub const fn range(self) -> &'static [AsciiRange<utf32>] {
@@ -51,6 +69,17 @@ impl Base {
             Self::Octal       => &Self::OCTAL_RANGES,
             Self::Decimal     => &Self::DECIMAL_RANGES,
             Self::Hexadecimal => &Self::HEXADECIMAL_RANGES,
+        };
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn range_ops(self) -> &'static [RangeInclusive<utf32>] {
+        return match self {
+            Self::Binary      => &Self::BINARY_RANGES_OPS,
+            Self::Octal       => &Self::OCTAL_RANGES_OPS,
+            Self::Decimal     => &Self::DECIMAL_RANGES_OPS,
+            Self::Hexadecimal => &Self::HEXADECIMAL_RANGES_OPS,
         };
     }
 }
@@ -74,6 +103,22 @@ impl Base {
         Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII,
     ];
 
+    pub const BINARY_RANGE_ASCII_OPS:                RangeInclusive<ascii> = RangeInclusive::new(b'0', b'1');
+    pub const OCTAL_RANGE_ASCII_OPS:                 RangeInclusive<ascii> = RangeInclusive::new(b'0', b'8');
+    pub const DECIMAL_RANGE_ASCII_OPS:               RangeInclusive<ascii> = RangeInclusive::new(b'0', b'9');
+    pub const HEXADECIMAL_DIGIT_RANGE_ASCII_OPS:     RangeInclusive<ascii> = Self::DECIMAL_RANGE_ASCII_OPS;
+    pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(b'A', b'F');
+    pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(b'a', b'f');
+
+    pub const BINARY_RANGES_ASCII_OPS:      [RangeInclusive<ascii>; 1] = [Self::BINARY_RANGE_ASCII_OPS];
+    pub const OCTAL_RANGES_ASCII_OPS:       [RangeInclusive<ascii>; 1] = [Self::OCTAL_RANGE_ASCII_OPS];
+    pub const DECIMAL_RANGES_ASCII_OPS:     [RangeInclusive<ascii>; 1] = [Self::DECIMAL_RANGE_ASCII_OPS];
+    pub const HEXADECIMAL_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 3] = [
+        Self::HEXADECIMAL_DIGIT_RANGE_ASCII_OPS,
+        Self::HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS,
+        Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS,
+    ];
+
     pub const BINARY_ASCII_OFFSET:                u8 = Self::BINARY_RANGE_ASCII.start;
     pub const OCTAL_ASCII_OFFSET:                 u8 = Self::OCTAL_RANGE_ASCII.start;
     pub const DECIMAL_ASCII_OFFSET:               u8 = Self::DECIMAL_RANGE_ASCII.start;
@@ -89,6 +134,17 @@ impl Base {
             Self::Octal       => &Self::OCTAL_RANGES_ASCII,
             Self::Decimal     => &Self::DECIMAL_RANGES_ASCII,
             Self::Hexadecimal => &Self::HEXADECIMAL_RANGES_ASCII,
+        };
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn range_ascii_ops(self) -> &'static [RangeInclusive<ascii>] {
+        return match self {
+            Self::Binary      => &Self::BINARY_RANGES_ASCII_OPS,
+            Self::Octal       => &Self::OCTAL_RANGES_ASCII_OPS,
+            Self::Decimal     => &Self::DECIMAL_RANGES_ASCII_OPS,
+            Self::Hexadecimal => &Self::HEXADECIMAL_RANGES_ASCII_OPS,
         };
     }
 }
