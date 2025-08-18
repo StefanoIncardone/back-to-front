@@ -1,6 +1,11 @@
+#![allow(deprecated)]
+// TODO(stefano): add proper deprecation messages
+    // - remove duplication of constants
+
 use crate::{ascii, utf32};
 use core::ops::RangeInclusive;
 
+// TODO(stefano): add number-like traits
 pub trait Ascii {}
 impl Ascii for ascii {}
 impl Ascii for utf32 {}
@@ -9,6 +14,14 @@ impl Ascii for utf32 {}
 pub struct AsciiRange<I: Ascii> {
     pub start: I,
     pub end: I,
+}
+
+impl<I: Ascii> AsciiRange<I> {
+    #[must_use]
+    #[inline(always)]
+    pub const fn new(start: I, end: I) -> Self {
+        return Self { start, end };
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
@@ -26,15 +39,495 @@ impl Base {
     pub const MAX: u8 = Self::Decimal as u8 + b'Z' - b'A' + 1;
 }
 
+// IDEA(stefano): bring ranges constants out to global scope or to own modules
+
+// binary
+impl Base {
+    pub const BINARY_DIGIT_START_ASCII: ascii = b'0';
+    pub const BINARY_DIGIT_END_ASCII: ascii = b'1';
+    pub const BINARY_DIGITS_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::BINARY_DIGIT_START_ASCII,
+        Self::BINARY_DIGIT_END_ASCII,
+    );
+
+    pub const BINARY_DIGIT_OUT_OF_RANGE_START_ASCII: ascii = Self::BINARY_DIGIT_END_ASCII + 1;
+    pub const BINARY_DIGIT_OUT_OF_RANGE_END_ASCII: ascii = b'9';
+    pub const BINARY_DIGITS_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::BINARY_DIGIT_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_DIGIT_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'A';
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'Z';
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'a';
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'z';
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_DIGITS_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::BINARY_DIGIT_START_ASCII,
+        Self::BINARY_DIGIT_END_ASCII,
+    );
+
+    pub const BINARY_DIGITS_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::BINARY_DIGIT_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_DIGIT_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const BINARY_DIGIT_START: utf32 = Self::BINARY_DIGIT_START_ASCII as utf32;
+    pub const BINARY_DIGIT_END: utf32 = Self::BINARY_DIGIT_END_ASCII as utf32;
+    pub const BINARY_DIGITS: AsciiRange<utf32> = AsciiRange::new(
+        Self::BINARY_DIGIT_START,
+        Self::BINARY_DIGIT_END,
+    );
+
+    pub const BINARY_DIGIT_OUT_OF_RANGE_START: utf32 = Self::BINARY_DIGIT_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const BINARY_DIGIT_OUT_OF_RANGE_END: utf32 = Self::BINARY_DIGIT_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const BINARY_DIGITS_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::BINARY_DIGIT_OUT_OF_RANGE_START,
+        Self::BINARY_DIGIT_OUT_OF_RANGE_END,
+    );
+
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::BINARY_UPPERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::BINARY_UPPERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START,
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::BINARY_LOWERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::BINARY_LOWERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START,
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const BINARY_DIGITS_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::BINARY_DIGIT_START,
+        Self::BINARY_DIGIT_END,
+    );
+
+    pub const BINARY_DIGITS_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::BINARY_DIGIT_OUT_OF_RANGE_START,
+        Self::BINARY_DIGIT_OUT_OF_RANGE_END,
+    );
+
+    pub const BINARY_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START,
+        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const BINARY_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START,
+        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END,
+    );
+}
+
+// octal
+#[rustfmt::skip]
+impl Base {
+    pub const OCTAL_DIGIT_START_ASCII: ascii = b'0';
+    pub const OCTAL_DIGIT_END_ASCII: ascii = b'7';
+    pub const OCTAL_DIGITS_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::OCTAL_DIGIT_START_ASCII,
+        Self::OCTAL_DIGIT_END_ASCII,
+    );
+
+    pub const OCTAL_DIGIT_OUT_OF_RANGE_START_ASCII: ascii = Self::OCTAL_DIGIT_END_ASCII + 1;
+    pub const OCTAL_DIGIT_OUT_OF_RANGE_END_ASCII: ascii = b'9';
+    pub const OCTAL_DIGITS_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'A';
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'Z';
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'a';
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'z';
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_DIGITS_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::OCTAL_DIGIT_START_ASCII,
+        Self::OCTAL_DIGIT_END_ASCII,
+    );
+
+    pub const OCTAL_DIGITS_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const OCTAL_DIGIT_START: utf32 = Self::OCTAL_DIGIT_START_ASCII as utf32;
+    pub const OCTAL_DIGIT_END: utf32 = Self::OCTAL_DIGIT_END_ASCII as utf32;
+    pub const OCTAL_DIGITS: AsciiRange<utf32> = AsciiRange::new(
+        Self::OCTAL_DIGIT_START,
+        Self::OCTAL_DIGIT_END,
+    );
+
+    pub const OCTAL_DIGIT_OUT_OF_RANGE_START: utf32 = Self::OCTAL_DIGIT_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const OCTAL_DIGIT_OUT_OF_RANGE_END: utf32 = Self::OCTAL_DIGIT_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const OCTAL_DIGITS_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_START,
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_END,
+    );
+
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const OCTAL_DIGITS_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::OCTAL_DIGIT_START,
+        Self::OCTAL_DIGIT_END,
+    );
+
+    pub const OCTAL_DIGITS_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_START,
+        Self::OCTAL_DIGIT_OUT_OF_RANGE_END,
+    );
+
+    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+}
+
+// decimal
+#[rustfmt::skip]
+impl Base {
+    pub const DECIMAL_DIGIT_START_ASCII: ascii = b'0';
+    pub const DECIMAL_DIGIT_END_ASCII: ascii = b'9';
+    pub const DECIMAL_DIGITS_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::DECIMAL_DIGIT_START_ASCII,
+        Self::DECIMAL_DIGIT_END_ASCII,
+    );
+
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'A';
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'Z';
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII: ascii = b'a';
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'z';
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const DECIMAL_DIGITS_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::DECIMAL_DIGIT_START_ASCII,
+        Self::DECIMAL_DIGIT_END_ASCII,
+    );
+
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const DECIMAL_DIGIT_START: utf32 = Self::DECIMAL_DIGIT_START_ASCII as utf32;
+    pub const DECIMAL_DIGIT_END: utf32 = Self::DECIMAL_DIGIT_END_ASCII as utf32;
+    pub const DECIMAL_DIGITS: AsciiRange<utf32> = AsciiRange::new(
+        Self::DECIMAL_DIGIT_START,
+        Self::DECIMAL_DIGIT_END,
+    );
+
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const DECIMAL_DIGITS_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::DECIMAL_DIGIT_START,
+        Self::DECIMAL_DIGIT_END,
+    );
+
+    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+}
+
+// hexadecimal
+#[rustfmt::skip]
+impl Base {
+    pub const HEXADECIMAL_DIGIT_START_ASCII: ascii = b'0';
+    pub const HEXADECIMAL_DIGIT_END_ASCII: ascii = b'9';
+    pub const HEXADECIMAL_DIGITS_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::HEXADECIMAL_DIGIT_START_ASCII,
+        Self::HEXADECIMAL_DIGIT_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_START_ASCII: ascii = b'A';
+    pub const HEXADECIMAL_UPPERCASE_END_ASCII: ascii = b'F';
+    pub const HEXADECIMAL_UPPERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::HEXADECIMAL_UPPERCASE_START_ASCII,
+        Self::HEXADECIMAL_UPPERCASE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_START_ASCII: ascii = b'a';
+    pub const HEXADECIMAL_LOWERCASE_END_ASCII: ascii = b'f';
+    pub const HEXADECIMAL_LOWERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::HEXADECIMAL_LOWERCASE_START_ASCII,
+        Self::HEXADECIMAL_LOWERCASE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII: ascii = Self::HEXADECIMAL_UPPERCASE_END_ASCII + 1;
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'Z';
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII: ascii = Self::HEXADECIMAL_LOWERCASE_END_ASCII + 1;
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII: ascii = b'z';
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_DIGITS_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::HEXADECIMAL_DIGIT_START_ASCII,
+        Self::HEXADECIMAL_DIGIT_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::HEXADECIMAL_UPPERCASE_START_ASCII,
+        Self::HEXADECIMAL_UPPERCASE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::HEXADECIMAL_LOWERCASE_START_ASCII,
+        Self::HEXADECIMAL_LOWERCASE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII,
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII,
+    );
+
+    pub const HEXADECIMAL_DIGIT_START: utf32 = Self::HEXADECIMAL_DIGIT_START_ASCII as utf32;
+    pub const HEXADECIMAL_DIGIT_END: utf32 = Self::HEXADECIMAL_DIGIT_END_ASCII as utf32;
+    pub const HEXADECIMAL_DIGITS: AsciiRange<utf32> = AsciiRange::new(
+        Self::HEXADECIMAL_DIGIT_START,
+        Self::HEXADECIMAL_DIGIT_END,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_START: utf32 = Self::HEXADECIMAL_UPPERCASE_START_ASCII as utf32;
+    pub const HEXADECIMAL_UPPERCASE_END: utf32 = Self::HEXADECIMAL_UPPERCASE_END_ASCII as utf32;
+    pub const HEXADECIMAL_UPPERCASE: AsciiRange<utf32> = AsciiRange::new(
+        Self::HEXADECIMAL_UPPERCASE_START,
+        Self::HEXADECIMAL_UPPERCASE_END,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_START: utf32 = Self::HEXADECIMAL_LOWERCASE_START_ASCII as utf32;
+    pub const HEXADECIMAL_LOWERCASE_END: utf32 = Self::HEXADECIMAL_LOWERCASE_END_ASCII as utf32;
+    pub const HEXADECIMAL_LOWERCASE: AsciiRange<utf32> = AsciiRange::new(
+        Self::HEXADECIMAL_LOWERCASE_START,
+        Self::HEXADECIMAL_LOWERCASE_END,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII as utf32;
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII as utf32;
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const HEXADECIMAL_DIGITS_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::HEXADECIMAL_DIGIT_START,
+        Self::HEXADECIMAL_DIGIT_END,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::HEXADECIMAL_UPPERCASE_START,
+        Self::HEXADECIMAL_UPPERCASE_END,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::HEXADECIMAL_LOWERCASE_START,
+        Self::HEXADECIMAL_LOWERCASE_END,
+    );
+
+    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START,
+        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END,
+    );
+
+    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START,
+        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+    );
+}
+
+// custom
+#[rustfmt::skip]
+impl Base {
+    pub const DIGIT_START_ASCII: ascii = b'0';
+    pub const DIGIT_END_ASCII: ascii = b'9';
+    pub const DIGITS_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::DIGIT_START_ASCII,
+        Self::DIGIT_END_ASCII,
+    );
+
+    pub const UPPERCASE_START_ASCII: ascii = b'A';
+    pub const UPPERCASE_END_ASCII: ascii = b'Z';
+    pub const UPPERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::UPPERCASE_START_ASCII,
+        Self::UPPERCASE_END_ASCII,
+    );
+
+    pub const LOWERCASE_START_ASCII: ascii = b'a';
+    pub const LOWERCASE_END_ASCII: ascii = b'z';
+    pub const LOWERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
+        Self::LOWERCASE_START_ASCII,
+        Self::LOWERCASE_END_ASCII,
+    );
+
+    pub const DIGITS_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::DIGIT_START_ASCII,
+        Self::DIGIT_END_ASCII,
+    );
+
+    pub const UPPERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::UPPERCASE_START_ASCII,
+        Self::UPPERCASE_END_ASCII,
+    );
+
+    pub const LOWERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
+        Self::LOWERCASE_START_ASCII,
+        Self::LOWERCASE_END_ASCII,
+    );
+
+    pub const DIGIT_START: utf32 = Self::DIGIT_START_ASCII as utf32;
+    pub const DIGIT_END: utf32 = Self::DIGIT_END_ASCII as utf32;
+    pub const DIGITS: AsciiRange<utf32> = AsciiRange::new(
+        Self::DIGIT_START,
+        Self::DIGIT_END,
+    );
+
+    pub const UPPERCASE_START: utf32 = Self::UPPERCASE_START_ASCII as utf32;
+    pub const UPPERCASE_END: utf32 = Self::UPPERCASE_END_ASCII as utf32;
+    pub const UPPERCASE: AsciiRange<utf32> = AsciiRange::new(
+        Self::UPPERCASE_START,
+        Self::UPPERCASE_END,
+    );
+
+    pub const LOWERCASE_START: utf32 = Self::LOWERCASE_START_ASCII as utf32;
+    pub const LOWERCASE_END: utf32 = Self::LOWERCASE_END_ASCII as utf32;
+    pub const LOWERCASE: AsciiRange<utf32> = AsciiRange::new(
+        Self::LOWERCASE_START,
+        Self::LOWERCASE_END,
+    );
+
+    pub const DIGITS_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::DIGIT_START,
+        Self::DIGIT_END,
+    );
+
+    pub const UPPERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::UPPERCASE_START,
+        Self::UPPERCASE_END,
+    );
+
+    pub const LOWERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
+        Self::LOWERCASE_START,
+        Self::LOWERCASE_END,
+    );
+}
+
 // Ranges utf32
 #[rustfmt::skip]
 impl Base {
-    pub const BINARY_RANGE:                AsciiRange<utf32> = AsciiRange { start: '0', end: '1' };
-    pub const OCTAL_RANGE:                 AsciiRange<utf32> = AsciiRange { start: '0', end: '8' };
-    pub const DECIMAL_RANGE:               AsciiRange<utf32> = AsciiRange { start: '0', end: '9' };
-    pub const HEXADECIMAL_DIGIT_RANGE:     AsciiRange<utf32> = Self::DECIMAL_RANGE;
-    pub const HEXADECIMAL_UPPERCASE_RANGE: AsciiRange<utf32> = AsciiRange { start: 'A', end: 'F' };
-    pub const HEXADECIMAL_LOWERCASE_RANGE: AsciiRange<utf32> = AsciiRange { start: 'a', end: 'f' };
+    pub const BINARY_RANGE:                AsciiRange<utf32> = Self::BINARY_DIGITS;
+    pub const OCTAL_RANGE:                 AsciiRange<utf32> = Self::OCTAL_DIGITS;
+    pub const DECIMAL_RANGE:               AsciiRange<utf32> = Self::DECIMAL_DIGITS;
+    pub const HEXADECIMAL_DIGIT_RANGE:     AsciiRange<utf32> = Self::HEXADECIMAL_DIGITS;
+    pub const HEXADECIMAL_UPPERCASE_RANGE: AsciiRange<utf32> = Self::HEXADECIMAL_UPPERCASE;
+    pub const HEXADECIMAL_LOWERCASE_RANGE: AsciiRange<utf32> = Self::HEXADECIMAL_LOWERCASE;
+    pub const DIGIT_RANGE:     AsciiRange<utf32> = Self::DIGITS;
+    pub const UPPERCASE_RANGE: AsciiRange<utf32> = Self::UPPERCASE;
+    pub const LOWERCASE_RANGE: AsciiRange<utf32> = Self::LOWERCASE;
 
     pub const BINARY_RANGES:      [AsciiRange<utf32>; 1] = [Self::BINARY_RANGE];
     pub const OCTAL_RANGES:       [AsciiRange<utf32>; 1] = [Self::OCTAL_RANGE];
@@ -44,13 +537,26 @@ impl Base {
         Self::HEXADECIMAL_UPPERCASE_RANGE,
         Self::HEXADECIMAL_LOWERCASE_RANGE,
     ];
+    pub const DIGIT_RANGES:   [AsciiRange<utf32>; 1] = [Self::DIGIT_RANGE];
+    pub const LETTERS_RANGES: [AsciiRange<utf32>; 2] = [
+        Self::UPPERCASE_RANGE,
+        Self::LOWERCASE_RANGE,
+    ];
+    pub const ALPHANUMERICAL_RANGES: [AsciiRange<utf32>; 3] = [
+        Self::DIGIT_RANGE,
+        Self::UPPERCASE_RANGE,
+        Self::LOWERCASE_RANGE,
+    ];
 
-    pub const BINARY_RANGE_OPS:                RangeInclusive<utf32> = RangeInclusive::new('0', '1');
-    pub const OCTAL_RANGE_OPS:                 RangeInclusive<utf32> = RangeInclusive::new('0', '8');
-    pub const DECIMAL_RANGE_OPS:               RangeInclusive<utf32> = RangeInclusive::new('0', '9');
-    pub const HEXADECIMAL_DIGIT_RANGE_OPS:     RangeInclusive<utf32> = Self::DECIMAL_RANGE_OPS;
-    pub const HEXADECIMAL_UPPERCASE_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new('A', 'F');
-    pub const HEXADECIMAL_LOWERCASE_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new('a', 'f');
+    pub const BINARY_RANGE_OPS:                RangeInclusive<utf32> = Self::BINARY_DIGITS_OPS;
+    pub const OCTAL_RANGE_OPS:                 RangeInclusive<utf32> = Self::OCTAL_DIGITS_OPS;
+    pub const DECIMAL_RANGE_OPS:               RangeInclusive<utf32> = Self::DECIMAL_DIGITS_OPS;
+    pub const HEXADECIMAL_DIGIT_RANGE_OPS:     RangeInclusive<utf32> = Self::HEXADECIMAL_DIGITS_OPS;
+    pub const HEXADECIMAL_UPPERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::HEXADECIMAL_UPPERCASE_OPS;
+    pub const HEXADECIMAL_LOWERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::HEXADECIMAL_LOWERCASE_OPS;
+    pub const DIGIT_RANGE_OPS:     RangeInclusive<utf32> = Self::DIGITS_OPS;
+    pub const UPPERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::UPPERCASE_OPS;
+    pub const LOWERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::LOWERCASE_OPS;
 
     pub const BINARY_RANGES_OPS:      [RangeInclusive<utf32>; 1] = [Self::BINARY_RANGE_OPS];
     pub const OCTAL_RANGES_OPS:       [RangeInclusive<utf32>; 1] = [Self::OCTAL_RANGE_OPS];
@@ -59,6 +565,16 @@ impl Base {
         Self::HEXADECIMAL_DIGIT_RANGE_OPS,
         Self::HEXADECIMAL_UPPERCASE_RANGE_OPS,
         Self::HEXADECIMAL_LOWERCASE_RANGE_OPS,
+    ];
+    pub const DIGIT_RANGES_OPS:   [RangeInclusive<utf32>; 1] = [Self::DIGIT_RANGE_OPS];
+    pub const LETTERS_RANGES_OPS: [RangeInclusive<utf32>; 2] = [
+        Self::UPPERCASE_RANGE_OPS,
+        Self::LOWERCASE_RANGE_OPS,
+    ];
+    pub const ALPHANUMERICAL_RANGES_OPS: [RangeInclusive<utf32>; 3] = [
+        Self::DIGIT_RANGE_OPS,
+        Self::UPPERCASE_RANGE_OPS,
+        Self::LOWERCASE_RANGE_OPS,
     ];
 
     #[must_use]
@@ -87,12 +603,15 @@ impl Base {
 // Ranges ascii
 #[rustfmt::skip]
 impl Base {
-    pub const BINARY_RANGE_ASCII:                AsciiRange<ascii> = AsciiRange { start: b'0', end: b'1' };
-    pub const OCTAL_RANGE_ASCII:                 AsciiRange<ascii> = AsciiRange { start: b'0', end: b'8' };
-    pub const DECIMAL_RANGE_ASCII:               AsciiRange<ascii> = AsciiRange { start: b'0', end: b'9' };
-    pub const HEXADECIMAL_DIGIT_RANGE_ASCII:     AsciiRange<ascii> = Self::DECIMAL_RANGE_ASCII;
-    pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII: AsciiRange<ascii> = AsciiRange { start: b'A', end: b'F' };
-    pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII: AsciiRange<ascii> = AsciiRange { start: b'a', end: b'f' };
+    pub const BINARY_RANGE_ASCII:                AsciiRange<ascii> = Self::BINARY_DIGITS_ASCII;
+    pub const OCTAL_RANGE_ASCII:                 AsciiRange<ascii> = Self::OCTAL_DIGITS_ASCII;
+    pub const DECIMAL_RANGE_ASCII:               AsciiRange<ascii> = Self::DECIMAL_DIGITS_ASCII;
+    pub const HEXADECIMAL_DIGIT_RANGE_ASCII:     AsciiRange<ascii> = Self::HEXADECIMAL_DIGITS_ASCII;
+    pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::HEXADECIMAL_UPPERCASE_ASCII;
+    pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::HEXADECIMAL_LOWERCASE_ASCII;
+    pub const DIGIT_RANGE_ASCII:     AsciiRange<ascii> = Self::DIGITS_ASCII;
+    pub const UPPERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::UPPERCASE_ASCII;
+    pub const LOWERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::LOWERCASE_ASCII;
 
     pub const BINARY_RANGES_ASCII:      [AsciiRange<ascii>; 1] = [Self::BINARY_RANGE_ASCII];
     pub const OCTAL_RANGES_ASCII:       [AsciiRange<ascii>; 1] = [Self::OCTAL_RANGE_ASCII];
@@ -102,13 +621,26 @@ impl Base {
         Self::HEXADECIMAL_UPPERCASE_RANGE_ASCII,
         Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII,
     ];
+    pub const DIGIT_RANGES_ASCII:   [AsciiRange<ascii>; 1] = [Self::DIGIT_RANGE_ASCII];
+    pub const LETTERS_RANGES_ASCII: [AsciiRange<ascii>; 2] = [
+        Self::UPPERCASE_RANGE_ASCII,
+        Self::LOWERCASE_RANGE_ASCII,
+    ];
+    pub const ALPHANUMERICAL_RANGES_ASCII: [AsciiRange<ascii>; 3] = [
+        Self::DIGIT_RANGE_ASCII,
+        Self::UPPERCASE_RANGE_ASCII,
+        Self::LOWERCASE_RANGE_ASCII,
+    ];
 
-    pub const BINARY_RANGE_ASCII_OPS:                RangeInclusive<ascii> = RangeInclusive::new(b'0', b'1');
-    pub const OCTAL_RANGE_ASCII_OPS:                 RangeInclusive<ascii> = RangeInclusive::new(b'0', b'8');
-    pub const DECIMAL_RANGE_ASCII_OPS:               RangeInclusive<ascii> = RangeInclusive::new(b'0', b'9');
-    pub const HEXADECIMAL_DIGIT_RANGE_ASCII_OPS:     RangeInclusive<ascii> = Self::DECIMAL_RANGE_ASCII_OPS;
-    pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(b'A', b'F');
-    pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(b'a', b'f');
+    pub const BINARY_RANGE_ASCII_OPS:                RangeInclusive<ascii> = Self::BINARY_DIGITS_ASCII_OPS;
+    pub const OCTAL_RANGE_ASCII_OPS:                 RangeInclusive<ascii> = Self::OCTAL_DIGITS_ASCII_OPS;
+    pub const DECIMAL_RANGE_ASCII_OPS:               RangeInclusive<ascii> = Self::DECIMAL_DIGITS_ASCII_OPS;
+    pub const HEXADECIMAL_DIGIT_RANGE_ASCII_OPS:     RangeInclusive<ascii> = Self::HEXADECIMAL_DIGITS_ASCII_OPS;
+    pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::HEXADECIMAL_UPPERCASE_ASCII_OPS;
+    pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::HEXADECIMAL_LOWERCASE_ASCII_OPS;
+    pub const DIGIT_RANGE_ASCII_OPS:     RangeInclusive<ascii> = Self::DIGITS_ASCII_OPS;
+    pub const UPPERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::UPPERCASE_ASCII_OPS;
+    pub const LOWERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::LOWERCASE_ASCII_OPS;
 
     pub const BINARY_RANGES_ASCII_OPS:      [RangeInclusive<ascii>; 1] = [Self::BINARY_RANGE_ASCII_OPS];
     pub const OCTAL_RANGES_ASCII_OPS:       [RangeInclusive<ascii>; 1] = [Self::OCTAL_RANGE_ASCII_OPS];
@@ -118,13 +650,26 @@ impl Base {
         Self::HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS,
         Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS,
     ];
+    pub const DIGIT_RANGES_ASCII_OPS:   [RangeInclusive<ascii>; 1] = [Self::DIGIT_RANGE_ASCII_OPS];
+    pub const LETTERS_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 2] = [
+        Self::UPPERCASE_RANGE_ASCII_OPS,
+        Self::LOWERCASE_RANGE_ASCII_OPS,
+    ];
+    pub const ALPHANUMERICAL_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 3] = [
+        Self::DIGIT_RANGE_ASCII_OPS,
+        Self::UPPERCASE_RANGE_ASCII_OPS,
+        Self::LOWERCASE_RANGE_ASCII_OPS,
+    ];
 
-    pub const BINARY_ASCII_OFFSET:                u8 = Self::BINARY_RANGE_ASCII.start;
-    pub const OCTAL_ASCII_OFFSET:                 u8 = Self::OCTAL_RANGE_ASCII.start;
-    pub const DECIMAL_ASCII_OFFSET:               u8 = Self::DECIMAL_RANGE_ASCII.start;
-    pub const HEXADECIMAL_DIGIT_ASCII_OFFSET:     u8 = Self::DECIMAL_ASCII_OFFSET;
-    pub const HEXADECIMAL_UPPERCASE_ASCII_OFFSET: u8 = Self::HEXADECIMAL_UPPERCASE_RANGE_ASCII.start - Self::Decimal as u8;
-    pub const HEXADECIMAL_LOWERCASE_ASCII_OFFSET: u8 = Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII.start - Self::Decimal as u8;
+    pub const BINARY_ASCII_OFFSET:                u8 = Self::BINARY_DIGIT_START_ASCII;
+    pub const OCTAL_ASCII_OFFSET:                 u8 = Self::OCTAL_DIGIT_START_ASCII;
+    pub const DECIMAL_ASCII_OFFSET:               u8 = Self::DECIMAL_DIGIT_START_ASCII;
+    pub const HEXADECIMAL_DIGIT_ASCII_OFFSET:     u8 = Self::HEXADECIMAL_DIGIT_START_ASCII;
+    pub const HEXADECIMAL_UPPERCASE_ASCII_OFFSET: u8 = Self::HEXADECIMAL_UPPERCASE_START_ASCII - Self::Decimal as u8;
+    pub const HEXADECIMAL_LOWERCASE_ASCII_OFFSET: u8 = Self::HEXADECIMAL_LOWERCASE_START_ASCII - Self::Decimal as u8;
+    pub const DIGIT_ASCII_OFFSET:                 u8 = Self::DIGIT_START_ASCII;
+    pub const UPPERCASE_ASCII_OFFSET:             u8 = Self::UPPERCASE_START_ASCII - Self::Decimal as u8;
+    pub const LOWERCASE_ASCII_OFFSET:             u8 = Self::LOWERCASE_START_ASCII - Self::Decimal as u8;
 
     #[must_use]
     #[inline]
@@ -150,13 +695,48 @@ impl Base {
 }
 
 // Parsing
+pub type Offset = ascii;
+pub type OffsetCustomBase = ascii;
+// NOTE(stefano): rename to `Digit` and `DigitCustomBase` when removing non offset based parsing
+pub type DigitOffset = u8;
+pub type DigitOffsetCustomBase = u8;
+
+// Note: this enum exists just to leverage the enum mechanism of assigning discriminants
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(u8)]
+enum OffsetEnum {
+    Invalid = 128,
+    OutOfRange,
+    BaseMin,
+    BaseMax,
+}
+
+pub const INVALID: Offset = OffsetEnum::Invalid as u8;
+pub const OUT_OF_RANGE: Offset = OffsetEnum::OutOfRange as u8;
+pub const BASE_MIN: OffsetCustomBase = OffsetEnum::BaseMin as u8;
+pub const BASE_MAX: OffsetCustomBase = OffsetEnum::BaseMax as u8;
+
 impl Base {
+    #[must_use]
+    #[inline(always)]
+    pub const fn check_offset(self, character: ascii) -> Offset {
+        return check_offset(character, self);
+    }
+
+    #[must_use]
+    #[inline(always)]
+    pub const fn parse_offset(self, character: ascii) -> DigitOffset {
+        return parse_offset(character, self);
+    }
+
+    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
     #[must_use]
     #[inline(always)]
     pub const fn check(self, character: ascii) -> AsciiDigit {
         return check(character, self);
     }
 
+    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
     #[must_use]
     #[inline(always)]
     pub const fn parse(self, character: ascii) -> Digit {
@@ -164,6 +744,7 @@ impl Base {
     }
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum AsciiDigit {
@@ -174,6 +755,7 @@ pub enum AsciiDigit {
     Other,
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -185,6 +767,7 @@ pub enum Digit {
     Other      = AsciiDigit::Other as u8,
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -198,6 +781,7 @@ pub enum AsciiDigitCustomBase {
     BaseMax,
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -213,6 +797,32 @@ pub enum DigitCustomBase {
 
 #[must_use]
 #[inline]
+pub const fn check_offset(character: ascii, base: Base) -> Offset {
+    #[rustfmt::skip]
+    return match base {
+        Base::Binary      => check_binary_offset(character),
+        Base::Octal       => check_octal_offset(character),
+        Base::Decimal     => check_decimal_offset(character),
+        Base::Hexadecimal => check_hexadecimal_offset(character),
+    };
+}
+
+
+#[must_use]
+#[inline]
+pub const fn parse_offset(character: ascii, base: Base) -> DigitOffset {
+    #[rustfmt::skip]
+    return match base {
+        Base::Binary      => parse_binary_offset(character),
+        Base::Octal       => parse_octal_offset(character),
+        Base::Decimal     => parse_decimal_offset(character),
+        Base::Hexadecimal => parse_hexadecimal_offset(character),
+    };
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[must_use]
+#[inline]
 pub const fn check(character: ascii, base: Base) -> AsciiDigit {
     #[rustfmt::skip]
     return match base {
@@ -223,6 +833,7 @@ pub const fn check(character: ascii, base: Base) -> AsciiDigit {
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse(character: ascii, base: Base) -> Digit {
@@ -235,116 +846,645 @@ pub const fn parse(character: ascii, base: Base) -> Digit {
     };
 }
 
+#[macro_export]
+macro_rules! range_binary_digit {
+    (ascii) => { Base::BINARY_DIGIT_START_ASCII..=Base::BINARY_DIGIT_END_ASCII };
+    () => { Base::BINARY_DIGIT_START..=Base::BINARY_DIGIT_END };
+}
+
+#[macro_export]
+macro_rules! range_binary_digit_out_of_range {
+    (ascii) => { Base::BINARY_DIGIT_OUT_OF_RANGE_START_ASCII..=Base::BINARY_DIGIT_OUT_OF_RANGE_END_ASCII };
+    () => { Base::BINARY_DIGIT_OUT_OF_RANGE_START..=Base::BINARY_DIGIT_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_binary_uppercase_out_of_range {
+    (ascii) => { Base::BINARY_UPPERCASE_OUT_OF_RANGE_START_ASCII..=Base::BINARY_UPPERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::BINARY_UPPERCASE_OUT_OF_RANGE_START..=Base::BINARY_UPPERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_binary_lowercase_out_of_range {
+    (ascii) => { Base::BINARY_LOWERCASE_OUT_OF_RANGE_START_ASCII..=Base::BINARY_LOWERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::BINARY_LOWERCASE_OUT_OF_RANGE_START..=Base::BINARY_LOWERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_binary_letter_out_of_range {
+    (ascii) => { range_binary_uppercase_out_of_range!(ascii) | range_binary_lowercase_out_of_range!(ascii) };
+    () => { range_binary_uppercase_out_of_range!() | range_binary_lowercase_out_of_range!() };
+}
+
+#[macro_export]
+macro_rules! range_binary_out_of_range {
+    (ascii) => { range_binary_digit_out_of_range!(ascii) | range_binary_letter_out_of_range!(ascii) };
+    () => { range_binary_digit_out_of_range!() | range_binary_letter_out_of_range!() };
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_digit(ch: ascii) -> bool {
+    return matches!(ch, range_binary_digit!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_digit_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_binary_digit_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_uppercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_binary_uppercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_lowercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_binary_lowercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_letter_out_of_range(ch: ascii) -> bool {
+    return is_binary_uppercase_out_of_range(ch) || is_binary_lowercase_out_of_range(ch);
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn is_binary(ch: ascii) -> bool {
+    return is_binary_digit(ch);
+}
+
+#[must_use]
+#[inline]
+pub const fn is_binary_out_of_range(ch: ascii) -> bool {
+    return is_binary_digit_out_of_range(ch) || is_binary_letter_out_of_range(ch);
+}
+
+macro_rules! offset_binary {
+    ($ch:expr) => {
+        match $ch {
+            range_binary_digit!(ascii)        => Base::BINARY_ASCII_OFFSET,
+            range_binary_out_of_range!(ascii) => return OUT_OF_RANGE,
+            _                                 => return INVALID,
+        }
+    }
+}
+
+#[must_use]
+#[inline]
+pub const fn check_binary_offset(character: ascii) -> Offset {
+    return offset_binary!(character);
+}
+
+
+#[must_use]
+#[inline]
+pub const fn parse_binary_offset(character: ascii) -> DigitOffset {
+    let offset = offset_binary!(character);
+    return character - offset;
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_binary(character: ascii) -> AsciiDigit {
     #[rustfmt::skip]
     return match character {
-        b'0'..=b'1'                             => AsciiDigit::Ok,
-        b'_'                                    => AsciiDigit::Underscore,
-        b'.'                                    => AsciiDigit::Dot,
-        b'2'..=b'9' | b'A'..=b'Z' | b'a'..=b'z' => AsciiDigit::OutOfRange,
-        _                                       => AsciiDigit::Other,
+        range_binary_digit!(ascii)        => AsciiDigit::Ok,
+        b'_'                              => AsciiDigit::Underscore,
+        b'.'                              => AsciiDigit::Dot,
+        range_binary_out_of_range!(ascii) => AsciiDigit::OutOfRange,
+        _                                 => AsciiDigit::Other,
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_binary(character: ascii) -> Digit {
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'1'                             => Base::BINARY_ASCII_OFFSET,
-        b'_'                                    => return Digit::Underscore,
-        b'.'                                    => return Digit::Dot,
-        b'2'..=b'9' | b'A'..=b'Z' | b'a'..=b'z' => return Digit::OutOfRange,
-        _                                       => return Digit::Other,
+        range_binary_digit!(ascii)        => Base::BINARY_ASCII_OFFSET,
+        b'_'                              => return Digit::Underscore,
+        b'.'                              => return Digit::Dot,
+        range_binary_out_of_range!(ascii) => return Digit::OutOfRange,
+        _                                 => return Digit::Other,
     };
     return Digit::Ok(character - offset);
 }
 
+#[macro_export]
+macro_rules! range_octal_digit {
+    (ascii) => { Base::OCTAL_DIGIT_START_ASCII..=Base::OCTAL_DIGIT_END_ASCII };
+    () => { Base::OCTAL_DIGIT_START..=Base::OCTAL_DIGIT_END };
+}
+
+#[macro_export]
+macro_rules! range_octal_digit_out_of_range {
+    (ascii) => { Base::OCTAL_DIGIT_OUT_OF_RANGE_START_ASCII..=Base::OCTAL_DIGIT_OUT_OF_RANGE_END_ASCII };
+    () => { Base::OCTAL_DIGIT_OUT_OF_RANGE_START..=Base::OCTAL_DIGIT_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_octal_uppercase_out_of_range {
+    (ascii) => { Base::OCTAL_UPPERCASE_OUT_OF_RANGE_START_ASCII..=Base::OCTAL_UPPERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::OCTAL_UPPERCASE_OUT_OF_RANGE_START..=Base::OCTAL_UPPERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_octal_lowercase_out_of_range {
+    (ascii) => { Base::OCTAL_LOWERCASE_OUT_OF_RANGE_START_ASCII..=Base::OCTAL_LOWERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::OCTAL_LOWERCASE_OUT_OF_RANGE_START..=Base::OCTAL_LOWERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_octal_letter_out_of_range {
+    (ascii) => { range_octal_uppercase_out_of_range!(ascii) | range_octal_lowercase_out_of_range!(ascii) };
+    () => { range_octal_uppercase_out_of_range!() | range_octal_lowercase_out_of_range!() };
+}
+
+#[macro_export]
+macro_rules! range_octal_out_of_range {
+    (ascii) => { range_octal_digit_out_of_range!(ascii) | range_octal_letter_out_of_range!(ascii) };
+    () => { range_octal_digit_out_of_range!() | range_octal_letter_out_of_range!() };
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_digit(ch: ascii) -> bool {
+    return matches!(ch, range_octal_digit!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_digit_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_octal_digit_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_uppercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_octal_uppercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_lowercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_octal_lowercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_letter_out_of_range(ch: ascii) -> bool {
+    return is_octal_uppercase_out_of_range(ch) || is_octal_lowercase_out_of_range(ch);
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn is_octal(ch: ascii) -> bool {
+    return is_octal_digit(ch);
+}
+
+#[must_use]
+#[inline]
+pub const fn is_octal_out_of_range(ch: ascii) -> bool {
+    return is_octal_digit_out_of_range(ch) || is_octal_letter_out_of_range(ch);
+}
+
+macro_rules! offset_octal {
+    ($ch:expr) => {
+        match $ch {
+            range_octal_digit!(ascii)        => Base::OCTAL_ASCII_OFFSET,
+            range_octal_out_of_range!(ascii) => return OUT_OF_RANGE,
+            _                                => return INVALID,
+        }
+    }
+}
+
+#[must_use]
+#[inline]
+pub const fn check_octal_offset(character: ascii) -> Offset {
+    return offset_octal!(character);
+}
+
+#[must_use]
+#[inline]
+pub const fn parse_octal_offset(character: ascii) -> DigitOffset {
+    let offset = offset_octal!(character);
+    return character - offset;
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_octal(character: ascii) -> AsciiDigit {
     #[rustfmt::skip]
     return match character {
-        b'0'..=b'7'                             => AsciiDigit::Ok,
-        b'_'                                    => AsciiDigit::Underscore,
-        b'.'                                    => AsciiDigit::Dot,
-        b'8'..=b'9' | b'A'..=b'Z' | b'a'..=b'z' => AsciiDigit::OutOfRange,
-        _                                       => AsciiDigit::Other,
+        range_octal_digit!(ascii)        => AsciiDigit::Ok,
+        b'_'                             => AsciiDigit::Underscore,
+        b'.'                             => AsciiDigit::Dot,
+        range_octal_out_of_range!(ascii) => AsciiDigit::OutOfRange,
+        _                                => AsciiDigit::Other,
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_octal(character: ascii) -> Digit {
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'7'                             => Base::OCTAL_ASCII_OFFSET,
-        b'_'                                    => return Digit::Underscore,
-        b'.'                                    => return Digit::Dot,
-        b'8'..=b'9' | b'A'..=b'Z' | b'a'..=b'z' => return Digit::OutOfRange,
-        _                                       => return Digit::Other,
+        range_octal_digit!(ascii)        => Base::OCTAL_ASCII_OFFSET,
+        b'_'                             => return Digit::Underscore,
+        b'.'                             => return Digit::Dot,
+        range_octal_out_of_range!(ascii) => return Digit::OutOfRange,
+        _                                => return Digit::Other,
     };
     return Digit::Ok(character - offset);
 }
 
+#[macro_export]
+macro_rules! range_decimal_digit {
+    (ascii) => { Base::DECIMAL_DIGIT_START_ASCII..=Base::DECIMAL_DIGIT_END_ASCII };
+    () => { Base::DECIMAL_DIGIT_START..=Base::DECIMAL_DIGIT_END };
+}
+
+#[macro_export]
+macro_rules! range_decimal_uppercase_out_of_range {
+    (ascii) => { Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII..=Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_START..=Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_decimal_lowercase_out_of_range {
+    (ascii) => { Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII..=Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_START..=Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_decimal_letter_out_of_range {
+    (ascii) => { range_decimal_uppercase_out_of_range!(ascii) | range_decimal_lowercase_out_of_range!(ascii) };
+    () => { range_decimal_uppercase_out_of_range!() | range_decimal_lowercase_out_of_range!() };
+}
+
+#[macro_export]
+macro_rules! range_decimal_out_of_range {
+    (ascii) => { range_decimal_letter_out_of_range!(ascii) };
+    () => { range_decimal_letter_out_of_range!() };
+}
+
+#[must_use]
+#[inline]
+pub const fn is_decimal_digit(ch: ascii) -> bool {
+    return matches!(ch, range_decimal_digit!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_decimal_uppercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_decimal_uppercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_decimal_lowercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_decimal_lowercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_decimal_letter_out_of_range(ch: ascii) -> bool {
+    return is_decimal_uppercase_out_of_range(ch) || is_decimal_lowercase_out_of_range(ch);
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn is_decimal(ch: ascii) -> bool {
+    return is_decimal_digit(ch);
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn is_decimal_out_of_range(ch: ascii) -> bool {
+    return is_decimal_letter_out_of_range(ch);
+}
+
+macro_rules! offset_decimal {
+    ($ch:expr) => {
+        match $ch {
+            range_decimal_digit!(ascii)        => Base::DECIMAL_ASCII_OFFSET,
+            range_decimal_out_of_range!(ascii) => return OUT_OF_RANGE,
+            _                                  => return INVALID,
+        }
+    }
+}
+
+#[must_use]
+#[inline]
+pub const fn check_decimal_offset(character: ascii) -> Offset {
+    return offset_decimal!(character);
+}
+
+#[must_use]
+#[inline]
+pub const fn parse_decimal_offset(character: ascii) -> DigitOffset {
+    let offset = offset_decimal!(character);
+    return character - offset;
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_decimal(character: ascii) -> AsciiDigit {
     #[rustfmt::skip]
     return match character {
-        b'0'..=b'9'               => AsciiDigit::Ok,
-        b'_'                      => AsciiDigit::Underscore,
-        b'.'                      => AsciiDigit::Dot,
-        b'A'..=b'Z' | b'a'..=b'z' => AsciiDigit::OutOfRange,
-        _                         => AsciiDigit::Other,
+        range_decimal_digit!(ascii)        => AsciiDigit::Ok,
+        b'_'                               => AsciiDigit::Underscore,
+        b'.'                               => AsciiDigit::Dot,
+        range_decimal_out_of_range!(ascii) => AsciiDigit::OutOfRange,
+        _                                  => AsciiDigit::Other,
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_decimal(character: ascii) -> Digit {
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'9'               => Base::DECIMAL_ASCII_OFFSET,
-        b'_'                      => return Digit::Underscore,
-        b'.'                      => return Digit::Dot,
-        b'A'..=b'Z' | b'a'..=b'z' => return Digit::OutOfRange,
-        _                         => return Digit::Other,
+        range_decimal_digit!(ascii)        => Base::DECIMAL_ASCII_OFFSET,
+        b'_'                               => return Digit::Underscore,
+        b'.'                               => return Digit::Dot,
+        range_decimal_out_of_range!(ascii) => return Digit::OutOfRange,
+        _                                  => return Digit::Other,
     };
     return Digit::Ok(character - offset);
 }
 
+#[macro_export]
+macro_rules! range_hexadecimal_digit {
+    (ascii) => { Base::HEXADECIMAL_DIGIT_START_ASCII..=Base::HEXADECIMAL_DIGIT_END_ASCII };
+    () => { Base::HEXADECIMAL_DIGIT_START..=Base::HEXADECIMAL_DIGIT_END };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_uppercase {
+    (ascii) => { Base::HEXADECIMAL_UPPERCASE_START_ASCII..=Base::HEXADECIMAL_UPPERCASE_END_ASCII };
+    () => { Base::HEXADECIMAL_UPPERCASE_START..=Base::HEXADECIMAL_UPPERCASE_END };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_lowercase {
+    (ascii) => { Base::HEXADECIMAL_LOWERCASE_START_ASCII..=Base::HEXADECIMAL_LOWERCASE_END_ASCII };
+    () => { Base::HEXADECIMAL_LOWERCASE_START..=Base::HEXADECIMAL_LOWERCASE_END };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_letter {
+    (ascii) => { range_hexadecimal_uppercase!(ascii) | range_hexadecimal_lowercase!(ascii) };
+    () => { range_hexadecimal_uppercase!() | range_hexadecimal_lowercase!() };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_uppercase_out_of_range {
+    (ascii) => { Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START_ASCII..=Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START..=Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_lowercase_out_of_range {
+    (ascii) => { Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START_ASCII..=Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END_ASCII };
+    () => { Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START..=Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_letter_out_of_range {
+    (ascii) => { range_hexadecimal_uppercase_out_of_range!(ascii) | range_hexadecimal_lowercase_out_of_range!(ascii) };
+    () => { range_hexadecimal_uppercase_out_of_range!() | range_hexadecimal_lowercase_out_of_range!() };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal {
+    (ascii) => { range_hexadecimal_digit!(ascii) | range_hexadecimal_letter!(ascii) };
+    () => { range_hexadecimal_digit!(ascii) | range_hexadecimal_letter!() };
+}
+
+#[macro_export]
+macro_rules! range_hexadecimal_out_of_range {
+    (ascii) => { range_hexadecimal_letter_out_of_range!(ascii) };
+    () => { range_hexadecimal_letter_out_of_range!() };
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_digit(ch: ascii) -> bool {
+    return matches!(ch, range_hexadecimal_digit!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_uppercase(ch: ascii) -> bool {
+    return matches!(ch, range_hexadecimal_uppercase!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_lowercase(ch: ascii) -> bool {
+    return matches!(ch, range_hexadecimal_lowercase!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_letter(ch: ascii) -> bool {
+    return is_hexadecimal_uppercase(ch) || is_hexadecimal_lowercase(ch);
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_uppercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_hexadecimal_uppercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_lowercase_out_of_range(ch: ascii) -> bool {
+    return matches!(ch, range_hexadecimal_lowercase_out_of_range!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal_letter_out_of_range(ch: ascii) -> bool {
+    return is_hexadecimal_uppercase_out_of_range(ch) || is_hexadecimal_lowercase_out_of_range(ch);
+}
+
+#[must_use]
+#[inline]
+pub const fn is_hexadecimal(ch: ascii) -> bool {
+    return is_hexadecimal_digit(ch) || is_hexadecimal_letter(ch);
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn is_hexadecimal_out_of_range(ch: ascii) -> bool {
+    return is_hexadecimal_letter_out_of_range(ch);
+}
+
+macro_rules! offset_hexadecimal {
+    ($ch:expr) => {
+        match $ch {
+            range_hexadecimal_digit!(ascii)        => Base::HEXADECIMAL_DIGIT_ASCII_OFFSET,
+            range_hexadecimal_uppercase!(ascii)    => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
+            range_hexadecimal_lowercase!(ascii)    => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
+            range_hexadecimal_out_of_range!(ascii) => return OUT_OF_RANGE,
+            _                                      => return INVALID,
+        }
+    }
+}
+
+#[must_use]
+#[inline]
+pub const fn check_hexadecimal_offset(character: ascii) -> Offset {
+    return offset_hexadecimal!(character);
+}
+
+#[must_use]
+#[inline]
+pub const fn parse_hexadecimal_offset(character: ascii) -> DigitOffset {
+    let offset = offset_hexadecimal!(character);
+    return character - offset;
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_hexadecimal(character: ascii) -> AsciiDigit {
     #[rustfmt::skip]
     return match character {
-        b'0'..=b'9' | b'A'..=b'F' | b'a'..=b'f' => AsciiDigit::Ok,
-        b'_'                                    => AsciiDigit::Underscore,
-        b'.'                                    => AsciiDigit::Dot,
-        b'G'..=b'Z' | b'g'..=b'z'               => AsciiDigit::OutOfRange,
-        _                                       => AsciiDigit::Other,
+        range_hexadecimal!(ascii)              => AsciiDigit::Ok,
+        b'_'                                   => AsciiDigit::Underscore,
+        b'.'                                   => AsciiDigit::Dot,
+        range_hexadecimal_out_of_range!(ascii) => AsciiDigit::OutOfRange,
+        _                                      => AsciiDigit::Other,
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_hexadecimal(character: ascii) -> Digit {
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'9'               => Base::HEXADECIMAL_DIGIT_ASCII_OFFSET,
-        b'A'..=b'F'               => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
-        b'a'..=b'f'               => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
-        b'_'                      => return Digit::Underscore,
-        b'.'                      => return Digit::Dot,
-        b'G'..=b'Z' | b'g'..=b'z' => return Digit::OutOfRange,
-        _                         => return Digit::Other,
+        range_hexadecimal_digit!(ascii)        => Base::HEXADECIMAL_DIGIT_ASCII_OFFSET,
+        range_hexadecimal_uppercase!(ascii)    => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
+        range_hexadecimal_lowercase!(ascii)    => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
+        b'_'                                   => return Digit::Underscore,
+        b'.'                                   => return Digit::Dot,
+        range_hexadecimal_out_of_range!(ascii) => return Digit::OutOfRange,
+        _                                      => return Digit::Other,
     };
     return Digit::Ok(character - offset);
 }
 
+#[macro_export]
+macro_rules! range_digit {
+    (ascii) => { Base::DIGIT_START_ASCII..=Base::DIGIT_END_ASCII };
+    () => { Base::DIGIT_START..=Base::DIGIT_END };
+}
+
+#[macro_export]
+macro_rules! range_uppercase {
+    (ascii) => { Base::UPPERCASE_START_ASCII..=Base::UPPERCASE_END_ASCII };
+    () => { Base::UPPERCASE_START..=Base::UPPERCASE_END };
+}
+
+#[macro_export]
+macro_rules! range_lowercase {
+    (ascii) => { Base::LOWERCASE_START_ASCII..=Base::LOWERCASE_END_ASCII };
+    () => { Base::LOWERCASE_START..=Base::LOWERCASE_END };
+}
+
+#[macro_export]
+macro_rules! range_letter {
+    (ascii) => { range_uppercase!(ascii) | range_lowercase!(ascii) };
+    () => { range_uppercase!() | range_lowercase!() };
+}
+
+#[macro_export]
+macro_rules! range_alphanumerical {
+    (ascii) => { range_digit!(ascii) | range_letter!(ascii) };
+    () => { range_digit!(ascii) | range_letter!() };
+}
+
+#[must_use]
+#[inline]
+pub const fn is_digit(ch: ascii) -> bool {
+    return matches!(ch, range_digit!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_uppercase(ch: ascii) -> bool {
+    return matches!(ch, range_uppercase!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_lowercase(ch: ascii) -> bool {
+    return matches!(ch, range_lowercase!(ascii));
+}
+
+#[must_use]
+#[inline]
+pub const fn is_letter(ch: ascii) -> bool {
+    return is_uppercase(ch) || is_lowercase(ch);
+}
+
+#[must_use]
+#[inline]
+pub const fn is_alphanumerical(ch: ascii) -> bool {
+    return is_digit(ch) || is_letter(ch);
+}
+
+macro_rules! offset_alphanumerical {
+    ($ch:expr) => {
+        match $ch {
+            range_digit!(ascii)     => Base::DIGIT_ASCII_OFFSET,
+            range_uppercase!(ascii) => Base::UPPERCASE_ASCII_OFFSET,
+            range_lowercase!(ascii) => Base::LOWERCASE_ASCII_OFFSET,
+            _                       => return INVALID,
+        }
+    }
+}
+
+#[must_use]
+#[inline]
+pub const fn check_custom_offset(character: ascii, base: u8) -> OffsetCustomBase {
+    if base < Base::MIN { return BASE_MIN; }
+    if base > Base::MAX { return BASE_MAX; }
+
+    let offset = offset_alphanumerical!(character);
+    let digit = character - offset;
+    if digit >= base { return OUT_OF_RANGE; }
+    return offset;
+}
+
+#[must_use]
+#[inline]
+pub const fn parse_custom_offset(character: ascii, base: u8) -> DigitOffsetCustomBase {
+    if base < Base::MIN { return BASE_MIN; }
+    if base > Base::MAX { return BASE_MAX; }
+
+    let offset = offset_alphanumerical!(character);
+    let digit = character - offset;
+    if digit >= base { return OUT_OF_RANGE; }
+    return digit;
+}
+
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
@@ -357,12 +1497,12 @@ pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
 
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'9' => Base::DECIMAL_ASCII_OFFSET,
-        b'A'..=b'Z' => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
-        b'a'..=b'z' => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
-        b'_'        => return AsciiDigitCustomBase::Underscore,
-        b'.'        => return AsciiDigitCustomBase::Dot,
-        _           => return AsciiDigitCustomBase::Other,
+        range_digit!(ascii)     => Base::DIGIT_ASCII_OFFSET,
+        range_uppercase!(ascii) => Base::UPPERCASE_ASCII_OFFSET,
+        range_lowercase!(ascii) => Base::LOWERCASE_ASCII_OFFSET,
+        b'_'                    => return AsciiDigitCustomBase::Underscore,
+        b'.'                    => return AsciiDigitCustomBase::Dot,
+        _                       => return AsciiDigitCustomBase::Other,
     };
 
     let digit = character - offset;
@@ -372,6 +1512,7 @@ pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
     return AsciiDigitCustomBase::Ok;
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
@@ -384,12 +1525,12 @@ pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
 
     #[rustfmt::skip]
     let offset = match character {
-        b'0'..=b'9' => Base::DECIMAL_ASCII_OFFSET,
-        b'A'..=b'Z' => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
-        b'a'..=b'z' => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
-        b'_'        => return DigitCustomBase::Underscore,
-        b'.'        => return DigitCustomBase::Dot,
-        _           => return DigitCustomBase::Other,
+        range_digit!(ascii)     => Base::DIGIT_ASCII_OFFSET,
+        range_uppercase!(ascii) => Base::UPPERCASE_ASCII_OFFSET,
+        range_lowercase!(ascii) => Base::LOWERCASE_ASCII_OFFSET,
+        b'_'                    => return DigitCustomBase::Underscore,
+        b'.'                    => return DigitCustomBase::Dot,
+        _                       => return DigitCustomBase::Other,
     };
 
     let digit = character - offset;
@@ -399,6 +1540,7 @@ pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
     return DigitCustomBase::Ok(digit);
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will be removed to avoid inconsistencies")]
 #[must_use]
 #[inline]
 pub const fn check_tally(character: ascii, tally_symbol: ascii) -> AsciiDigit {
@@ -411,6 +1553,7 @@ pub const fn check_tally(character: ascii, tally_symbol: ascii) -> AsciiDigit {
     };
 }
 
+#[deprecated(since = "0.1.1-dev", note = "will be removed to avoid inconsistencies")]
 #[must_use]
 #[inline]
 pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
@@ -423,6 +1566,7 @@ pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
     };
 }
 
+// IDEA(stefano): introduce loops to check every ascii combination
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {
@@ -639,4 +1783,166 @@ mod tests {
     test_assert!(parse_tally(b'_', b'0'), == Digit::Underscore);
     test_assert!(parse_tally(b'.', b'0'), == Digit::Dot);
     test_assert!(parse_tally(b'@', b'0'), == Digit::Other);
+
+    test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+    test_assert!(check_binary_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+    test_assert!(check_binary_offset(b'2'), == offset if offset == OUT_OF_RANGE);
+    test_assert!(check_binary_offset(b'a'), == offset if offset == OUT_OF_RANGE);
+    test_assert!(check_binary_offset(b'Z'), == offset if offset == OUT_OF_RANGE);
+    test_assert!(check_binary_offset(b'_'), == offset if offset == INVALID);
+    test_assert!(check_binary_offset(b'.'), == offset if offset == INVALID);
+    test_assert!(check_binary_offset(b'@'), == offset if offset == INVALID);
+
+    test_assert!(parse_binary_offset(b'0'), == 0);
+    test_assert!(parse_binary_offset(b'1'), == 1);
+    test_assert!(parse_binary_offset(b'2'), == digit if digit == OUT_OF_RANGE);
+    test_assert!(parse_binary_offset(b'a'), == digit if digit == OUT_OF_RANGE);
+    test_assert!(parse_binary_offset(b'Z'), == digit if digit == OUT_OF_RANGE);
+    test_assert!(parse_binary_offset(b'_'), == digit if digit == INVALID);
+    test_assert!(parse_binary_offset(b'.'), == digit if digit == INVALID);
+    test_assert!(parse_binary_offset(b'@'), == digit if digit == INVALID);
+
+    test_assert!(check_octal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+    test_assert!(check_octal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+    test_assert!(check_octal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+    test_assert!(check_octal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+    test_assert!(check_octal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+    test_assert!(check_octal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+    test_assert!(check_octal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+    test_assert!(check_octal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+    test_assert!(check_octal_offset(b'8'), == OUT_OF_RANGE);
+    test_assert!(check_octal_offset(b'9'), == OUT_OF_RANGE);
+    test_assert!(check_octal_offset(b'a'), == OUT_OF_RANGE);
+    test_assert!(check_octal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(check_octal_offset(b'_'), == INVALID);
+    test_assert!(check_octal_offset(b'.'), == INVALID);
+    test_assert!(check_octal_offset(b'@'), == INVALID);
+
+    test_assert!(parse_octal_offset(b'0'), == 0);
+    test_assert!(parse_octal_offset(b'1'), == 1);
+    test_assert!(parse_octal_offset(b'2'), == 2);
+    test_assert!(parse_octal_offset(b'3'), == 3);
+    test_assert!(parse_octal_offset(b'4'), == 4);
+    test_assert!(parse_octal_offset(b'5'), == 5);
+    test_assert!(parse_octal_offset(b'6'), == 6);
+    test_assert!(parse_octal_offset(b'7'), == 7);
+    test_assert!(parse_octal_offset(b'8'), == OUT_OF_RANGE);
+    test_assert!(parse_octal_offset(b'9'), == OUT_OF_RANGE);
+    test_assert!(parse_octal_offset(b'a'), == OUT_OF_RANGE);
+    test_assert!(parse_octal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(parse_octal_offset(b'_'), == INVALID);
+    test_assert!(parse_octal_offset(b'.'), == INVALID);
+    test_assert!(parse_octal_offset(b'@'), == INVALID);
+
+    test_assert!(check_decimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+    test_assert!(check_decimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+    test_assert!(check_decimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+    test_assert!(check_decimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+    test_assert!(check_decimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+    test_assert!(check_decimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+    test_assert!(check_decimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+    test_assert!(check_decimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+    test_assert!(check_decimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
+    test_assert!(check_decimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
+    test_assert!(check_decimal_offset(b'a'), == OUT_OF_RANGE);
+    test_assert!(check_decimal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(check_decimal_offset(b'_'), == INVALID);
+    test_assert!(check_decimal_offset(b'.'), == INVALID);
+    test_assert!(check_decimal_offset(b'@'), == INVALID);
+
+    test_assert!(parse_decimal_offset(b'0'), == 0);
+    test_assert!(parse_decimal_offset(b'1'), == 1);
+    test_assert!(parse_decimal_offset(b'2'), == 2);
+    test_assert!(parse_decimal_offset(b'3'), == 3);
+    test_assert!(parse_decimal_offset(b'4'), == 4);
+    test_assert!(parse_decimal_offset(b'5'), == 5);
+    test_assert!(parse_decimal_offset(b'6'), == 6);
+    test_assert!(parse_decimal_offset(b'7'), == 7);
+    test_assert!(parse_decimal_offset(b'8'), == 8);
+    test_assert!(parse_decimal_offset(b'9'), == 9);
+    test_assert!(parse_decimal_offset(b'a'), == OUT_OF_RANGE);
+    test_assert!(parse_decimal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(parse_decimal_offset(b'_'), == INVALID);
+    test_assert!(parse_decimal_offset(b'.'), == INVALID);
+    test_assert!(parse_decimal_offset(b'@'), == INVALID);
+
+    test_assert!(check_hexadecimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+    test_assert!(check_hexadecimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+    test_assert!(check_hexadecimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+    test_assert!(check_hexadecimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+    test_assert!(check_hexadecimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+    test_assert!(check_hexadecimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+    test_assert!(check_hexadecimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+    test_assert!(check_hexadecimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+    test_assert!(check_hexadecimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
+    test_assert!(check_hexadecimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
+    test_assert!(check_hexadecimal_offset(b'A'), == offset if offset < INVALID && (b'A' - offset) == 10);
+    test_assert!(check_hexadecimal_offset(b'a'), == offset if offset < INVALID && (b'a' - offset) == 10);
+    test_assert!(check_hexadecimal_offset(b'B'), == offset if offset < INVALID && (b'B' - offset) == 11);
+    test_assert!(check_hexadecimal_offset(b'b'), == offset if offset < INVALID && (b'b' - offset) == 11);
+    test_assert!(check_hexadecimal_offset(b'C'), == offset if offset < INVALID && (b'C' - offset) == 12);
+    test_assert!(check_hexadecimal_offset(b'c'), == offset if offset < INVALID && (b'c' - offset) == 12);
+    test_assert!(check_hexadecimal_offset(b'D'), == offset if offset < INVALID && (b'D' - offset) == 13);
+    test_assert!(check_hexadecimal_offset(b'd'), == offset if offset < INVALID && (b'd' - offset) == 13);
+    test_assert!(check_hexadecimal_offset(b'E'), == offset if offset < INVALID && (b'E' - offset) == 14);
+    test_assert!(check_hexadecimal_offset(b'e'), == offset if offset < INVALID && (b'e' - offset) == 14);
+    test_assert!(check_hexadecimal_offset(b'F'), == offset if offset < INVALID && (b'F' - offset) == 15);
+    test_assert!(check_hexadecimal_offset(b'f'), == offset if offset < INVALID && (b'f' - offset) == 15);
+    test_assert!(check_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
+    test_assert!(check_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(check_hexadecimal_offset(b'_'), == INVALID);
+    test_assert!(check_hexadecimal_offset(b'.'), == INVALID);
+    test_assert!(check_hexadecimal_offset(b'@'), == INVALID);
+
+    test_assert!(parse_hexadecimal_offset(b'0'), == 0);
+    test_assert!(parse_hexadecimal_offset(b'1'), == 1);
+    test_assert!(parse_hexadecimal_offset(b'2'), == 2);
+    test_assert!(parse_hexadecimal_offset(b'3'), == 3);
+    test_assert!(parse_hexadecimal_offset(b'4'), == 4);
+    test_assert!(parse_hexadecimal_offset(b'5'), == 5);
+    test_assert!(parse_hexadecimal_offset(b'6'), == 6);
+    test_assert!(parse_hexadecimal_offset(b'7'), == 7);
+    test_assert!(parse_hexadecimal_offset(b'8'), == 8);
+    test_assert!(parse_hexadecimal_offset(b'9'), == 9);
+    test_assert!(parse_hexadecimal_offset(b'A'), == 10);
+    test_assert!(parse_hexadecimal_offset(b'a'), == 10);
+    test_assert!(parse_hexadecimal_offset(b'B'), == 11);
+    test_assert!(parse_hexadecimal_offset(b'b'), == 11);
+    test_assert!(parse_hexadecimal_offset(b'C'), == 12);
+    test_assert!(parse_hexadecimal_offset(b'c'), == 12);
+    test_assert!(parse_hexadecimal_offset(b'D'), == 13);
+    test_assert!(parse_hexadecimal_offset(b'd'), == 13);
+    test_assert!(parse_hexadecimal_offset(b'E'), == 14);
+    test_assert!(parse_hexadecimal_offset(b'e'), == 14);
+    test_assert!(parse_hexadecimal_offset(b'F'), == 15);
+    test_assert!(parse_hexadecimal_offset(b'f'), == 15);
+    test_assert!(parse_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
+    test_assert!(parse_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
+    test_assert!(parse_hexadecimal_offset(b'_'), == INVALID);
+    test_assert!(parse_hexadecimal_offset(b'.'), == INVALID);
+    test_assert!(parse_hexadecimal_offset(b'@'), == INVALID);
+
+    test_assert!(check_custom_offset(b'g', 00), == BASE_MIN);
+    test_assert!(check_custom_offset(b'g', 01), == BASE_MIN);
+    test_assert!(check_custom_offset(b'g', 02), != BASE_MIN);
+    test_assert!(check_custom_offset(b'g', 36), != BASE_MAX);
+    test_assert!(check_custom_offset(b'g', 37), == BASE_MAX);
+    test_assert!(check_custom_offset(b'g', 17), == offset if offset < INVALID && (b'g' - offset) == 16);
+    test_assert!(check_custom_offset(b'z', 36), == offset if offset < INVALID && (b'z' - offset) == 35);
+    test_assert!(check_custom_offset(b'z', 21), == OUT_OF_RANGE);
+    test_assert!(check_custom_offset(b'_', 36), == INVALID);
+    test_assert!(check_custom_offset(b'.', 36), == INVALID);
+    test_assert!(check_custom_offset(b'@', 36), == INVALID);
+
+    test_assert!(parse_custom_offset(b'g', 00), == BASE_MIN);
+    test_assert!(parse_custom_offset(b'g', 01), == BASE_MIN);
+    test_assert!(parse_custom_offset(b'g', 02), != BASE_MIN);
+    test_assert!(parse_custom_offset(b'g', 36), != BASE_MAX);
+    test_assert!(parse_custom_offset(b'g', 37), == BASE_MAX);
+    test_assert!(parse_custom_offset(b'g', 17), == 16);
+    test_assert!(parse_custom_offset(b'z', 36), == 35);
+    test_assert!(parse_custom_offset(b'z', 21), == OUT_OF_RANGE);
+    test_assert!(parse_custom_offset(b'_', 36), == INVALID);
+    test_assert!(parse_custom_offset(b'.', 36), == INVALID);
+    test_assert!(parse_custom_offset(b'@', 36), == INVALID);
 }

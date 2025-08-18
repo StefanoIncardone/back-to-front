@@ -3,7 +3,7 @@
 Experimenting with tools for creating programming languages.
 
 > [!WARNING]
-> The tools could change at any moment for now, and could contain many bugs
+> Changes can happen at any moment for now, use at your own risk
 
 ## Syntem requirements
 
