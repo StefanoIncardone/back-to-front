@@ -72,3 +72,73 @@ impl Base {
 
 const _: ascii = Base::BINARY_DIGIT_ASCII_START;
 ```
+
+## 0.1.? - More type-safe number base
+
+```rust
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum Base {
+    // Common bases
+    Binary = 0b10,
+    Octal = 0o10,
+    #[default]
+    Decimal = 10,
+    Hexadecimal = 0x10,
+
+    // Extended bases
+    Three = 3,
+    Four = 4,
+    ...
+    Duodecimal = 12,
+    ...
+    Vigesimal = 20,
+    ...
+    ThirtySix = 36,
+}
+
+// usefull aliases
+impl Base {
+    pub const Base2: Self = Self::Binary;
+    pub const Base8: Self = Self::Octal;
+    pub const Base10: Self = Self::Decimal;
+    pub const Base16: Self = Self::Hexadecimal;
+    pub const Base3: Self = Self::Three;
+    pub const Base20: Self = Self::Vigesimal;
+
+    pub const MIN: Self = Self::Base2;
+    pub const MAX: Self = Self::Base36;
+}
+
+// Would allow for the removal of errors related to base min and max
+#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AsciiDigitCustomBase {
+    Ok         = AsciiDigit::Ok as u8,
+    Underscore = AsciiDigit::Underscore as u8,
+    Dot        = AsciiDigit::Dot as u8,
+    OutOfRange = AsciiDigit::OutOfRange as u8,
+    Other      = AsciiDigit::Other as u8,
+    // cannot happen anymore
+    BaseMin,
+    BaseMax,
+}
+
+#[must_use]
+#[inline]
+pub const fn check_custom_offset(character: ascii, base: Base) -> OffsetCustomBase {
+    // cannot happen anymore
+    // if base < Base::MIN { return BASE_MIN; }
+    // if base > Base::MAX { return BASE_MAX; }
+
+    let offset = offset_alphanumerical!(character);
+    let digit = character - offset;
+    if digit >= base as u8 { return OUT_OF_RANGE; }
+    return offset;
+}
+
+// could also create constants similar to the ones for the common bases, and maybe provide impl
+// macros to reduce the boilerplate
+```
