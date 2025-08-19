@@ -46,3 +46,52 @@ impl Span {
 }
 
 pub type Line = Span;
+
+#[expect(unused_macro_rules, clippy::should_panic_without_expect, unused_imports)]
+#[cfg(test)]
+#[rustfmt::skip]
+mod tests {
+    use super::*;
+
+    macro_rules! test_assert {
+        ($expression:expr, == $pattern:pat $(if $guard:expr)? $(,)?) => {
+            const _: () = match $expression {
+                $pattern $(if $guard)? => {},
+                _ => panic!(),
+            };
+        };
+        ($expression:expr, != $pattern:pat $(if $guard:expr)? $(,)?) => {
+            const _: () = match $expression {
+                $pattern $(if $guard)? => panic!(),
+                _ => {},
+            };
+        };
+    }
+
+    mod _0_1_0_functionality {
+        use super::*;
+
+        test_assert!(unsafe { Span::new_unchecked(0, 0) }, == Span { start: 0, end: 0 });
+
+        #[should_panic]
+        #[test]
+        const fn span_new_unchecked_should_panic() {
+            let _ = unsafe { Span::new_unchecked(1, 0) };
+        }
+
+        test_assert!(Span::new(0, 0), == Some(Span { start: 0, end: 0 }));
+        test_assert!(Span::new(1, 0), == None);
+    }
+
+    mod _0_1_0_backwards_compatibility {
+        use crate::offset32;
+        use super::{
+            Span, Line,
+        };
+
+        const _: unsafe fn(offset32, offset32) -> Span = Span::new_unchecked;
+        const _: fn(offset32, offset32) -> Option<Span> = Span::new;
+        const _: fn(Span) -> offset32 = Span::start;
+        const _: fn(Span) -> offset32 = Span::end;
+    }
+}

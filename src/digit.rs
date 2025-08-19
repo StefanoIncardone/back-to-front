@@ -1297,7 +1297,7 @@ macro_rules! range_hexadecimal_letter_out_of_range {
 #[macro_export]
 macro_rules! range_hexadecimal {
     (ascii) => { range_hexadecimal_digit!(ascii) | range_hexadecimal_letter!(ascii) };
-    () => { range_hexadecimal_digit!(ascii) | range_hexadecimal_letter!() };
+    () => { range_hexadecimal_digit!() | range_hexadecimal_letter!() };
 }
 
 #[macro_export]
@@ -1443,7 +1443,7 @@ macro_rules! range_letter {
 #[macro_export]
 macro_rules! range_alphanumerical {
     (ascii) => { range_digit!(ascii) | range_letter!(ascii) };
-    () => { range_digit!(ascii) | range_letter!() };
+    () => { range_digit!() | range_letter!() };
 }
 
 #[must_use]
@@ -1594,6 +1594,7 @@ pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
 }
 
 // IDEA(stefano): introduce loops to check every ascii combination
+#[expect(unused_imports, unreachable_patterns, dead_code)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {
@@ -1601,375 +1602,869 @@ mod tests {
 
     macro_rules! test_assert {
         ($expression:expr, == $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = {
-                match $expression {
-                    $pattern $(if $guard)? => {},
-                    _ => panic!(),
-                }
+            const _: () = match $expression {
+                $pattern $(if $guard)? => {},
+                _ => panic!(),
             };
         };
         ($expression:expr, != $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = {
-                match $expression {
-                    $pattern $(if $guard)? => panic!(),
-                    _ => {},
-                }
+            const _: () = match $expression {
+                $pattern $(if $guard)? => panic!(),
+                _ => {},
             };
         };
     }
 
-    test_assert!(Base::Binary.check(b'1'),      == AsciiDigit::Ok);
-    test_assert!(Base::Octal.check(b'7'),       == AsciiDigit::Ok);
-    test_assert!(Base::Decimal.check(b'9'),     == AsciiDigit::Ok);
-    test_assert!(Base::Hexadecimal.check(b'f'), == AsciiDigit::Ok);
-    test_assert!(Base::Hexadecimal.check(b'F'), == AsciiDigit::Ok);
+    mod _0_1_1_dev_functionality {
+        use super::*;
 
-    test_assert!(Base::Binary.parse(b'1'),      == Digit::Ok(1));
-    test_assert!(Base::Octal.parse(b'7'),       == Digit::Ok(7));
-    test_assert!(Base::Decimal.parse(b'9'),     == Digit::Ok(9));
-    test_assert!(Base::Hexadecimal.parse(b'f'), == Digit::Ok(15));
-    test_assert!(Base::Hexadecimal.parse(b'F'), == Digit::Ok(15));
+        test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+        test_assert!(check_binary_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+        test_assert!(check_binary_offset(b'2'), == offset if offset == OUT_OF_RANGE);
+        test_assert!(check_binary_offset(b'a'), == offset if offset == OUT_OF_RANGE);
+        test_assert!(check_binary_offset(b'Z'), == offset if offset == OUT_OF_RANGE);
+        test_assert!(check_binary_offset(b'_'), == offset if offset == INVALID);
+        test_assert!(check_binary_offset(b'.'), == offset if offset == INVALID);
+        test_assert!(check_binary_offset(b'@'), == offset if offset == INVALID);
 
-    test_assert!(check(b'1', Base::Binary),      == AsciiDigit::Ok);
-    test_assert!(check(b'7', Base::Octal),       == AsciiDigit::Ok);
-    test_assert!(check(b'9', Base::Decimal),     == AsciiDigit::Ok);
-    test_assert!(check(b'f', Base::Hexadecimal), == AsciiDigit::Ok);
-    test_assert!(check(b'F', Base::Hexadecimal), == AsciiDigit::Ok);
+        test_assert!(parse_binary_offset(b'0'), == 0);
+        test_assert!(parse_binary_offset(b'1'), == 1);
+        test_assert!(parse_binary_offset(b'2'), == digit if digit == OUT_OF_RANGE);
+        test_assert!(parse_binary_offset(b'a'), == digit if digit == OUT_OF_RANGE);
+        test_assert!(parse_binary_offset(b'Z'), == digit if digit == OUT_OF_RANGE);
+        test_assert!(parse_binary_offset(b'_'), == digit if digit == INVALID);
+        test_assert!(parse_binary_offset(b'.'), == digit if digit == INVALID);
+        test_assert!(parse_binary_offset(b'@'), == digit if digit == INVALID);
 
-    test_assert!(parse(b'1', Base::Binary),      == Digit::Ok(1));
-    test_assert!(parse(b'7', Base::Octal),       == Digit::Ok(7));
-    test_assert!(parse(b'9', Base::Decimal),     == Digit::Ok(9));
-    test_assert!(parse(b'f', Base::Hexadecimal), == Digit::Ok(15));
-    test_assert!(parse(b'F', Base::Hexadecimal), == Digit::Ok(15));
+        test_assert!(check_octal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+        test_assert!(check_octal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+        test_assert!(check_octal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+        test_assert!(check_octal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+        test_assert!(check_octal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+        test_assert!(check_octal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+        test_assert!(check_octal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+        test_assert!(check_octal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+        test_assert!(check_octal_offset(b'8'), == OUT_OF_RANGE);
+        test_assert!(check_octal_offset(b'9'), == OUT_OF_RANGE);
+        test_assert!(check_octal_offset(b'a'), == OUT_OF_RANGE);
+        test_assert!(check_octal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(check_octal_offset(b'_'), == INVALID);
+        test_assert!(check_octal_offset(b'.'), == INVALID);
+        test_assert!(check_octal_offset(b'@'), == INVALID);
 
-    test_assert!(check_binary(b'0'), == AsciiDigit::Ok);
-    test_assert!(check_binary(b'1'), == AsciiDigit::Ok);
-    test_assert!(check_binary(b'2'), == AsciiDigit::OutOfRange);
-    test_assert!(check_binary(b'a'), == AsciiDigit::OutOfRange);
-    test_assert!(check_binary(b'Z'), == AsciiDigit::OutOfRange);
-    test_assert!(check_binary(b'_'), == AsciiDigit::Underscore);
-    test_assert!(check_binary(b'.'), == AsciiDigit::Dot);
-    test_assert!(check_binary(b'@'), == AsciiDigit::Other);
+        test_assert!(parse_octal_offset(b'0'), == 0);
+        test_assert!(parse_octal_offset(b'1'), == 1);
+        test_assert!(parse_octal_offset(b'2'), == 2);
+        test_assert!(parse_octal_offset(b'3'), == 3);
+        test_assert!(parse_octal_offset(b'4'), == 4);
+        test_assert!(parse_octal_offset(b'5'), == 5);
+        test_assert!(parse_octal_offset(b'6'), == 6);
+        test_assert!(parse_octal_offset(b'7'), == 7);
+        test_assert!(parse_octal_offset(b'8'), == OUT_OF_RANGE);
+        test_assert!(parse_octal_offset(b'9'), == OUT_OF_RANGE);
+        test_assert!(parse_octal_offset(b'a'), == OUT_OF_RANGE);
+        test_assert!(parse_octal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(parse_octal_offset(b'_'), == INVALID);
+        test_assert!(parse_octal_offset(b'.'), == INVALID);
+        test_assert!(parse_octal_offset(b'@'), == INVALID);
 
-    test_assert!(parse_binary(b'0'), == Digit::Ok(0));
-    test_assert!(parse_binary(b'1'), == Digit::Ok(1));
-    test_assert!(parse_binary(b'2'), == Digit::OutOfRange);
-    test_assert!(parse_binary(b'a'), == Digit::OutOfRange);
-    test_assert!(parse_binary(b'Z'), == Digit::OutOfRange);
-    test_assert!(parse_binary(b'_'), == Digit::Underscore);
-    test_assert!(parse_binary(b'.'), == Digit::Dot);
-    test_assert!(parse_binary(b'@'), == Digit::Other);
+        test_assert!(check_decimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+        test_assert!(check_decimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+        test_assert!(check_decimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+        test_assert!(check_decimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+        test_assert!(check_decimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+        test_assert!(check_decimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+        test_assert!(check_decimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+        test_assert!(check_decimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+        test_assert!(check_decimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
+        test_assert!(check_decimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
+        test_assert!(check_decimal_offset(b'a'), == OUT_OF_RANGE);
+        test_assert!(check_decimal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(check_decimal_offset(b'_'), == INVALID);
+        test_assert!(check_decimal_offset(b'.'), == INVALID);
+        test_assert!(check_decimal_offset(b'@'), == INVALID);
 
-    test_assert!(check_octal(b'0'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'1'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'2'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'3'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'4'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'5'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'6'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'7'), == AsciiDigit::Ok);
-    test_assert!(check_octal(b'8'), == AsciiDigit::OutOfRange);
-    test_assert!(check_octal(b'9'), == AsciiDigit::OutOfRange);
-    test_assert!(check_octal(b'a'), == AsciiDigit::OutOfRange);
-    test_assert!(check_octal(b'Z'), == AsciiDigit::OutOfRange);
-    test_assert!(check_octal(b'_'), == AsciiDigit::Underscore);
-    test_assert!(check_octal(b'.'), == AsciiDigit::Dot);
-    test_assert!(check_octal(b'@'), == AsciiDigit::Other);
+        test_assert!(parse_decimal_offset(b'0'), == 0);
+        test_assert!(parse_decimal_offset(b'1'), == 1);
+        test_assert!(parse_decimal_offset(b'2'), == 2);
+        test_assert!(parse_decimal_offset(b'3'), == 3);
+        test_assert!(parse_decimal_offset(b'4'), == 4);
+        test_assert!(parse_decimal_offset(b'5'), == 5);
+        test_assert!(parse_decimal_offset(b'6'), == 6);
+        test_assert!(parse_decimal_offset(b'7'), == 7);
+        test_assert!(parse_decimal_offset(b'8'), == 8);
+        test_assert!(parse_decimal_offset(b'9'), == 9);
+        test_assert!(parse_decimal_offset(b'a'), == OUT_OF_RANGE);
+        test_assert!(parse_decimal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(parse_decimal_offset(b'_'), == INVALID);
+        test_assert!(parse_decimal_offset(b'.'), == INVALID);
+        test_assert!(parse_decimal_offset(b'@'), == INVALID);
 
-    test_assert!(parse_octal(b'0'), == Digit::Ok(0));
-    test_assert!(parse_octal(b'1'), == Digit::Ok(1));
-    test_assert!(parse_octal(b'2'), == Digit::Ok(2));
-    test_assert!(parse_octal(b'3'), == Digit::Ok(3));
-    test_assert!(parse_octal(b'4'), == Digit::Ok(4));
-    test_assert!(parse_octal(b'5'), == Digit::Ok(5));
-    test_assert!(parse_octal(b'6'), == Digit::Ok(6));
-    test_assert!(parse_octal(b'7'), == Digit::Ok(7));
-    test_assert!(parse_octal(b'8'), == Digit::OutOfRange);
-    test_assert!(parse_octal(b'9'), == Digit::OutOfRange);
-    test_assert!(parse_octal(b'a'), == Digit::OutOfRange);
-    test_assert!(parse_octal(b'Z'), == Digit::OutOfRange);
-    test_assert!(parse_octal(b'_'), == Digit::Underscore);
-    test_assert!(parse_octal(b'.'), == Digit::Dot);
-    test_assert!(parse_octal(b'@'), == Digit::Other);
+        test_assert!(check_hexadecimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
+        test_assert!(check_hexadecimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+        test_assert!(check_hexadecimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
+        test_assert!(check_hexadecimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
+        test_assert!(check_hexadecimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
+        test_assert!(check_hexadecimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
+        test_assert!(check_hexadecimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
+        test_assert!(check_hexadecimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+        test_assert!(check_hexadecimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
+        test_assert!(check_hexadecimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
+        test_assert!(check_hexadecimal_offset(b'A'), == offset if offset < INVALID && (b'A' - offset) == 10);
+        test_assert!(check_hexadecimal_offset(b'a'), == offset if offset < INVALID && (b'a' - offset) == 10);
+        test_assert!(check_hexadecimal_offset(b'B'), == offset if offset < INVALID && (b'B' - offset) == 11);
+        test_assert!(check_hexadecimal_offset(b'b'), == offset if offset < INVALID && (b'b' - offset) == 11);
+        test_assert!(check_hexadecimal_offset(b'C'), == offset if offset < INVALID && (b'C' - offset) == 12);
+        test_assert!(check_hexadecimal_offset(b'c'), == offset if offset < INVALID && (b'c' - offset) == 12);
+        test_assert!(check_hexadecimal_offset(b'D'), == offset if offset < INVALID && (b'D' - offset) == 13);
+        test_assert!(check_hexadecimal_offset(b'd'), == offset if offset < INVALID && (b'd' - offset) == 13);
+        test_assert!(check_hexadecimal_offset(b'E'), == offset if offset < INVALID && (b'E' - offset) == 14);
+        test_assert!(check_hexadecimal_offset(b'e'), == offset if offset < INVALID && (b'e' - offset) == 14);
+        test_assert!(check_hexadecimal_offset(b'F'), == offset if offset < INVALID && (b'F' - offset) == 15);
+        test_assert!(check_hexadecimal_offset(b'f'), == offset if offset < INVALID && (b'f' - offset) == 15);
+        test_assert!(check_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
+        test_assert!(check_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(check_hexadecimal_offset(b'_'), == INVALID);
+        test_assert!(check_hexadecimal_offset(b'.'), == INVALID);
+        test_assert!(check_hexadecimal_offset(b'@'), == INVALID);
 
-    test_assert!(check_decimal(b'0'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'1'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'2'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'3'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'4'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'5'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'6'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'7'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'8'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'9'), == AsciiDigit::Ok);
-    test_assert!(check_decimal(b'a'), == AsciiDigit::OutOfRange);
-    test_assert!(check_decimal(b'Z'), == AsciiDigit::OutOfRange);
-    test_assert!(check_decimal(b'_'), == AsciiDigit::Underscore);
-    test_assert!(check_decimal(b'.'), == AsciiDigit::Dot);
-    test_assert!(check_decimal(b'@'), == AsciiDigit::Other);
+        test_assert!(parse_hexadecimal_offset(b'0'), == 0);
+        test_assert!(parse_hexadecimal_offset(b'1'), == 1);
+        test_assert!(parse_hexadecimal_offset(b'2'), == 2);
+        test_assert!(parse_hexadecimal_offset(b'3'), == 3);
+        test_assert!(parse_hexadecimal_offset(b'4'), == 4);
+        test_assert!(parse_hexadecimal_offset(b'5'), == 5);
+        test_assert!(parse_hexadecimal_offset(b'6'), == 6);
+        test_assert!(parse_hexadecimal_offset(b'7'), == 7);
+        test_assert!(parse_hexadecimal_offset(b'8'), == 8);
+        test_assert!(parse_hexadecimal_offset(b'9'), == 9);
+        test_assert!(parse_hexadecimal_offset(b'A'), == 10);
+        test_assert!(parse_hexadecimal_offset(b'a'), == 10);
+        test_assert!(parse_hexadecimal_offset(b'B'), == 11);
+        test_assert!(parse_hexadecimal_offset(b'b'), == 11);
+        test_assert!(parse_hexadecimal_offset(b'C'), == 12);
+        test_assert!(parse_hexadecimal_offset(b'c'), == 12);
+        test_assert!(parse_hexadecimal_offset(b'D'), == 13);
+        test_assert!(parse_hexadecimal_offset(b'd'), == 13);
+        test_assert!(parse_hexadecimal_offset(b'E'), == 14);
+        test_assert!(parse_hexadecimal_offset(b'e'), == 14);
+        test_assert!(parse_hexadecimal_offset(b'F'), == 15);
+        test_assert!(parse_hexadecimal_offset(b'f'), == 15);
+        test_assert!(parse_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
+        test_assert!(parse_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
+        test_assert!(parse_hexadecimal_offset(b'_'), == INVALID);
+        test_assert!(parse_hexadecimal_offset(b'.'), == INVALID);
+        test_assert!(parse_hexadecimal_offset(b'@'), == INVALID);
 
-    test_assert!(parse_decimal(b'0'), == Digit::Ok(0));
-    test_assert!(parse_decimal(b'1'), == Digit::Ok(1));
-    test_assert!(parse_decimal(b'2'), == Digit::Ok(2));
-    test_assert!(parse_decimal(b'3'), == Digit::Ok(3));
-    test_assert!(parse_decimal(b'4'), == Digit::Ok(4));
-    test_assert!(parse_decimal(b'5'), == Digit::Ok(5));
-    test_assert!(parse_decimal(b'6'), == Digit::Ok(6));
-    test_assert!(parse_decimal(b'7'), == Digit::Ok(7));
-    test_assert!(parse_decimal(b'8'), == Digit::Ok(8));
-    test_assert!(parse_decimal(b'9'), == Digit::Ok(9));
-    test_assert!(parse_decimal(b'a'), == Digit::OutOfRange);
-    test_assert!(parse_decimal(b'Z'), == Digit::OutOfRange);
-    test_assert!(parse_decimal(b'_'), == Digit::Underscore);
-    test_assert!(parse_decimal(b'.'), == Digit::Dot);
-    test_assert!(parse_decimal(b'@'), == Digit::Other);
+        test_assert!(check_custom_offset(b'g', 00), == BASE_MIN);
+        test_assert!(check_custom_offset(b'g', 01), == BASE_MIN);
+        test_assert!(check_custom_offset(b'g', 02), != BASE_MIN);
+        test_assert!(check_custom_offset(b'g', 36), != BASE_MAX);
+        test_assert!(check_custom_offset(b'g', 37), == BASE_MAX);
+        test_assert!(check_custom_offset(b'g', 17), == offset if offset < INVALID && (b'g' - offset) == 16);
+        test_assert!(check_custom_offset(b'z', 36), == offset if offset < INVALID && (b'z' - offset) == 35);
+        test_assert!(check_custom_offset(b'z', 21), == OUT_OF_RANGE);
+        test_assert!(check_custom_offset(b'_', 36), == INVALID);
+        test_assert!(check_custom_offset(b'.', 36), == INVALID);
+        test_assert!(check_custom_offset(b'@', 36), == INVALID);
 
-    test_assert!(check_hexadecimal(b'0'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'1'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'2'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'3'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'4'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'5'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'6'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'7'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'8'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'9'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'A'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'a'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'B'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'b'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'C'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'c'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'D'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'd'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'E'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'e'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'F'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'f'), == AsciiDigit::Ok);
-    test_assert!(check_hexadecimal(b'g'), == AsciiDigit::OutOfRange);
-    test_assert!(check_hexadecimal(b'Z'), == AsciiDigit::OutOfRange);
-    test_assert!(check_hexadecimal(b'_'), == AsciiDigit::Underscore);
-    test_assert!(check_hexadecimal(b'.'), == AsciiDigit::Dot);
-    test_assert!(check_hexadecimal(b'@'), == AsciiDigit::Other);
+        test_assert!(parse_custom_offset(b'g', 00), == BASE_MIN);
+        test_assert!(parse_custom_offset(b'g', 01), == BASE_MIN);
+        test_assert!(parse_custom_offset(b'g', 02), != BASE_MIN);
+        test_assert!(parse_custom_offset(b'g', 36), != BASE_MAX);
+        test_assert!(parse_custom_offset(b'g', 37), == BASE_MAX);
+        test_assert!(parse_custom_offset(b'g', 17), == 16);
+        test_assert!(parse_custom_offset(b'z', 36), == 35);
+        test_assert!(parse_custom_offset(b'z', 21), == OUT_OF_RANGE);
+        test_assert!(parse_custom_offset(b'_', 36), == INVALID);
+        test_assert!(parse_custom_offset(b'.', 36), == INVALID);
+        test_assert!(parse_custom_offset(b'@', 36), == INVALID);
+    }
 
-    test_assert!(parse_hexadecimal(b'0'), == Digit::Ok(0));
-    test_assert!(parse_hexadecimal(b'1'), == Digit::Ok(1));
-    test_assert!(parse_hexadecimal(b'2'), == Digit::Ok(2));
-    test_assert!(parse_hexadecimal(b'3'), == Digit::Ok(3));
-    test_assert!(parse_hexadecimal(b'4'), == Digit::Ok(4));
-    test_assert!(parse_hexadecimal(b'5'), == Digit::Ok(5));
-    test_assert!(parse_hexadecimal(b'6'), == Digit::Ok(6));
-    test_assert!(parse_hexadecimal(b'7'), == Digit::Ok(7));
-    test_assert!(parse_hexadecimal(b'8'), == Digit::Ok(8));
-    test_assert!(parse_hexadecimal(b'9'), == Digit::Ok(9));
-    test_assert!(parse_hexadecimal(b'A'), == Digit::Ok(10));
-    test_assert!(parse_hexadecimal(b'a'), == Digit::Ok(10));
-    test_assert!(parse_hexadecimal(b'B'), == Digit::Ok(11));
-    test_assert!(parse_hexadecimal(b'b'), == Digit::Ok(11));
-    test_assert!(parse_hexadecimal(b'C'), == Digit::Ok(12));
-    test_assert!(parse_hexadecimal(b'c'), == Digit::Ok(12));
-    test_assert!(parse_hexadecimal(b'D'), == Digit::Ok(13));
-    test_assert!(parse_hexadecimal(b'd'), == Digit::Ok(13));
-    test_assert!(parse_hexadecimal(b'E'), == Digit::Ok(14));
-    test_assert!(parse_hexadecimal(b'e'), == Digit::Ok(14));
-    test_assert!(parse_hexadecimal(b'F'), == Digit::Ok(15));
-    test_assert!(parse_hexadecimal(b'f'), == Digit::Ok(15));
-    test_assert!(parse_hexadecimal(b'g'), == Digit::OutOfRange);
-    test_assert!(parse_hexadecimal(b'Z'), == Digit::OutOfRange);
-    test_assert!(parse_hexadecimal(b'_'), == Digit::Underscore);
-    test_assert!(parse_hexadecimal(b'.'), == Digit::Dot);
-    test_assert!(parse_hexadecimal(b'@'), == Digit::Other);
+    mod _0_1_1_dev_backwards_compatibility {
+        use core::ops::RangeInclusive;
+        use crate::{ascii, utf32};
+        use super::{
+            Ascii, AsciiRange,
 
-    test_assert!(check_custom(b'g', 00), == AsciiDigitCustomBase::BaseMin);
-    test_assert!(check_custom(b'g', 37), == AsciiDigitCustomBase::BaseMax);
-    test_assert!(check_custom(b'g', 17), == AsciiDigitCustomBase::Ok);
-    test_assert!(check_custom(b'z', 36), == AsciiDigitCustomBase::Ok);
-    test_assert!(check_custom(b'z', 21), == AsciiDigitCustomBase::OutOfRange);
-    test_assert!(check_custom(b'_', 36), == AsciiDigitCustomBase::Underscore);
-    test_assert!(check_custom(b'.', 36), == AsciiDigitCustomBase::Dot);
-    test_assert!(check_custom(b'@', 36), == AsciiDigitCustomBase::Other);
+            Offset, OffsetCustomBase, DigitOffset, DigitOffsetCustomBase,
+            Base,
 
-    test_assert!(parse_custom(b'g', 00), == DigitCustomBase::BaseMin);
-    test_assert!(parse_custom(b'g', 01), == DigitCustomBase::BaseMin);
-    test_assert!(parse_custom(b'g', 02), != DigitCustomBase::BaseMin);
-    test_assert!(parse_custom(b'g', 36), != DigitCustomBase::BaseMax);
-    test_assert!(parse_custom(b'g', 37), == DigitCustomBase::BaseMax);
-    test_assert!(parse_custom(b'g', 17), == DigitCustomBase::Ok(16));
-    test_assert!(parse_custom(b'z', 36), == DigitCustomBase::Ok(35));
-    test_assert!(parse_custom(b'z', 21), == DigitCustomBase::OutOfRange);
-    test_assert!(parse_custom(b'_', 36), == DigitCustomBase::Underscore);
-    test_assert!(parse_custom(b'.', 36), == DigitCustomBase::Dot);
-    test_assert!(parse_custom(b'@', 36), == DigitCustomBase::Other);
+            check_offset,
+            parse_offset,
 
-    test_assert!(check_tally(b'0', b'0'), == AsciiDigit::Ok);
-    test_assert!(check_tally(b'_', b'0'), == AsciiDigit::Underscore);
-    test_assert!(check_tally(b'.', b'0'), == AsciiDigit::Dot);
-    test_assert!(check_tally(b'@', b'0'), == AsciiDigit::Other);
+            is_binary_digit,
+            is_binary_digit_out_of_range,
+            is_binary_uppercase_out_of_range,
+            is_binary_lowercase_out_of_range,
+            is_binary_letter_out_of_range,
+            is_binary,
+            is_binary_out_of_range,
+            check_binary_offset,
+            parse_binary_offset,
 
-    test_assert!(parse_tally(b'0', b'0'), == Digit::Ok(1));
-    test_assert!(parse_tally(b'_', b'0'), == Digit::Underscore);
-    test_assert!(parse_tally(b'.', b'0'), == Digit::Dot);
-    test_assert!(parse_tally(b'@', b'0'), == Digit::Other);
+            is_octal_digit,
+            is_octal_digit_out_of_range,
+            is_octal_uppercase_out_of_range,
+            is_octal_lowercase_out_of_range,
+            is_octal_letter_out_of_range,
+            is_octal,
+            is_octal_out_of_range,
+            check_octal_offset,
+            parse_octal_offset,
 
-    test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-    test_assert!(check_binary_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-    test_assert!(check_binary_offset(b'2'), == offset if offset == OUT_OF_RANGE);
-    test_assert!(check_binary_offset(b'a'), == offset if offset == OUT_OF_RANGE);
-    test_assert!(check_binary_offset(b'Z'), == offset if offset == OUT_OF_RANGE);
-    test_assert!(check_binary_offset(b'_'), == offset if offset == INVALID);
-    test_assert!(check_binary_offset(b'.'), == offset if offset == INVALID);
-    test_assert!(check_binary_offset(b'@'), == offset if offset == INVALID);
+            is_decimal_digit,
+            is_decimal_uppercase_out_of_range,
+            is_decimal_lowercase_out_of_range,
+            is_decimal_letter_out_of_range,
+            is_decimal,
+            is_decimal_out_of_range,
+            check_decimal_offset,
+            parse_decimal_offset,
 
-    test_assert!(parse_binary_offset(b'0'), == 0);
-    test_assert!(parse_binary_offset(b'1'), == 1);
-    test_assert!(parse_binary_offset(b'2'), == digit if digit == OUT_OF_RANGE);
-    test_assert!(parse_binary_offset(b'a'), == digit if digit == OUT_OF_RANGE);
-    test_assert!(parse_binary_offset(b'Z'), == digit if digit == OUT_OF_RANGE);
-    test_assert!(parse_binary_offset(b'_'), == digit if digit == INVALID);
-    test_assert!(parse_binary_offset(b'.'), == digit if digit == INVALID);
-    test_assert!(parse_binary_offset(b'@'), == digit if digit == INVALID);
+            is_hexadecimal_digit,
+            is_hexadecimal_uppercase,
+            is_hexadecimal_lowercase,
+            is_hexadecimal_letter,
+            is_hexadecimal_uppercase_out_of_range,
+            is_hexadecimal_lowercase_out_of_range,
+            is_hexadecimal_letter_out_of_range,
+            is_hexadecimal,
+            is_hexadecimal_out_of_range,
+            check_hexadecimal_offset,
+            parse_hexadecimal_offset,
 
-    test_assert!(check_octal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-    test_assert!(check_octal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-    test_assert!(check_octal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-    test_assert!(check_octal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-    test_assert!(check_octal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-    test_assert!(check_octal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-    test_assert!(check_octal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-    test_assert!(check_octal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
-    test_assert!(check_octal_offset(b'8'), == OUT_OF_RANGE);
-    test_assert!(check_octal_offset(b'9'), == OUT_OF_RANGE);
-    test_assert!(check_octal_offset(b'a'), == OUT_OF_RANGE);
-    test_assert!(check_octal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(check_octal_offset(b'_'), == INVALID);
-    test_assert!(check_octal_offset(b'.'), == INVALID);
-    test_assert!(check_octal_offset(b'@'), == INVALID);
+            is_digit,
+            is_uppercase,
+            is_lowercase,
+            is_letter,
+            is_alphanumerical,
+            check_custom_offset,
+            parse_custom_offset,
+        };
 
-    test_assert!(parse_octal_offset(b'0'), == 0);
-    test_assert!(parse_octal_offset(b'1'), == 1);
-    test_assert!(parse_octal_offset(b'2'), == 2);
-    test_assert!(parse_octal_offset(b'3'), == 3);
-    test_assert!(parse_octal_offset(b'4'), == 4);
-    test_assert!(parse_octal_offset(b'5'), == 5);
-    test_assert!(parse_octal_offset(b'6'), == 6);
-    test_assert!(parse_octal_offset(b'7'), == 7);
-    test_assert!(parse_octal_offset(b'8'), == OUT_OF_RANGE);
-    test_assert!(parse_octal_offset(b'9'), == OUT_OF_RANGE);
-    test_assert!(parse_octal_offset(b'a'), == OUT_OF_RANGE);
-    test_assert!(parse_octal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(parse_octal_offset(b'_'), == INVALID);
-    test_assert!(parse_octal_offset(b'.'), == INVALID);
-    test_assert!(parse_octal_offset(b'@'), == INVALID);
+        const _: () = {
+            fn new<I: Ascii>(start: I, end: I) -> AsciiRange<I> {
+                return AsciiRange::<I>::new(start, end);
+            }
+        };
 
-    test_assert!(check_decimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-    test_assert!(check_decimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-    test_assert!(check_decimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-    test_assert!(check_decimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-    test_assert!(check_decimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-    test_assert!(check_decimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-    test_assert!(check_decimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-    test_assert!(check_decimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
-    test_assert!(check_decimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
-    test_assert!(check_decimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
-    test_assert!(check_decimal_offset(b'a'), == OUT_OF_RANGE);
-    test_assert!(check_decimal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(check_decimal_offset(b'_'), == INVALID);
-    test_assert!(check_decimal_offset(b'.'), == INVALID);
-    test_assert!(check_decimal_offset(b'@'), == INVALID);
+        const _: ascii                 = Base::BINARY_DIGIT_ASCII_START;
+        const _: ascii                 = Base::BINARY_DIGIT_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::BINARY_DIGIT_ASCII;
+        const _: ascii                 = Base::BINARY_DIGIT_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::BINARY_DIGIT_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::BINARY_DIGIT_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII;
+        const _: RangeInclusive<ascii> = Base::BINARY_DIGIT_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::BINARY_DIGIT_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: utf32                 = Base::BINARY_DIGIT_START;
+        const _: utf32                 = Base::BINARY_DIGIT_END;
+        const _: AsciiRange<utf32>     = Base::BINARY_DIGIT;
+        const _: utf32                 = Base::BINARY_DIGIT_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::BINARY_DIGIT_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::BINARY_DIGIT_OUT_OF_RANGE;
+        const _: utf32                 = Base::BINARY_UPPERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::BINARY_UPPERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::BINARY_UPPERCASE_OUT_OF_RANGE;
+        const _: utf32                 = Base::BINARY_LOWERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::BINARY_LOWERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::BINARY_LOWERCASE_OUT_OF_RANGE;
+        const _: RangeInclusive<utf32> = Base::BINARY_DIGIT_OPS;
+        const _: RangeInclusive<utf32> = Base::BINARY_DIGIT_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::BINARY_UPPERCASE_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::BINARY_LOWERCASE_OUT_OF_RANGE_OPS;
 
-    test_assert!(parse_decimal_offset(b'0'), == 0);
-    test_assert!(parse_decimal_offset(b'1'), == 1);
-    test_assert!(parse_decimal_offset(b'2'), == 2);
-    test_assert!(parse_decimal_offset(b'3'), == 3);
-    test_assert!(parse_decimal_offset(b'4'), == 4);
-    test_assert!(parse_decimal_offset(b'5'), == 5);
-    test_assert!(parse_decimal_offset(b'6'), == 6);
-    test_assert!(parse_decimal_offset(b'7'), == 7);
-    test_assert!(parse_decimal_offset(b'8'), == 8);
-    test_assert!(parse_decimal_offset(b'9'), == 9);
-    test_assert!(parse_decimal_offset(b'a'), == OUT_OF_RANGE);
-    test_assert!(parse_decimal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(parse_decimal_offset(b'_'), == INVALID);
-    test_assert!(parse_decimal_offset(b'.'), == INVALID);
-    test_assert!(parse_decimal_offset(b'@'), == INVALID);
+        const _: ascii                 = Base::OCTAL_DIGIT_ASCII_START;
+        const _: ascii                 = Base::OCTAL_DIGIT_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::OCTAL_DIGIT_ASCII;
+        const _: ascii                 = Base::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::OCTAL_DIGIT_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        const _: RangeInclusive<ascii> = Base::OCTAL_DIGIT_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: utf32                 = Base::OCTAL_DIGIT_START;
+        const _: utf32                 = Base::OCTAL_DIGIT_END;
+        const _: AsciiRange<utf32>     = Base::OCTAL_DIGIT;
+        const _: utf32                 = Base::OCTAL_DIGIT_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::OCTAL_DIGIT_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::OCTAL_DIGIT_OUT_OF_RANGE;
+        const _: utf32                 = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::OCTAL_UPPERCASE_OUT_OF_RANGE;
+        const _: utf32                 = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::OCTAL_LOWERCASE_OUT_OF_RANGE;
+        const _: RangeInclusive<utf32> = Base::OCTAL_DIGIT_OPS;
+        const _: RangeInclusive<utf32> = Base::OCTAL_DIGIT_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::OCTAL_UPPERCASE_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::OCTAL_LOWERCASE_OUT_OF_RANGE_OPS;
 
-    test_assert!(check_hexadecimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-    test_assert!(check_hexadecimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-    test_assert!(check_hexadecimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-    test_assert!(check_hexadecimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-    test_assert!(check_hexadecimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-    test_assert!(check_hexadecimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-    test_assert!(check_hexadecimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-    test_assert!(check_hexadecimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
-    test_assert!(check_hexadecimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
-    test_assert!(check_hexadecimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
-    test_assert!(check_hexadecimal_offset(b'A'), == offset if offset < INVALID && (b'A' - offset) == 10);
-    test_assert!(check_hexadecimal_offset(b'a'), == offset if offset < INVALID && (b'a' - offset) == 10);
-    test_assert!(check_hexadecimal_offset(b'B'), == offset if offset < INVALID && (b'B' - offset) == 11);
-    test_assert!(check_hexadecimal_offset(b'b'), == offset if offset < INVALID && (b'b' - offset) == 11);
-    test_assert!(check_hexadecimal_offset(b'C'), == offset if offset < INVALID && (b'C' - offset) == 12);
-    test_assert!(check_hexadecimal_offset(b'c'), == offset if offset < INVALID && (b'c' - offset) == 12);
-    test_assert!(check_hexadecimal_offset(b'D'), == offset if offset < INVALID && (b'D' - offset) == 13);
-    test_assert!(check_hexadecimal_offset(b'd'), == offset if offset < INVALID && (b'd' - offset) == 13);
-    test_assert!(check_hexadecimal_offset(b'E'), == offset if offset < INVALID && (b'E' - offset) == 14);
-    test_assert!(check_hexadecimal_offset(b'e'), == offset if offset < INVALID && (b'e' - offset) == 14);
-    test_assert!(check_hexadecimal_offset(b'F'), == offset if offset < INVALID && (b'F' - offset) == 15);
-    test_assert!(check_hexadecimal_offset(b'f'), == offset if offset < INVALID && (b'f' - offset) == 15);
-    test_assert!(check_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
-    test_assert!(check_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(check_hexadecimal_offset(b'_'), == INVALID);
-    test_assert!(check_hexadecimal_offset(b'.'), == INVALID);
-    test_assert!(check_hexadecimal_offset(b'@'), == INVALID);
+        const _: ascii                 = Base::DECIMAL_DIGIT_ASCII_START;
+        const _: ascii                 = Base::DECIMAL_DIGIT_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::DECIMAL_DIGIT_ASCII;
+        const _: ascii                 = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        const _: RangeInclusive<ascii> = Base::DECIMAL_DIGIT_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: utf32                 = Base::DECIMAL_DIGIT_START;
+        const _: utf32                 = Base::DECIMAL_DIGIT_END;
+        const _: AsciiRange<utf32>     = Base::DECIMAL_DIGIT;
+        const _: utf32                 = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE;
+        const _: utf32                 = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE;
+        const _: RangeInclusive<utf32> = Base::DECIMAL_DIGIT_OPS;
+        const _: RangeInclusive<utf32> = Base::DECIMAL_UPPERCASE_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::DECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
 
-    test_assert!(parse_hexadecimal_offset(b'0'), == 0);
-    test_assert!(parse_hexadecimal_offset(b'1'), == 1);
-    test_assert!(parse_hexadecimal_offset(b'2'), == 2);
-    test_assert!(parse_hexadecimal_offset(b'3'), == 3);
-    test_assert!(parse_hexadecimal_offset(b'4'), == 4);
-    test_assert!(parse_hexadecimal_offset(b'5'), == 5);
-    test_assert!(parse_hexadecimal_offset(b'6'), == 6);
-    test_assert!(parse_hexadecimal_offset(b'7'), == 7);
-    test_assert!(parse_hexadecimal_offset(b'8'), == 8);
-    test_assert!(parse_hexadecimal_offset(b'9'), == 9);
-    test_assert!(parse_hexadecimal_offset(b'A'), == 10);
-    test_assert!(parse_hexadecimal_offset(b'a'), == 10);
-    test_assert!(parse_hexadecimal_offset(b'B'), == 11);
-    test_assert!(parse_hexadecimal_offset(b'b'), == 11);
-    test_assert!(parse_hexadecimal_offset(b'C'), == 12);
-    test_assert!(parse_hexadecimal_offset(b'c'), == 12);
-    test_assert!(parse_hexadecimal_offset(b'D'), == 13);
-    test_assert!(parse_hexadecimal_offset(b'd'), == 13);
-    test_assert!(parse_hexadecimal_offset(b'E'), == 14);
-    test_assert!(parse_hexadecimal_offset(b'e'), == 14);
-    test_assert!(parse_hexadecimal_offset(b'F'), == 15);
-    test_assert!(parse_hexadecimal_offset(b'f'), == 15);
-    test_assert!(parse_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
-    test_assert!(parse_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
-    test_assert!(parse_hexadecimal_offset(b'_'), == INVALID);
-    test_assert!(parse_hexadecimal_offset(b'.'), == INVALID);
-    test_assert!(parse_hexadecimal_offset(b'@'), == INVALID);
+        const _: ascii                 = Base::HEXADECIMAL_DIGIT_ASCII_START;
+        const _: ascii                 = Base::HEXADECIMAL_DIGIT_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::HEXADECIMAL_DIGIT_ASCII;
+        const _: ascii                 = Base::HEXADECIMAL_UPPERCASE_ASCII_START;
+        const _: ascii                 = Base::HEXADECIMAL_UPPERCASE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::HEXADECIMAL_UPPERCASE_ASCII;
+        const _: ascii                 = Base::HEXADECIMAL_LOWERCASE_ASCII_START;
+        const _: ascii                 = Base::HEXADECIMAL_LOWERCASE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::HEXADECIMAL_LOWERCASE_ASCII;
+        const _: ascii                 = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        const _: ascii                 = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START;
+        const _: ascii                 = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END;
+        const _: AsciiRange<ascii>     = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        const _: RangeInclusive<ascii> = Base::HEXADECIMAL_DIGIT_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::HEXADECIMAL_UPPERCASE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::HEXADECIMAL_LOWERCASE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii> = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
+        const _: utf32                 = Base::HEXADECIMAL_DIGIT_START;
+        const _: utf32                 = Base::HEXADECIMAL_DIGIT_END;
+        const _: AsciiRange<utf32>     = Base::HEXADECIMAL_DIGIT;
+        const _: utf32                 = Base::HEXADECIMAL_UPPERCASE_START;
+        const _: utf32                 = Base::HEXADECIMAL_UPPERCASE_END;
+        const _: AsciiRange<utf32>     = Base::HEXADECIMAL_UPPERCASE;
+        const _: utf32                 = Base::HEXADECIMAL_LOWERCASE_START;
+        const _: utf32                 = Base::HEXADECIMAL_LOWERCASE_END;
+        const _: AsciiRange<utf32>     = Base::HEXADECIMAL_LOWERCASE;
+        const _: utf32                 = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE;
+        const _: utf32                 = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START;
+        const _: utf32                 = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END;
+        const _: AsciiRange<utf32>     = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE;
+        const _: RangeInclusive<utf32> = Base::HEXADECIMAL_DIGIT_OPS;
+        const _: RangeInclusive<utf32> = Base::HEXADECIMAL_UPPERCASE_OPS;
+        const _: RangeInclusive<utf32> = Base::HEXADECIMAL_LOWERCASE_OPS;
+        const _: RangeInclusive<utf32> = Base::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_OPS;
+        const _: RangeInclusive<utf32> = Base::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
 
-    test_assert!(check_custom_offset(b'g', 00), == BASE_MIN);
-    test_assert!(check_custom_offset(b'g', 01), == BASE_MIN);
-    test_assert!(check_custom_offset(b'g', 02), != BASE_MIN);
-    test_assert!(check_custom_offset(b'g', 36), != BASE_MAX);
-    test_assert!(check_custom_offset(b'g', 37), == BASE_MAX);
-    test_assert!(check_custom_offset(b'g', 17), == offset if offset < INVALID && (b'g' - offset) == 16);
-    test_assert!(check_custom_offset(b'z', 36), == offset if offset < INVALID && (b'z' - offset) == 35);
-    test_assert!(check_custom_offset(b'z', 21), == OUT_OF_RANGE);
-    test_assert!(check_custom_offset(b'_', 36), == INVALID);
-    test_assert!(check_custom_offset(b'.', 36), == INVALID);
-    test_assert!(check_custom_offset(b'@', 36), == INVALID);
+        const _: ascii                      = Base::DIGIT_ASCII_START;
+        const _: ascii                      = Base::DIGIT_ASCII_END;
+        const _: AsciiRange<ascii>          = Base::DIGIT_ASCII;
+        const _: ascii                      = Base::UPPERCASE_ASCII_START;
+        const _: ascii                      = Base::UPPERCASE_ASCII_END;
+        const _: AsciiRange<ascii>          = Base::UPPERCASE_ASCII;
+        const _: ascii                      = Base::LOWERCASE_ASCII_START;
+        const _: ascii                      = Base::LOWERCASE_ASCII_END;
+        const _: AsciiRange<ascii>          = Base::LOWERCASE_ASCII;
+        const _: RangeInclusive<ascii>      = Base::DIGIT_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::UPPERCASE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::LOWERCASE_ASCII_OPS;
+        const _: utf32                      = Base::DIGIT_START;
+        const _: utf32                      = Base::DIGIT_END;
+        const _: AsciiRange<utf32>          = Base::DIGIT;
+        const _: utf32                      = Base::UPPERCASE_START;
+        const _: utf32                      = Base::UPPERCASE_END;
+        const _: AsciiRange<utf32>          = Base::UPPERCASE;
+        const _: utf32                      = Base::LOWERCASE_START;
+        const _: utf32                      = Base::LOWERCASE_END;
+        const _: AsciiRange<utf32>          = Base::LOWERCASE;
+        const _: RangeInclusive<utf32>      = Base::DIGIT_OPS;
+        const _: RangeInclusive<utf32>      = Base::UPPERCASE_OPS;
+        const _: RangeInclusive<utf32>      = Base::LOWERCASE_OPS;
+        const _: [AsciiRange<ascii>; 1]     = Base::DIGIT_RANGES_ASCII;
+        const _: [AsciiRange<ascii>; 2]     = Base::LETTERS_RANGES_ASCII;
+        const _: [AsciiRange<ascii>; 3]     = Base::ALPHANUMERICAL_RANGES_ASCII;
+        const _: [AsciiRange<utf32>; 1]     = Base::DIGIT_RANGES;
+        const _: [AsciiRange<utf32>; 2]     = Base::LETTERS_RANGES;
+        const _: [AsciiRange<utf32>; 3]     = Base::ALPHANUMERICAL_RANGES;
+        const _: [RangeInclusive<ascii>; 1] = Base::DIGIT_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 2] = Base::LETTERS_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 3] = Base::ALPHANUMERICAL_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<utf32>; 1] = Base::DIGIT_RANGES_OPS;
+        const _: [RangeInclusive<utf32>; 2] = Base::LETTERS_RANGES_OPS;
+        const _: [RangeInclusive<utf32>; 3] = Base::ALPHANUMERICAL_RANGES_OPS;
+        const _: u8                         = Base::DIGIT_ASCII_OFFSET;
+        const _: u8                         = Base::UPPERCASE_ASCII_OFFSET;
+        const _: u8                         = Base::LOWERCASE_ASCII_OFFSET;
 
-    test_assert!(parse_custom_offset(b'g', 00), == BASE_MIN);
-    test_assert!(parse_custom_offset(b'g', 01), == BASE_MIN);
-    test_assert!(parse_custom_offset(b'g', 02), != BASE_MIN);
-    test_assert!(parse_custom_offset(b'g', 36), != BASE_MAX);
-    test_assert!(parse_custom_offset(b'g', 37), == BASE_MAX);
-    test_assert!(parse_custom_offset(b'g', 17), == 16);
-    test_assert!(parse_custom_offset(b'z', 36), == 35);
-    test_assert!(parse_custom_offset(b'z', 21), == OUT_OF_RANGE);
-    test_assert!(parse_custom_offset(b'_', 36), == INVALID);
-    test_assert!(parse_custom_offset(b'.', 36), == INVALID);
-    test_assert!(parse_custom_offset(b'@', 36), == INVALID);
+        const _: fn(Base, ascii) -> Offset = Base::check_offset;
+        const _: fn(Base, ascii) -> DigitOffset = Base::parse_offset;
+
+        const _: () = match b'0' {
+            range_binary_digit!(ascii) => {},
+            range_binary_digit_out_of_range!(ascii) => {},
+            range_binary_uppercase_out_of_range!(ascii) => {},
+            range_binary_lowercase_out_of_range!(ascii) => {},
+            range_binary_letter_out_of_range!(ascii) => {},
+            range_binary_out_of_range!(ascii) => {},
+            _ => {},
+        };
+        const _: () = match '0' {
+            range_binary_digit!() => {},
+            range_binary_digit_out_of_range!() => {},
+            range_binary_uppercase_out_of_range!() => {},
+            range_binary_lowercase_out_of_range!() => {},
+            range_binary_letter_out_of_range!() => {},
+            range_binary_out_of_range!() => {},
+            _ => {},
+        };
+        const _: fn(ascii) -> bool        = is_binary_digit;
+        const _: fn(ascii) -> bool        = is_binary_digit_out_of_range;
+        const _: fn(ascii) -> bool        = is_binary_uppercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_binary_lowercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_binary_letter_out_of_range;
+        const _: fn(ascii) -> bool        = is_binary;
+        const _: fn(ascii) -> bool        = is_binary_out_of_range;
+        const _: fn(ascii) -> Offset      = check_binary_offset;
+        const _: fn(ascii) -> DigitOffset = parse_binary_offset;
+
+        const _: () = match b'0' {
+            range_octal_digit!(ascii) => {},
+            range_octal_digit_out_of_range!(ascii) => {},
+            range_octal_uppercase_out_of_range!(ascii) => {},
+            range_octal_lowercase_out_of_range!(ascii) => {},
+            range_octal_letter_out_of_range!(ascii) => {},
+            range_octal_out_of_range!(ascii) => {},
+            _ => {},
+        };
+        const _: () = match '0' {
+            range_octal_digit!() => {},
+            range_octal_digit_out_of_range!() => {},
+            range_octal_uppercase_out_of_range!() => {},
+            range_octal_lowercase_out_of_range!() => {},
+            range_octal_letter_out_of_range!() => {},
+            range_octal_out_of_range!() => {},
+            _ => {},
+        };
+        const _: fn(ascii) -> bool        = is_octal_digit;
+        const _: fn(ascii) -> bool        = is_octal_digit_out_of_range;
+        const _: fn(ascii) -> bool        = is_octal_uppercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_octal_lowercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_octal_letter_out_of_range;
+        const _: fn(ascii) -> bool        = is_octal;
+        const _: fn(ascii) -> bool        = is_octal_out_of_range;
+        const _: fn(ascii) -> Offset      = check_octal_offset;
+        const _: fn(ascii) -> DigitOffset = parse_octal_offset;
+
+        const _: () = match b'0' {
+            range_decimal_digit!(ascii) => {},
+            range_decimal_uppercase_out_of_range!(ascii) => {},
+            range_decimal_lowercase_out_of_range!(ascii) => {},
+            range_decimal_letter_out_of_range!(ascii) => {},
+            range_decimal_out_of_range!(ascii) => {},
+            _ => {},
+        };
+        const _: () = match '0' {
+            range_decimal_digit!() => {},
+            range_decimal_uppercase_out_of_range!() => {},
+            range_decimal_lowercase_out_of_range!() => {},
+            range_decimal_letter_out_of_range!() => {},
+            range_decimal_out_of_range!() => {},
+            _ => {},
+        };
+        const _: fn(ascii) -> bool        = is_decimal_digit;
+        const _: fn(ascii) -> bool        = is_decimal_uppercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_decimal_lowercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_decimal_letter_out_of_range;
+        const _: fn(ascii) -> bool        = is_decimal;
+        const _: fn(ascii) -> bool        = is_decimal_out_of_range;
+        const _: fn(ascii) -> Offset      = check_decimal_offset;
+        const _: fn(ascii) -> DigitOffset = parse_decimal_offset;
+
+        const _: () = match b'0' {
+            range_hexadecimal_digit!(ascii) => {},
+            range_hexadecimal_uppercase!(ascii) => {},
+            range_hexadecimal_lowercase!(ascii) => {},
+            range_hexadecimal_letter!(ascii) => {},
+            range_hexadecimal_uppercase_out_of_range!(ascii) => {},
+            range_hexadecimal_lowercase_out_of_range!(ascii) => {},
+            range_hexadecimal_letter_out_of_range!(ascii) => {},
+            range_hexadecimal!(ascii) => {},
+            range_hexadecimal_out_of_range!(ascii) => {},
+            _ => {},
+        };
+        const _: () = match '0' {
+            range_hexadecimal_digit!() => {},
+            range_hexadecimal_uppercase!() => {},
+            range_hexadecimal_lowercase!() => {},
+            range_hexadecimal_letter!() => {},
+            range_hexadecimal_uppercase_out_of_range!() => {},
+            range_hexadecimal_lowercase_out_of_range!() => {},
+            range_hexadecimal_letter_out_of_range!() => {},
+            range_hexadecimal!() => {},
+            range_hexadecimal_out_of_range!() => {},
+            _ => {},
+        };
+
+        const _: fn(ascii) -> bool        = is_hexadecimal_digit;
+        const _: fn(ascii) -> bool        = is_hexadecimal_uppercase;
+        const _: fn(ascii) -> bool        = is_hexadecimal_lowercase;
+        const _: fn(ascii) -> bool        = is_hexadecimal_letter;
+        const _: fn(ascii) -> bool        = is_hexadecimal_uppercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_hexadecimal_lowercase_out_of_range;
+        const _: fn(ascii) -> bool        = is_hexadecimal_letter_out_of_range;
+        const _: fn(ascii) -> bool        = is_hexadecimal;
+        const _: fn(ascii) -> bool        = is_hexadecimal_out_of_range;
+        const _: fn(ascii) -> Offset      = check_hexadecimal_offset;
+        const _: fn(ascii) -> DigitOffset = parse_hexadecimal_offset;
+
+        const _: () = match b'0' {
+            range_digit!(ascii) => {},
+            range_uppercase!(ascii) => {},
+            range_lowercase!(ascii) => {},
+            range_letter!(ascii) => {},
+            range_alphanumerical!(ascii) => {},
+            _ => {},
+        };
+        const _: () = match '0' {
+            range_digit!() => {},
+            range_uppercase!() => {},
+            range_lowercase!() => {},
+            range_letter!() => {},
+            range_alphanumerical!() => {},
+            _ => {},
+        };
+        const _: fn(ascii) -> bool = is_digit;
+        const _: fn(ascii) -> bool = is_uppercase;
+        const _: fn(ascii) -> bool = is_lowercase;
+        const _: fn(ascii) -> bool = is_letter;
+        const _: fn(ascii) -> bool = is_alphanumerical;
+        const _: fn(ascii, u8) -> OffsetCustomBase = check_custom_offset;
+        const _: fn(ascii, u8) -> DigitOffsetCustomBase = parse_custom_offset;
+    }
+
+    mod _0_1_0_functionality {
+        use super::*;
+
+        test_assert!(Base::Binary.check(b'1'),      == AsciiDigit::Ok);
+        test_assert!(Base::Octal.check(b'7'),       == AsciiDigit::Ok);
+        test_assert!(Base::Decimal.check(b'9'),     == AsciiDigit::Ok);
+        test_assert!(Base::Hexadecimal.check(b'f'), == AsciiDigit::Ok);
+        test_assert!(Base::Hexadecimal.check(b'F'), == AsciiDigit::Ok);
+
+        test_assert!(Base::Binary.parse(b'1'),      == Digit::Ok(1));
+        test_assert!(Base::Octal.parse(b'7'),       == Digit::Ok(7));
+        test_assert!(Base::Decimal.parse(b'9'),     == Digit::Ok(9));
+        test_assert!(Base::Hexadecimal.parse(b'f'), == Digit::Ok(15));
+        test_assert!(Base::Hexadecimal.parse(b'F'), == Digit::Ok(15));
+
+        test_assert!(check(b'1', Base::Binary),      == AsciiDigit::Ok);
+        test_assert!(check(b'7', Base::Octal),       == AsciiDigit::Ok);
+        test_assert!(check(b'9', Base::Decimal),     == AsciiDigit::Ok);
+        test_assert!(check(b'f', Base::Hexadecimal), == AsciiDigit::Ok);
+        test_assert!(check(b'F', Base::Hexadecimal), == AsciiDigit::Ok);
+
+        test_assert!(parse(b'1', Base::Binary),      == Digit::Ok(1));
+        test_assert!(parse(b'7', Base::Octal),       == Digit::Ok(7));
+        test_assert!(parse(b'9', Base::Decimal),     == Digit::Ok(9));
+        test_assert!(parse(b'f', Base::Hexadecimal), == Digit::Ok(15));
+        test_assert!(parse(b'F', Base::Hexadecimal), == Digit::Ok(15));
+
+        test_assert!(check_binary(b'0'), == AsciiDigit::Ok);
+        test_assert!(check_binary(b'1'), == AsciiDigit::Ok);
+        test_assert!(check_binary(b'2'), == AsciiDigit::OutOfRange);
+        test_assert!(check_binary(b'a'), == AsciiDigit::OutOfRange);
+        test_assert!(check_binary(b'Z'), == AsciiDigit::OutOfRange);
+        test_assert!(check_binary(b'_'), == AsciiDigit::Underscore);
+        test_assert!(check_binary(b'.'), == AsciiDigit::Dot);
+        test_assert!(check_binary(b'@'), == AsciiDigit::Other);
+
+        test_assert!(parse_binary(b'0'), == Digit::Ok(0));
+        test_assert!(parse_binary(b'1'), == Digit::Ok(1));
+        test_assert!(parse_binary(b'2'), == Digit::OutOfRange);
+        test_assert!(parse_binary(b'a'), == Digit::OutOfRange);
+        test_assert!(parse_binary(b'Z'), == Digit::OutOfRange);
+        test_assert!(parse_binary(b'_'), == Digit::Underscore);
+        test_assert!(parse_binary(b'.'), == Digit::Dot);
+        test_assert!(parse_binary(b'@'), == Digit::Other);
+
+        test_assert!(check_octal(b'0'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'1'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'2'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'3'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'4'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'5'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'6'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'7'), == AsciiDigit::Ok);
+        test_assert!(check_octal(b'8'), == AsciiDigit::OutOfRange);
+        test_assert!(check_octal(b'9'), == AsciiDigit::OutOfRange);
+        test_assert!(check_octal(b'a'), == AsciiDigit::OutOfRange);
+        test_assert!(check_octal(b'Z'), == AsciiDigit::OutOfRange);
+        test_assert!(check_octal(b'_'), == AsciiDigit::Underscore);
+        test_assert!(check_octal(b'.'), == AsciiDigit::Dot);
+        test_assert!(check_octal(b'@'), == AsciiDigit::Other);
+
+        test_assert!(parse_octal(b'0'), == Digit::Ok(0));
+        test_assert!(parse_octal(b'1'), == Digit::Ok(1));
+        test_assert!(parse_octal(b'2'), == Digit::Ok(2));
+        test_assert!(parse_octal(b'3'), == Digit::Ok(3));
+        test_assert!(parse_octal(b'4'), == Digit::Ok(4));
+        test_assert!(parse_octal(b'5'), == Digit::Ok(5));
+        test_assert!(parse_octal(b'6'), == Digit::Ok(6));
+        test_assert!(parse_octal(b'7'), == Digit::Ok(7));
+        test_assert!(parse_octal(b'8'), == Digit::OutOfRange);
+        test_assert!(parse_octal(b'9'), == Digit::OutOfRange);
+        test_assert!(parse_octal(b'a'), == Digit::OutOfRange);
+        test_assert!(parse_octal(b'Z'), == Digit::OutOfRange);
+        test_assert!(parse_octal(b'_'), == Digit::Underscore);
+        test_assert!(parse_octal(b'.'), == Digit::Dot);
+        test_assert!(parse_octal(b'@'), == Digit::Other);
+
+        test_assert!(check_decimal(b'0'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'1'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'2'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'3'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'4'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'5'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'6'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'7'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'8'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'9'), == AsciiDigit::Ok);
+        test_assert!(check_decimal(b'a'), == AsciiDigit::OutOfRange);
+        test_assert!(check_decimal(b'Z'), == AsciiDigit::OutOfRange);
+        test_assert!(check_decimal(b'_'), == AsciiDigit::Underscore);
+        test_assert!(check_decimal(b'.'), == AsciiDigit::Dot);
+        test_assert!(check_decimal(b'@'), == AsciiDigit::Other);
+
+        test_assert!(parse_decimal(b'0'), == Digit::Ok(0));
+        test_assert!(parse_decimal(b'1'), == Digit::Ok(1));
+        test_assert!(parse_decimal(b'2'), == Digit::Ok(2));
+        test_assert!(parse_decimal(b'3'), == Digit::Ok(3));
+        test_assert!(parse_decimal(b'4'), == Digit::Ok(4));
+        test_assert!(parse_decimal(b'5'), == Digit::Ok(5));
+        test_assert!(parse_decimal(b'6'), == Digit::Ok(6));
+        test_assert!(parse_decimal(b'7'), == Digit::Ok(7));
+        test_assert!(parse_decimal(b'8'), == Digit::Ok(8));
+        test_assert!(parse_decimal(b'9'), == Digit::Ok(9));
+        test_assert!(parse_decimal(b'a'), == Digit::OutOfRange);
+        test_assert!(parse_decimal(b'Z'), == Digit::OutOfRange);
+        test_assert!(parse_decimal(b'_'), == Digit::Underscore);
+        test_assert!(parse_decimal(b'.'), == Digit::Dot);
+        test_assert!(parse_decimal(b'@'), == Digit::Other);
+
+        test_assert!(check_hexadecimal(b'0'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'1'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'2'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'3'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'4'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'5'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'6'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'7'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'8'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'9'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'A'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'a'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'B'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'b'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'C'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'c'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'D'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'd'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'E'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'e'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'F'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'f'), == AsciiDigit::Ok);
+        test_assert!(check_hexadecimal(b'g'), == AsciiDigit::OutOfRange);
+        test_assert!(check_hexadecimal(b'Z'), == AsciiDigit::OutOfRange);
+        test_assert!(check_hexadecimal(b'_'), == AsciiDigit::Underscore);
+        test_assert!(check_hexadecimal(b'.'), == AsciiDigit::Dot);
+        test_assert!(check_hexadecimal(b'@'), == AsciiDigit::Other);
+
+        test_assert!(parse_hexadecimal(b'0'), == Digit::Ok(0));
+        test_assert!(parse_hexadecimal(b'1'), == Digit::Ok(1));
+        test_assert!(parse_hexadecimal(b'2'), == Digit::Ok(2));
+        test_assert!(parse_hexadecimal(b'3'), == Digit::Ok(3));
+        test_assert!(parse_hexadecimal(b'4'), == Digit::Ok(4));
+        test_assert!(parse_hexadecimal(b'5'), == Digit::Ok(5));
+        test_assert!(parse_hexadecimal(b'6'), == Digit::Ok(6));
+        test_assert!(parse_hexadecimal(b'7'), == Digit::Ok(7));
+        test_assert!(parse_hexadecimal(b'8'), == Digit::Ok(8));
+        test_assert!(parse_hexadecimal(b'9'), == Digit::Ok(9));
+        test_assert!(parse_hexadecimal(b'A'), == Digit::Ok(10));
+        test_assert!(parse_hexadecimal(b'a'), == Digit::Ok(10));
+        test_assert!(parse_hexadecimal(b'B'), == Digit::Ok(11));
+        test_assert!(parse_hexadecimal(b'b'), == Digit::Ok(11));
+        test_assert!(parse_hexadecimal(b'C'), == Digit::Ok(12));
+        test_assert!(parse_hexadecimal(b'c'), == Digit::Ok(12));
+        test_assert!(parse_hexadecimal(b'D'), == Digit::Ok(13));
+        test_assert!(parse_hexadecimal(b'd'), == Digit::Ok(13));
+        test_assert!(parse_hexadecimal(b'E'), == Digit::Ok(14));
+        test_assert!(parse_hexadecimal(b'e'), == Digit::Ok(14));
+        test_assert!(parse_hexadecimal(b'F'), == Digit::Ok(15));
+        test_assert!(parse_hexadecimal(b'f'), == Digit::Ok(15));
+        test_assert!(parse_hexadecimal(b'g'), == Digit::OutOfRange);
+        test_assert!(parse_hexadecimal(b'Z'), == Digit::OutOfRange);
+        test_assert!(parse_hexadecimal(b'_'), == Digit::Underscore);
+        test_assert!(parse_hexadecimal(b'.'), == Digit::Dot);
+        test_assert!(parse_hexadecimal(b'@'), == Digit::Other);
+
+        test_assert!(check_custom(b'g', 00), == AsciiDigitCustomBase::BaseMin);
+        test_assert!(check_custom(b'g', 37), == AsciiDigitCustomBase::BaseMax);
+        test_assert!(check_custom(b'g', 17), == AsciiDigitCustomBase::Ok);
+        test_assert!(check_custom(b'z', 36), == AsciiDigitCustomBase::Ok);
+        test_assert!(check_custom(b'z', 21), == AsciiDigitCustomBase::OutOfRange);
+        test_assert!(check_custom(b'_', 36), == AsciiDigitCustomBase::Underscore);
+        test_assert!(check_custom(b'.', 36), == AsciiDigitCustomBase::Dot);
+        test_assert!(check_custom(b'@', 36), == AsciiDigitCustomBase::Other);
+
+        test_assert!(parse_custom(b'g', 00), == DigitCustomBase::BaseMin);
+        test_assert!(parse_custom(b'g', 01), == DigitCustomBase::BaseMin);
+        test_assert!(parse_custom(b'g', 02), != DigitCustomBase::BaseMin);
+        test_assert!(parse_custom(b'g', 36), != DigitCustomBase::BaseMax);
+        test_assert!(parse_custom(b'g', 37), == DigitCustomBase::BaseMax);
+        test_assert!(parse_custom(b'g', 17), == DigitCustomBase::Ok(16));
+        test_assert!(parse_custom(b'z', 36), == DigitCustomBase::Ok(35));
+        test_assert!(parse_custom(b'z', 21), == DigitCustomBase::OutOfRange);
+        test_assert!(parse_custom(b'_', 36), == DigitCustomBase::Underscore);
+        test_assert!(parse_custom(b'.', 36), == DigitCustomBase::Dot);
+        test_assert!(parse_custom(b'@', 36), == DigitCustomBase::Other);
+
+        test_assert!(check_tally(b'0', b'0'), == AsciiDigit::Ok);
+        test_assert!(check_tally(b'_', b'0'), == AsciiDigit::Underscore);
+        test_assert!(check_tally(b'.', b'0'), == AsciiDigit::Dot);
+        test_assert!(check_tally(b'@', b'0'), == AsciiDigit::Other);
+
+        test_assert!(parse_tally(b'0', b'0'), == Digit::Ok(1));
+        test_assert!(parse_tally(b'_', b'0'), == Digit::Underscore);
+        test_assert!(parse_tally(b'.', b'0'), == Digit::Dot);
+        test_assert!(parse_tally(b'@', b'0'), == Digit::Other);
+    }
+
+    mod _0_1_0_backwards_compatibility {
+        use core::ops::RangeInclusive;
+        use crate::{ascii, utf32};
+        use super::{
+            Ascii, AsciiRange,
+            Base::{self, Binary, Octal, Decimal, Hexadecimal},
+            AsciiDigit, AsciiDigitCustomBase, Digit, DigitCustomBase,
+
+            check,
+            parse,
+            check_binary,
+            parse_binary,
+            check_octal,
+            parse_octal,
+            check_decimal,
+            parse_decimal,
+            check_hexadecimal,
+            parse_hexadecimal,
+            check_custom,
+            parse_custom,
+            check_tally,
+            parse_tally,
+        };
+
+        const _: () = {use AsciiDigit::{Ok, Underscore, Dot, OutOfRange, Other};};
+        const _: () = {use Digit::{Ok, Underscore, Dot, OutOfRange, Other};};
+        const _: () = {use AsciiDigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};};
+        const _: () = {use DigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};};
+
+        const _: u8 = Base::MIN;
+        const _: u8 = Base::MAX;
+
+        const _: AsciiRange<utf32>          = Base::BINARY_RANGE;
+        const _: AsciiRange<utf32>          = Base::OCTAL_RANGE;
+        const _: AsciiRange<utf32>          = Base::DECIMAL_RANGE;
+        const _: AsciiRange<utf32>          = Base::HEXADECIMAL_DIGIT_RANGE;
+        const _: AsciiRange<utf32>          = Base::HEXADECIMAL_UPPERCASE_RANGE;
+        const _: AsciiRange<utf32>          = Base::HEXADECIMAL_LOWERCASE_RANGE;
+        const _: [AsciiRange<utf32>; 1]     = Base::BINARY_RANGES;
+        const _: [AsciiRange<utf32>; 1]     = Base::OCTAL_RANGES;
+        const _: [AsciiRange<utf32>; 1]     = Base::DECIMAL_RANGES;
+        const _: [AsciiRange<utf32>; 3]     = Base::HEXADECIMAL_RANGES;
+        const _: RangeInclusive<utf32>      = Base::BINARY_RANGE_OPS;
+        const _: RangeInclusive<utf32>      = Base::OCTAL_RANGE_OPS;
+        const _: RangeInclusive<utf32>      = Base::DECIMAL_RANGE_OPS;
+        const _: RangeInclusive<utf32>      = Base::HEXADECIMAL_DIGIT_RANGE_OPS;
+        const _: RangeInclusive<utf32>      = Base::HEXADECIMAL_UPPERCASE_RANGE_OPS;
+        const _: RangeInclusive<utf32>      = Base::HEXADECIMAL_LOWERCASE_RANGE_OPS;
+        const _: [RangeInclusive<utf32>; 1] = Base::BINARY_RANGES_OPS;
+        const _: [RangeInclusive<utf32>; 1] = Base::OCTAL_RANGES_OPS;
+        const _: [RangeInclusive<utf32>; 1] = Base::DECIMAL_RANGES_OPS;
+        const _: [RangeInclusive<utf32>; 3] = Base::HEXADECIMAL_RANGES_OPS;
+
+        const _: AsciiRange<ascii>          = Base::BINARY_RANGE_ASCII;
+        const _: AsciiRange<ascii>          = Base::OCTAL_RANGE_ASCII;
+        const _: AsciiRange<ascii>          = Base::DECIMAL_RANGE_ASCII;
+        const _: AsciiRange<ascii>          = Base::HEXADECIMAL_DIGIT_RANGE_ASCII;
+        const _: AsciiRange<ascii>          = Base::HEXADECIMAL_UPPERCASE_RANGE_ASCII;
+        const _: AsciiRange<ascii>          = Base::HEXADECIMAL_LOWERCASE_RANGE_ASCII;
+        const _: [AsciiRange<ascii>; 1]     = Base::BINARY_RANGES_ASCII;
+        const _: [AsciiRange<ascii>; 1]     = Base::OCTAL_RANGES_ASCII;
+        const _: [AsciiRange<ascii>; 1]     = Base::DECIMAL_RANGES_ASCII;
+        const _: [AsciiRange<ascii>; 3]     = Base::HEXADECIMAL_RANGES_ASCII;
+        const _: RangeInclusive<ascii>      = Base::BINARY_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::OCTAL_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::DECIMAL_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::HEXADECIMAL_DIGIT_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS;
+        const _: RangeInclusive<ascii>      = Base::HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 1] = Base::BINARY_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 1] = Base::OCTAL_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 1] = Base::DECIMAL_RANGES_ASCII_OPS;
+        const _: [RangeInclusive<ascii>; 3] = Base::HEXADECIMAL_RANGES_ASCII_OPS;
+        const _: u8                         = Base::BINARY_ASCII_OFFSET;
+        const _: u8                         = Base::OCTAL_ASCII_OFFSET;
+        const _: u8                         = Base::DECIMAL_ASCII_OFFSET;
+        const _: u8                         = Base::HEXADECIMAL_DIGIT_ASCII_OFFSET;
+        const _: u8                         = Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET;
+        const _: u8                         = Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET;
+
+        const _: fn(Base) -> &'static [AsciiRange<utf32>]     = Base::range;
+        const _: fn(Base) -> &'static [RangeInclusive<utf32>] = Base::range_ops;
+        const _: fn(Base) -> &'static [AsciiRange<ascii>]     = Base::range_ascii;
+        const _: fn(Base) -> &'static [RangeInclusive<ascii>] = Base::range_ascii_ops;
+
+        const _: fn(Base, ascii) -> AsciiDigit = Base::check;
+        const _: fn(Base, ascii) -> Digit      = Base::parse;
+
+        const _: fn(ascii, Base) -> AsciiDigit         = check;
+        const _: fn(ascii, Base) -> Digit              = parse;
+        const _: fn(ascii) -> AsciiDigit               = check_binary;
+        const _: fn(ascii) -> Digit                    = parse_binary;
+        const _: fn(ascii) -> AsciiDigit               = check_octal;
+        const _: fn(ascii) -> Digit                    = parse_octal;
+        const _: fn(ascii) -> AsciiDigit               = check_decimal;
+        const _: fn(ascii) -> Digit                    = parse_decimal;
+        const _: fn(ascii) -> AsciiDigit               = check_hexadecimal;
+        const _: fn(ascii) -> Digit                    = parse_hexadecimal;
+        const _: fn(ascii, u8) -> AsciiDigitCustomBase = check_custom;
+        const _: fn(ascii, u8) -> DigitCustomBase      = parse_custom;
+        const _: fn(ascii, ascii) -> AsciiDigit        = check_tally;
+        const _: fn(ascii, ascii) -> Digit             = parse_tally;
+    }
 }
