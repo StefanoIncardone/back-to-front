@@ -1,5 +1,8 @@
 #![allow(deprecated)]
 #![expect(clippy::pub_use)]
+// IDEA(stefano): consider removing `Base::range_*`, `Base::check` and `Base::parse` functions to
+    // maintain consistency with the corresponding freestanding functions
+// TODO(stefano): add documentations
 // TODO(stefano): find a way of only allowing importing of macros from this module and not from the
     // root module: `use crate::foo_macro` should not work, while `use crate::digit::foo_macro`
     // should be the only way of importing these macros
@@ -725,6 +728,30 @@ impl Base {
     }
 }
 
+#[must_use]
+#[inline(always)]
+pub const fn range(base: Base) -> &'static [AsciiRange<utf32>] {
+    return base.range();
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn range_ops(base: Base) -> &'static [RangeInclusive<utf32>] {
+    return base.range_ops();
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn range_ascii(base: Base) -> &'static [AsciiRange<ascii>] {
+    return base.range_ascii();
+}
+
+#[must_use]
+#[inline(always)]
+pub const fn range_ascii_ops(base: Base) -> &'static [RangeInclusive<ascii>] {
+    return base.range_ascii_ops();
+}
+
 // Parsing
 pub type Offset = ascii;
 pub type OffsetCustomBase = ascii;
@@ -746,34 +773,6 @@ pub const INVALID: Offset = OffsetEnum::Invalid as u8;
 pub const OUT_OF_RANGE: Offset = OffsetEnum::OutOfRange as u8;
 pub const BASE_MIN: OffsetCustomBase = OffsetEnum::BaseMin as u8;
 pub const BASE_MAX: OffsetCustomBase = OffsetEnum::BaseMax as u8;
-
-impl Base {
-    #[must_use]
-    #[inline(always)]
-    pub const fn check_offset(self, character: ascii) -> Offset {
-        return check_offset(character, self);
-    }
-
-    #[must_use]
-    #[inline(always)]
-    pub const fn parse_offset(self, character: ascii) -> DigitOffset {
-        return parse_offset(character, self);
-    }
-
-    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
-    #[must_use]
-    #[inline(always)]
-    pub const fn check(self, character: ascii) -> AsciiDigit {
-        return check(character, self);
-    }
-
-    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
-    #[must_use]
-    #[inline(always)]
-    pub const fn parse(self, character: ascii) -> Digit {
-        return parse(character, self);
-    }
-}
 
 #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -826,55 +825,85 @@ pub enum DigitCustomBase {
     BaseMax    = AsciiDigitCustomBase::BaseMax as u8,
 }
 
+// NOTE(stefano): find a way of making these functions have the same signature as the freestanding
+// versions
+impl Base {
+    #[must_use]
+    #[inline]
+    pub const fn check_offset(self, character: ascii) -> Offset {
+        #[rustfmt::skip]
+        return match self {
+            Self::Binary      => check_binary_offset(character),
+            Self::Octal       => check_octal_offset(character),
+            Self::Decimal     => check_decimal_offset(character),
+            Self::Hexadecimal => check_hexadecimal_offset(character),
+        };
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn parse_offset(self, character: ascii) -> DigitOffset {
+        #[rustfmt::skip]
+        return match self {
+            Self::Binary      => parse_binary_offset(character),
+            Self::Octal       => parse_octal_offset(character),
+            Self::Decimal     => parse_decimal_offset(character),
+            Self::Hexadecimal => parse_hexadecimal_offset(character),
+        };
+    }
+
+    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+    #[must_use]
+    #[inline]
+    pub const fn check(self, character: ascii) -> AsciiDigit {
+        #[rustfmt::skip]
+        return match self {
+            Self::Binary      => check_binary(character),
+            Self::Octal       => check_octal(character),
+            Self::Decimal     => check_decimal(character),
+            Self::Hexadecimal => check_hexadecimal(character),
+        };
+    }
+
+    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+    #[must_use]
+    #[inline]
+    pub const fn parse(self, character: ascii) -> Digit {
+        #[rustfmt::skip]
+        return match self {
+            Self::Binary      => parse_binary(character),
+            Self::Octal       => parse_octal(character),
+            Self::Decimal     => parse_decimal(character),
+            Self::Hexadecimal => parse_hexadecimal(character),
+        };
+    }
+}
+
 #[must_use]
 #[inline]
 pub const fn check_offset(character: ascii, base: Base) -> Offset {
-    #[rustfmt::skip]
-    return match base {
-        Base::Binary      => check_binary_offset(character),
-        Base::Octal       => check_octal_offset(character),
-        Base::Decimal     => check_decimal_offset(character),
-        Base::Hexadecimal => check_hexadecimal_offset(character),
-    };
+    return base.check_offset(character);
 }
 
 
 #[must_use]
 #[inline]
 pub const fn parse_offset(character: ascii, base: Base) -> DigitOffset {
-    #[rustfmt::skip]
-    return match base {
-        Base::Binary      => parse_binary_offset(character),
-        Base::Octal       => parse_octal_offset(character),
-        Base::Decimal     => parse_decimal_offset(character),
-        Base::Hexadecimal => parse_hexadecimal_offset(character),
-    };
+    return base.parse_offset(character);
 }
 
 #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check(character: ascii, base: Base) -> AsciiDigit {
-    #[rustfmt::skip]
-    return match base {
-        Base::Binary      => check_binary(character),
-        Base::Octal       => check_octal(character),
-        Base::Decimal     => check_decimal(character),
-        Base::Hexadecimal => check_hexadecimal(character),
-    };
+    return base.check(character);
 }
 
 #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse(character: ascii, base: Base) -> Digit {
-    #[rustfmt::skip]
-    return match base {
-        Base::Binary      => parse_binary(character),
-        Base::Octal       => parse_octal(character),
-        Base::Decimal     => parse_decimal(character),
-        Base::Hexadecimal => parse_hexadecimal(character),
-    };
+    return base.parse(character);
 }
 
 #[macro_export]
@@ -1784,7 +1813,7 @@ pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
 }
 
 // IDEA(stefano): introduce loops to check every ascii combination
-#[expect(unused_imports, unreachable_patterns, dead_code)]
+#[expect(unreachable_patterns, dead_code)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {
@@ -1803,6 +1832,7 @@ mod tests {
         };
     }
 
+    // TODO(stefano): add tests for `is_*` functions
     mod _0_1_1_dev_functionality {
         use crate::digit::*;
 
@@ -1979,6 +2009,11 @@ mod tests {
             BASE_MAX, BASE_MIN, INVALID, OUT_OF_RANGE,
 
             Base,
+
+            range,
+            range_ops,
+            range_ascii,
+            range_ascii_ops,
 
             check_offset,
             parse_offset,
@@ -2273,8 +2308,16 @@ mod tests {
         const _: u8                         = Base::UPPERCASE_ASCII_OFFSET;
         const _: u8                         = Base::LOWERCASE_ASCII_OFFSET;
 
-        const _: fn(Base, ascii) -> Offset = Base::check_offset;
+        const _: fn(Base) -> &'static [AsciiRange<utf32>]     = range;
+        const _: fn(Base) -> &'static [RangeInclusive<utf32>] = range_ops;
+        const _: fn(Base) -> &'static [AsciiRange<ascii>]     = range_ascii;
+        const _: fn(Base) -> &'static [RangeInclusive<ascii>] = range_ascii_ops;
+
+        const _: fn(Base, ascii) -> Offset      = Base::check_offset;
         const _: fn(Base, ascii) -> DigitOffset = Base::parse_offset;
+        const _: fn(ascii, Base) -> Offset      = check_offset;
+        const _: fn(ascii, Base) -> DigitOffset = parse_offset;
+
         const _: OffsetCustomBase = BASE_MAX;
         const _: OffsetCustomBase = BASE_MIN;
         const _: Offset = INVALID;
@@ -2624,8 +2667,8 @@ mod tests {
         use core::ops::RangeInclusive;
         use crate::{ascii, utf32};
         use crate::digit::{
-            Ascii, AsciiRange,
-            Base::{self, Binary, Octal, Decimal, Hexadecimal},
+            AsciiRange,
+            Base::{self},
             AsciiDigit, AsciiDigitCustomBase, Digit, DigitCustomBase,
 
             check,
@@ -2644,10 +2687,15 @@ mod tests {
             parse_tally,
         };
 
-        const _: () = {use AsciiDigit::{Ok, Underscore, Dot, OutOfRange, Other};};
-        const _: () = {use Digit::{Ok, Underscore, Dot, OutOfRange, Other};};
-        const _: () = {use AsciiDigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};};
-        const _: () = {use DigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};};
+        #[expect(unused_imports)]
+        const _: () = {
+            {use crate::digit::Ascii;}
+            {use crate::digit::Base::{Binary, Octal, Decimal, Hexadecimal};}
+            {use AsciiDigit::{Ok, Underscore, Dot, OutOfRange, Other};}
+            {use Digit::{Ok, Underscore, Dot, OutOfRange, Other};}
+            {use AsciiDigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};}
+            {use DigitCustomBase::{Ok, Underscore, Dot, OutOfRange, Other, BaseMin, BaseMax};}
+        };
 
         const _: u8 = Base::MIN;
         const _: u8 = Base::MAX;
@@ -2707,9 +2755,9 @@ mod tests {
 
         const _: fn(Base, ascii) -> AsciiDigit = Base::check;
         const _: fn(Base, ascii) -> Digit      = Base::parse;
+        const _: fn(ascii, Base) -> AsciiDigit = check;
+        const _: fn(ascii, Base) -> Digit      = parse;
 
-        const _: fn(ascii, Base) -> AsciiDigit         = check;
-        const _: fn(ascii, Base) -> Digit              = parse;
         const _: fn(ascii) -> AsciiDigit               = check_binary;
         const _: fn(ascii) -> Digit                    = parse_binary;
         const _: fn(ascii) -> AsciiDigit               = check_octal;
