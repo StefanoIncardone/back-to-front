@@ -46,104 +46,77 @@ impl Base {
     pub const MAX: u8 = Self::Decimal as u8 + b'Z' - b'A' + 1;
 }
 
+macro_rules! const_range {
+    (
+        typ: $typ:ty;
+        $(
+            start: $start_name:ident = $start:expr;
+            end: $end_name:ident = $end:expr;
+            range: $range_name:ident;
+            $(range_ops: $range_name_ops:ident;)?
+        )+
+    ) => {
+        $(
+            pub const $start_name: $typ = $start;
+            pub const $end_name: $typ = $end;
+            pub const $range_name: AsciiRange<$typ> = AsciiRange::new(
+                Self::$start_name,
+                Self::$end_name,
+            );
+            $(pub const $range_name_ops: RangeInclusive<$typ> = RangeInclusive::new(
+                Self::$start_name,
+                Self::$end_name,
+            );)?
+        )+
+    };
+}
+
 // IDEA(stefano): bring ranges constants out to global scope or to own modules
 
 // binary
 impl Base {
-    pub const BINARY_DIGIT_ASCII_START: ascii = b'0';
-    pub const BINARY_DIGIT_ASCII_END: ascii = b'1';
-    pub const BINARY_DIGIT_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::BINARY_DIGIT_ASCII_START,
-        Self::BINARY_DIGIT_ASCII_END,
+    const_range!(typ: ascii;
+        start:     BINARY_DIGIT_ASCII_START = b'0';
+        end:       BINARY_DIGIT_ASCII_END   = b'1';
+        range:     BINARY_DIGIT_ASCII;
+        range_ops: BINARY_DIGIT_ASCII_OPS;
+
+        start:     BINARY_DIGIT_OUT_OF_RANGE_ASCII_START = Self::BINARY_DIGIT_ASCII_END + 1;
+        end:       BINARY_DIGIT_OUT_OF_RANGE_ASCII_END   = b'9';
+        range:     BINARY_DIGIT_OUT_OF_RANGE_ASCII;
+        range_ops: BINARY_DIGIT_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START = b'A';
+        end:       BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END   = b'Z';
+        range:     BINARY_UPPERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START = b'a';
+        end:       BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END   = b'z';
+        range:     BINARY_LOWERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
     );
 
-    pub const BINARY_DIGIT_OUT_OF_RANGE_ASCII_START: ascii = Self::BINARY_DIGIT_ASCII_END + 1;
-    pub const BINARY_DIGIT_OUT_OF_RANGE_ASCII_END: ascii = b'9';
-    pub const BINARY_DIGIT_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_END,
-    );
+    const_range!(typ: utf32;
+        start:     BINARY_DIGIT_START = Self::BINARY_DIGIT_ASCII_START as utf32;
+        end:       BINARY_DIGIT_END   = Self::BINARY_DIGIT_ASCII_END as utf32;
+        range:     BINARY_DIGIT;
+        range_ops: BINARY_DIGIT_OPS;
 
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'A';
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'Z';
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     BINARY_DIGIT_OUT_OF_RANGE_START = Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       BINARY_DIGIT_OUT_OF_RANGE_END   = Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     BINARY_DIGIT_OUT_OF_RANGE;
+        range_ops: BINARY_DIGIT_OUT_OF_RANGE_OPS;
 
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'a';
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'z';
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     BINARY_UPPERCASE_OUT_OF_RANGE_START = Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       BINARY_UPPERCASE_OUT_OF_RANGE_END   = Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     BINARY_UPPERCASE_OUT_OF_RANGE;
+        range_ops: BINARY_UPPERCASE_OUT_OF_RANGE_OPS;
 
-    pub const BINARY_DIGIT_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::BINARY_DIGIT_ASCII_START,
-        Self::BINARY_DIGIT_ASCII_END,
-    );
-
-    pub const BINARY_DIGIT_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const BINARY_DIGIT_START: utf32 = Self::BINARY_DIGIT_ASCII_START as utf32;
-    pub const BINARY_DIGIT_END: utf32 = Self::BINARY_DIGIT_ASCII_END as utf32;
-    pub const BINARY_DIGIT: AsciiRange<utf32> = AsciiRange::new(
-        Self::BINARY_DIGIT_START,
-        Self::BINARY_DIGIT_END,
-    );
-
-    pub const BINARY_DIGIT_OUT_OF_RANGE_START: utf32 = Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const BINARY_DIGIT_OUT_OF_RANGE_END: utf32 = Self::BINARY_DIGIT_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const BINARY_DIGIT_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::BINARY_DIGIT_OUT_OF_RANGE_START,
-        Self::BINARY_DIGIT_OUT_OF_RANGE_END,
-    );
-
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::BINARY_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START,
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START,
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const BINARY_DIGIT_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::BINARY_DIGIT_START,
-        Self::BINARY_DIGIT_END,
-    );
-
-    pub const BINARY_DIGIT_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::BINARY_DIGIT_OUT_OF_RANGE_START,
-        Self::BINARY_DIGIT_OUT_OF_RANGE_END,
-    );
-
-    pub const BINARY_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_START,
-        Self::BINARY_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const BINARY_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_START,
-        Self::BINARY_LOWERCASE_OUT_OF_RANGE_END,
+        start:     BINARY_LOWERCASE_OUT_OF_RANGE_START = Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       BINARY_LOWERCASE_OUT_OF_RANGE_END   = Self::BINARY_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     BINARY_LOWERCASE_OUT_OF_RANGE;
+        range_ops: BINARY_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
     #[deprecated(since = "0.1.1-dev", note = "will be renamed to `BINARY_DIGIT_ASCII`")]
@@ -168,100 +141,48 @@ impl Base {
 // octal
 #[rustfmt::skip]
 impl Base {
-    pub const OCTAL_DIGIT_ASCII_START: ascii = b'0';
-    pub const OCTAL_DIGIT_ASCII_END: ascii = b'7';
-    pub const OCTAL_DIGIT_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::OCTAL_DIGIT_ASCII_START,
-        Self::OCTAL_DIGIT_ASCII_END,
+    const_range!(typ: ascii;
+        start:     OCTAL_DIGIT_ASCII_START = b'0';
+        end:       OCTAL_DIGIT_ASCII_END   = b'7';
+        range:     OCTAL_DIGIT_ASCII;
+        range_ops: OCTAL_DIGIT_ASCII_OPS;
+
+        start:     OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START = Self::OCTAL_DIGIT_ASCII_END + 1;
+        end:       OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END   = b'9';
+        range:     OCTAL_DIGIT_OUT_OF_RANGE_ASCII;
+        range_ops: OCTAL_DIGIT_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START = b'A';
+        end:       OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END   = b'Z';
+        range:     OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START = b'a';
+        end:       OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END   = b'z';
+        range:     OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
     );
 
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START: ascii = Self::OCTAL_DIGIT_ASCII_END + 1;
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END: ascii = b'9';
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END,
-    );
+    const_range!(typ: utf32;
+        start:     OCTAL_DIGIT_START = Self::OCTAL_DIGIT_ASCII_START as utf32;
+        end:       OCTAL_DIGIT_END = Self::OCTAL_DIGIT_ASCII_END as utf32;
+        range:     OCTAL_DIGIT;
+        range_ops: OCTAL_DIGIT_OPS;
 
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'A';
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'Z';
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     OCTAL_DIGIT_OUT_OF_RANGE_START = Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       OCTAL_DIGIT_OUT_OF_RANGE_END = Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     OCTAL_DIGIT_OUT_OF_RANGE;
+        range_ops: OCTAL_DIGIT_OUT_OF_RANGE_OPS;
 
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'a';
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'z';
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     OCTAL_UPPERCASE_OUT_OF_RANGE_START = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       OCTAL_UPPERCASE_OUT_OF_RANGE_END = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     OCTAL_UPPERCASE_OUT_OF_RANGE;
+        range_ops: OCTAL_UPPERCASE_OUT_OF_RANGE_OPS;
 
-    pub const OCTAL_DIGIT_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::OCTAL_DIGIT_ASCII_START,
-        Self::OCTAL_DIGIT_ASCII_END,
-    );
-
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const OCTAL_DIGIT_START: utf32 = Self::OCTAL_DIGIT_ASCII_START as utf32;
-    pub const OCTAL_DIGIT_END: utf32 = Self::OCTAL_DIGIT_ASCII_END as utf32;
-    pub const OCTAL_DIGIT: AsciiRange<utf32> = AsciiRange::new(
-        Self::OCTAL_DIGIT_START,
-        Self::OCTAL_DIGIT_END,
-    );
-
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_START: utf32 = Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_END: utf32 = Self::OCTAL_DIGIT_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const OCTAL_DIGIT_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_START,
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_END,
-    );
-
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::OCTAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const OCTAL_DIGIT_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::OCTAL_DIGIT_START,
-        Self::OCTAL_DIGIT_END,
-    );
-
-    pub const OCTAL_DIGIT_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_START,
-        Self::OCTAL_DIGIT_OUT_OF_RANGE_END,
-    );
-
-    pub const OCTAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::OCTAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const OCTAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::OCTAL_LOWERCASE_OUT_OF_RANGE_END,
+        start:     OCTAL_LOWERCASE_OUT_OF_RANGE_START = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       OCTAL_LOWERCASE_OUT_OF_RANGE_END = Self::OCTAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     OCTAL_LOWERCASE_OUT_OF_RANGE;
+        range_ops: OCTAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
     #[deprecated(since = "0.1.1-dev", note = "will be renamed to `OCTAL_DIGIT_ASCII`")]
@@ -286,76 +207,38 @@ impl Base {
 // decimal
 #[rustfmt::skip]
 impl Base {
-    pub const DECIMAL_DIGIT_ASCII_START: ascii = b'0';
-    pub const DECIMAL_DIGIT_ASCII_END: ascii = b'9';
-    pub const DECIMAL_DIGIT_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::DECIMAL_DIGIT_ASCII_START,
-        Self::DECIMAL_DIGIT_ASCII_END,
+    const_range!(typ: ascii;
+        start:     DECIMAL_DIGIT_ASCII_START = b'0';
+        end:       DECIMAL_DIGIT_ASCII_END   = b'9';
+        range:     DECIMAL_DIGIT_ASCII;
+        range_ops: DECIMAL_DIGIT_ASCII_OPS;
+
+        start:     DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START = b'A';
+        end:       DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END   = b'Z';
+        range:     DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START = b'a';
+        end:       DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END   = b'z';
+        range:     DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
     );
 
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'A';
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'Z';
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+    const_range!(typ: utf32;
+        start:     DECIMAL_DIGIT_START = Self::DECIMAL_DIGIT_ASCII_START as utf32;
+        end:       DECIMAL_DIGIT_END   = Self::DECIMAL_DIGIT_ASCII_END as utf32;
+        range:     DECIMAL_DIGIT;
+        range_ops: DECIMAL_DIGIT_OPS;
 
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START: ascii = b'a';
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'z';
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     DECIMAL_UPPERCASE_OUT_OF_RANGE_START = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       DECIMAL_UPPERCASE_OUT_OF_RANGE_END   = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     DECIMAL_UPPERCASE_OUT_OF_RANGE;
+        range_ops: DECIMAL_UPPERCASE_OUT_OF_RANGE_OPS;
 
-    pub const DECIMAL_DIGIT_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::DECIMAL_DIGIT_ASCII_START,
-        Self::DECIMAL_DIGIT_ASCII_END,
-    );
-
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const DECIMAL_DIGIT_START: utf32 = Self::DECIMAL_DIGIT_ASCII_START as utf32;
-    pub const DECIMAL_DIGIT_END: utf32 = Self::DECIMAL_DIGIT_ASCII_END as utf32;
-    pub const DECIMAL_DIGIT: AsciiRange<utf32> = AsciiRange::new(
-        Self::DECIMAL_DIGIT_START,
-        Self::DECIMAL_DIGIT_END,
-    );
-
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const DECIMAL_DIGIT_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::DECIMAL_DIGIT_START,
-        Self::DECIMAL_DIGIT_END,
-    );
-
-    pub const DECIMAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::DECIMAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const DECIMAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+        start:     DECIMAL_LOWERCASE_OUT_OF_RANGE_START = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       DECIMAL_LOWERCASE_OUT_OF_RANGE_END   = Self::DECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     DECIMAL_LOWERCASE_OUT_OF_RANGE;
+        range_ops: DECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
     #[deprecated(since = "0.1.1-dev", note = "will be renamed to `DECIMAL_DIGIT_ASCII`")]
@@ -380,124 +263,58 @@ impl Base {
 // hexadecimal
 #[rustfmt::skip]
 impl Base {
-    pub const HEXADECIMAL_DIGIT_ASCII_START: ascii = b'0';
-    pub const HEXADECIMAL_DIGIT_ASCII_END: ascii = b'9';
-    pub const HEXADECIMAL_DIGIT_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::HEXADECIMAL_DIGIT_ASCII_START,
-        Self::HEXADECIMAL_DIGIT_ASCII_END,
+    const_range!(typ: ascii;
+        start:     HEXADECIMAL_DIGIT_ASCII_START = b'0';
+        end:       HEXADECIMAL_DIGIT_ASCII_END   = b'9';
+        range:     HEXADECIMAL_DIGIT_ASCII;
+        range_ops: HEXADECIMAL_DIGIT_ASCII_OPS;
+
+        start:     HEXADECIMAL_UPPERCASE_ASCII_START = b'A';
+        end:       HEXADECIMAL_UPPERCASE_ASCII_END   = b'F';
+        range:     HEXADECIMAL_UPPERCASE_ASCII;
+        range_ops: HEXADECIMAL_UPPERCASE_ASCII_OPS;
+
+        start:     HEXADECIMAL_LOWERCASE_ASCII_START = b'a';
+        end:       HEXADECIMAL_LOWERCASE_ASCII_END   = b'f';
+        range:     HEXADECIMAL_LOWERCASE_ASCII;
+        range_ops: HEXADECIMAL_LOWERCASE_ASCII_OPS;
+
+        start:     HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START = Self::HEXADECIMAL_UPPERCASE_ASCII_END + 1;
+        end:       HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END   = b'Z';
+        range:     HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS;
+
+        start:     HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START = Self::HEXADECIMAL_LOWERCASE_ASCII_END + 1;
+        end:       HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END   = b'z';
+        range:     HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII;
+        range_ops: HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS;
     );
 
-    pub const HEXADECIMAL_UPPERCASE_ASCII_START: ascii = b'A';
-    pub const HEXADECIMAL_UPPERCASE_ASCII_END: ascii = b'F';
-    pub const HEXADECIMAL_UPPERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::HEXADECIMAL_UPPERCASE_ASCII_START,
-        Self::HEXADECIMAL_UPPERCASE_ASCII_END,
-    );
+    const_range!(typ: utf32;
+        start:     HEXADECIMAL_DIGIT_START = Self::HEXADECIMAL_DIGIT_ASCII_START as utf32;
+        end:       HEXADECIMAL_DIGIT_END   = Self::HEXADECIMAL_DIGIT_ASCII_END as utf32;
+        range:     HEXADECIMAL_DIGIT;
+        range_ops: HEXADECIMAL_DIGIT_OPS;
 
-    pub const HEXADECIMAL_LOWERCASE_ASCII_START: ascii = b'a';
-    pub const HEXADECIMAL_LOWERCASE_ASCII_END: ascii = b'f';
-    pub const HEXADECIMAL_LOWERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::HEXADECIMAL_LOWERCASE_ASCII_START,
-        Self::HEXADECIMAL_LOWERCASE_ASCII_END,
-    );
+        start:     HEXADECIMAL_UPPERCASE_START = Self::HEXADECIMAL_UPPERCASE_ASCII_START as utf32;
+        end:       HEXADECIMAL_UPPERCASE_END   = Self::HEXADECIMAL_UPPERCASE_ASCII_END as utf32;
+        range:     HEXADECIMAL_UPPERCASE;
+        range_ops: HEXADECIMAL_UPPERCASE_OPS;
 
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START: ascii = Self::HEXADECIMAL_UPPERCASE_ASCII_END + 1;
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'Z';
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     HEXADECIMAL_LOWERCASE_START = Self::HEXADECIMAL_LOWERCASE_ASCII_START as utf32;
+        end:       HEXADECIMAL_LOWERCASE_END   = Self::HEXADECIMAL_LOWERCASE_ASCII_END as utf32;
+        range:     HEXADECIMAL_LOWERCASE;
+        range_ops: HEXADECIMAL_LOWERCASE_OPS;
 
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START: ascii = Self::HEXADECIMAL_LOWERCASE_ASCII_END + 1;
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END: ascii = b'z';
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
+        start:     HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END   = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     HEXADECIMAL_UPPERCASE_OUT_OF_RANGE;
+        range_ops: HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_OPS;
 
-    pub const HEXADECIMAL_DIGIT_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::HEXADECIMAL_DIGIT_ASCII_START,
-        Self::HEXADECIMAL_DIGIT_ASCII_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::HEXADECIMAL_UPPERCASE_ASCII_START,
-        Self::HEXADECIMAL_UPPERCASE_ASCII_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::HEXADECIMAL_LOWERCASE_ASCII_START,
-        Self::HEXADECIMAL_LOWERCASE_ASCII_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START,
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END,
-    );
-
-    pub const HEXADECIMAL_DIGIT_START: utf32 = Self::HEXADECIMAL_DIGIT_ASCII_START as utf32;
-    pub const HEXADECIMAL_DIGIT_END: utf32 = Self::HEXADECIMAL_DIGIT_ASCII_END as utf32;
-    pub const HEXADECIMAL_DIGIT: AsciiRange<utf32> = AsciiRange::new(
-        Self::HEXADECIMAL_DIGIT_START,
-        Self::HEXADECIMAL_DIGIT_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_START: utf32 = Self::HEXADECIMAL_UPPERCASE_ASCII_START as utf32;
-    pub const HEXADECIMAL_UPPERCASE_END: utf32 = Self::HEXADECIMAL_UPPERCASE_ASCII_END as utf32;
-    pub const HEXADECIMAL_UPPERCASE: AsciiRange<utf32> = AsciiRange::new(
-        Self::HEXADECIMAL_UPPERCASE_START,
-        Self::HEXADECIMAL_UPPERCASE_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_START: utf32 = Self::HEXADECIMAL_LOWERCASE_ASCII_START as utf32;
-    pub const HEXADECIMAL_LOWERCASE_END: utf32 = Self::HEXADECIMAL_LOWERCASE_ASCII_END as utf32;
-    pub const HEXADECIMAL_LOWERCASE: AsciiRange<utf32> = AsciiRange::new(
-        Self::HEXADECIMAL_LOWERCASE_START,
-        Self::HEXADECIMAL_LOWERCASE_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START: utf32 = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END: utf32 = Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START: utf32 = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END: utf32 = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE: AsciiRange<utf32> = AsciiRange::new(
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const HEXADECIMAL_DIGIT_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::HEXADECIMAL_DIGIT_START,
-        Self::HEXADECIMAL_DIGIT_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::HEXADECIMAL_UPPERCASE_START,
-        Self::HEXADECIMAL_UPPERCASE_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::HEXADECIMAL_LOWERCASE_START,
-        Self::HEXADECIMAL_LOWERCASE_END,
-    );
-
-    pub const HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_START,
-        Self::HEXADECIMAL_UPPERCASE_OUT_OF_RANGE_END,
-    );
-
-    pub const HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START,
-        Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END,
+        start:     HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_START = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_START as utf32;
+        end:       HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_END   = Self::HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_ASCII_END as utf32;
+        range:     HEXADECIMAL_LOWERCASE_OUT_OF_RANGE;
+        range_ops: HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
     #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_DIGIT_ASCII`")]
@@ -560,76 +377,38 @@ impl Base {
 // custom
 #[rustfmt::skip]
 impl Base {
-    pub const DIGIT_ASCII_START: ascii = b'0';
-    pub const DIGIT_ASCII_END: ascii = b'9';
-    pub const DIGIT_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::DIGIT_ASCII_START,
-        Self::DIGIT_ASCII_END,
+    const_range!(typ: ascii;
+        start:     DIGIT_ASCII_START = b'0';
+        end:       DIGIT_ASCII_END   = b'9';
+        range:     DIGIT_ASCII;
+        range_ops: DIGIT_ASCII_OPS;
+
+        start:     UPPERCASE_ASCII_START = b'A';
+        end:       UPPERCASE_ASCII_END   = b'Z';
+        range:     UPPERCASE_ASCII;
+        range_ops: UPPERCASE_ASCII_OPS;
+
+        start:     LOWERCASE_ASCII_START = b'a';
+        end:       LOWERCASE_ASCII_END   = b'z';
+        range:     LOWERCASE_ASCII;
+        range_ops: LOWERCASE_ASCII_OPS;
     );
 
-    pub const UPPERCASE_ASCII_START: ascii = b'A';
-    pub const UPPERCASE_ASCII_END: ascii = b'Z';
-    pub const UPPERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::UPPERCASE_ASCII_START,
-        Self::UPPERCASE_ASCII_END,
-    );
+    const_range!(typ: utf32;
+        start:     DIGIT_START = Self::DIGIT_ASCII_START as utf32;
+        end:       DIGIT_END   = Self::DIGIT_ASCII_END as utf32;
+        range:     DIGIT;
+        range_ops: DIGIT_OPS;
 
-    pub const LOWERCASE_ASCII_START: ascii = b'a';
-    pub const LOWERCASE_ASCII_END: ascii = b'z';
-    pub const LOWERCASE_ASCII: AsciiRange<ascii> = AsciiRange::new(
-        Self::LOWERCASE_ASCII_START,
-        Self::LOWERCASE_ASCII_END,
-    );
+        start:     UPPERCASE_START = Self::UPPERCASE_ASCII_START as utf32;
+        end:       UPPERCASE_END   = Self::UPPERCASE_ASCII_END as utf32;
+        range:     UPPERCASE;
+        range_ops: UPPERCASE_OPS;
 
-    pub const DIGIT_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::DIGIT_ASCII_START,
-        Self::DIGIT_ASCII_END,
-    );
-
-    pub const UPPERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::UPPERCASE_ASCII_START,
-        Self::UPPERCASE_ASCII_END,
-    );
-
-    pub const LOWERCASE_ASCII_OPS: RangeInclusive<ascii> = RangeInclusive::new(
-        Self::LOWERCASE_ASCII_START,
-        Self::LOWERCASE_ASCII_END,
-    );
-
-    pub const DIGIT_START: utf32 = Self::DIGIT_ASCII_START as utf32;
-    pub const DIGIT_END: utf32 = Self::DIGIT_ASCII_END as utf32;
-    pub const DIGIT: AsciiRange<utf32> = AsciiRange::new(
-        Self::DIGIT_START,
-        Self::DIGIT_END,
-    );
-
-    pub const UPPERCASE_START: utf32 = Self::UPPERCASE_ASCII_START as utf32;
-    pub const UPPERCASE_END: utf32 = Self::UPPERCASE_ASCII_END as utf32;
-    pub const UPPERCASE: AsciiRange<utf32> = AsciiRange::new(
-        Self::UPPERCASE_START,
-        Self::UPPERCASE_END,
-    );
-
-    pub const LOWERCASE_START: utf32 = Self::LOWERCASE_ASCII_START as utf32;
-    pub const LOWERCASE_END: utf32 = Self::LOWERCASE_ASCII_END as utf32;
-    pub const LOWERCASE: AsciiRange<utf32> = AsciiRange::new(
-        Self::LOWERCASE_START,
-        Self::LOWERCASE_END,
-    );
-
-    pub const DIGIT_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::DIGIT_START,
-        Self::DIGIT_END,
-    );
-
-    pub const UPPERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::UPPERCASE_START,
-        Self::UPPERCASE_END,
-    );
-
-    pub const LOWERCASE_OPS: RangeInclusive<utf32> = RangeInclusive::new(
-        Self::LOWERCASE_START,
-        Self::LOWERCASE_END,
+        start:     LOWERCASE_START = Self::LOWERCASE_ASCII_START as utf32;
+        end:       LOWERCASE_END   = Self::LOWERCASE_ASCII_END as utf32;
+        range:     LOWERCASE;
+        range_ops: LOWERCASE_OPS;
     );
 
     pub const DIGIT_RANGES_ASCII:   [AsciiRange<ascii>; 1] = [Self::DIGIT_ASCII];
