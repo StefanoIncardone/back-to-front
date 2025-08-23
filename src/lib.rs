@@ -14,18 +14,20 @@ pub type offset32 = u32;
 #[expect(non_camel_case_types, reason = "alias to a primitive type")]
 pub type offset64 = u64;
 
+#[allow(unused_macros)]
 macro_rules! test_assert {
     ($expression:expr, == $pattern:pat $(if $guard:expr)? $(,)?) => {
-        const _: () = match $expression {
+        match $expression {
             $pattern $(if $guard)? => {},
             _ => panic!(),
-        };
+        }
     };
     ($expression:expr, != $pattern:pat $(if $guard:expr)? $(,)?) => {
-        const _: () = match $expression {
+        match $expression {
             $pattern $(if $guard)? => panic!(),
             _ => {},
-        };
+        }
     };
 }
+#[allow(unused_imports)]
 pub(crate) use test_assert;

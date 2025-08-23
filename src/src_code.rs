@@ -55,7 +55,7 @@ mod tests {
     mod _0_1_0_functionality {
         use crate::{src_code::Span, test_assert};
 
-        test_assert!(unsafe { Span::new_unchecked(0, 0) }, == Span { start: 0, end: 0 });
+        const _: () = test_assert!(unsafe { Span::new_unchecked(0, 0) }, == Span { start: 0, end: 0 });
 
         #[should_panic]
         #[test]
@@ -63,8 +63,8 @@ mod tests {
             let _ = unsafe { Span::new_unchecked(1, 0) };
         }
 
-        test_assert!(Span::new(0, 0), == Some(Span { start: 0, end: 0 }));
-        test_assert!(Span::new(1, 0), == None);
+        const _: () = test_assert!(Span::new(0, 0), == Some(Span { start: 0, end: 0 }));
+        const _: () = test_assert!(Span::new(1, 0), == None);
     }
 
     mod _0_1_0_backwards_compatibility {
