@@ -1,6 +1,7 @@
 use crate::offset32;
 
 // IDEA(stefano): make generic over the type of start and end
+    // - constrain the generic type to be number-like
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 pub struct Span {
     /// Inclusive and less that or equal to [`Self::end()`]
@@ -47,29 +48,12 @@ impl Span {
 
 pub type Line = Span;
 
-#[expect(unused_macro_rules, clippy::should_panic_without_expect, unused_imports)]
+#[expect(clippy::should_panic_without_expect, unused_imports)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {
-    use super::*;
-
-    macro_rules! test_assert {
-        ($expression:expr, == $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = match $expression {
-                $pattern $(if $guard)? => {},
-                _ => panic!(),
-            };
-        };
-        ($expression:expr, != $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = match $expression {
-                $pattern $(if $guard)? => panic!(),
-                _ => {},
-            };
-        };
-    }
-
     mod _0_1_0_functionality {
-        use super::*;
+        use crate::{src_code::Span, test_assert};
 
         test_assert!(unsafe { Span::new_unchecked(0, 0) }, == Span { start: 0, end: 0 });
 
@@ -84,14 +68,13 @@ mod tests {
     }
 
     mod _0_1_0_backwards_compatibility {
-        use crate::offset32;
-        use super::{
-            Span, Line,
-        };
+        use crate::{offset32, src_code::{
+            Line, Span
+        }};
 
-        const _: unsafe fn(offset32, offset32) -> Span = Span::new_unchecked;
-        const _: fn(offset32, offset32) -> Option<Span> = Span::new;
-        const _: fn(Span) -> offset32 = Span::start;
-        const _: fn(Span) -> offset32 = Span::end;
+        const _: unsafe fn(offset32, offset32) -> Span         = Span::new_unchecked;
+        const _:        fn(offset32, offset32) -> Option<Span> = Span::new;
+        const _:        fn(Span) -> offset32                   = Span::start;
+        const _:        fn(Span) -> offset32                   = Span::end;
     }
 }

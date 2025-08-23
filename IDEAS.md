@@ -111,7 +111,7 @@ impl Base {
 }
 
 // Would allow for the removal of errors related to base min and max
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]

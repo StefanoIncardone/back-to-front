@@ -3,11 +3,7 @@
 // IDEA(stefano): consider removing `Base::range_*`, `Base::check` and `Base::parse` functions to
     // maintain consistency with the corresponding freestanding functions
 // TODO(stefano): add documentations
-// TODO(stefano): find a way of only allowing importing of macros from this module and not from the
-    // root module: `use crate::foo_macro` should not work, while `use crate::digit::foo_macro`
-    // should be the only way of importing these macros
-// TODO(stefano): add proper deprecation messages
-    // - remove duplication of constants
+// TODO(stefano): remove duplication of constants
 
 use crate::{ascii, utf32};
 use core::ops::RangeInclusive;
@@ -119,17 +115,17 @@ impl Base {
         range_ops: BINARY_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `BINARY_DIGIT_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `BINARY_DIGIT_ASCII`")]
     pub const BINARY_RANGE_ASCII: AsciiRange<ascii> = Self::BINARY_DIGIT_ASCII;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `BINARY_DIGIT`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `BINARY_DIGIT`")]
     pub const BINARY_RANGE:       AsciiRange<utf32> = Self::BINARY_DIGIT;
 
     pub const BINARY_RANGES_ASCII: [AsciiRange<ascii>; 1] = [Self::BINARY_DIGIT_ASCII];
     pub const BINARY_RANGES:       [AsciiRange<utf32>; 1] = [Self::BINARY_RANGE];
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `BINARY_DIGIT_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `BINARY_DIGIT_ASCII_OPS`")]
     pub const BINARY_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::BINARY_DIGIT_ASCII_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `BINARY_DIGIT_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `BINARY_DIGIT_OPS`")]
     pub const BINARY_RANGE_OPS:       RangeInclusive<utf32> = Self::BINARY_DIGIT_OPS;
 
     pub const BINARY_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 1] = [Self::BINARY_DIGIT_ASCII_OPS];
@@ -185,17 +181,17 @@ impl Base {
         range_ops: OCTAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `OCTAL_DIGIT_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `OCTAL_DIGIT_ASCII`")]
     pub const OCTAL_RANGE_ASCII: AsciiRange<ascii> = Self::OCTAL_DIGIT_ASCII;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `OCTAL_DIGIT`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `OCTAL_DIGIT`")]
     pub const OCTAL_RANGE:       AsciiRange<utf32> = Self::OCTAL_DIGIT;
 
     pub const OCTAL_RANGES_ASCII: [AsciiRange<ascii>; 1] = [Self::OCTAL_DIGIT_ASCII];
-    pub const OCTAL_RANGES:       [AsciiRange<utf32>; 1] = [Self::OCTAL_RANGE];
+    pub const OCTAL_RANGES:       [AsciiRange<utf32>; 1] = [Self::OCTAL_DIGIT];
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `OCTAL_DIGIT_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `OCTAL_DIGIT_ASCII_OPS`")]
     pub const OCTAL_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::OCTAL_DIGIT_ASCII_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `OCTAL_DIGIT_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `OCTAL_DIGIT_OPS`")]
     pub const OCTAL_RANGE_OPS:       RangeInclusive<utf32> = Self::OCTAL_DIGIT_OPS;
 
     pub const OCTAL_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 1] = [Self::OCTAL_DIGIT_ASCII_OPS];
@@ -241,17 +237,17 @@ impl Base {
         range_ops: DECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `DECIMAL_DIGIT_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `DECIMAL_DIGIT_ASCII`")]
     pub const DECIMAL_RANGE_ASCII: AsciiRange<ascii> = Self::DECIMAL_DIGIT_ASCII;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `DECIMAL_DIGIT`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `DECIMAL_DIGIT`")]
     pub const DECIMAL_RANGE:       AsciiRange<utf32> = Self::DECIMAL_DIGIT;
 
     pub const DECIMAL_RANGES_ASCII: [AsciiRange<ascii>; 1] = [Self::DECIMAL_DIGIT_ASCII];
-    pub const DECIMAL_RANGES:       [AsciiRange<utf32>; 1] = [Self::DECIMAL_RANGE];
+    pub const DECIMAL_RANGES:       [AsciiRange<utf32>; 1] = [Self::DECIMAL_DIGIT];
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `DECIMAL_DIGIT_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `DECIMAL_DIGIT_ASCII_OPS`")]
     pub const DECIMAL_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::DECIMAL_DIGIT_ASCII_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `DECIMAL_DIGIT_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `DECIMAL_DIGIT_OPS`")]
     pub const DECIMAL_RANGE_OPS:       RangeInclusive<utf32> = Self::DECIMAL_DIGIT_OPS;
 
     pub const DECIMAL_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 1] = [Self::DECIMAL_DIGIT_ASCII_OPS];
@@ -317,37 +313,37 @@ impl Base {
         range_ops: HEXADECIMAL_LOWERCASE_OUT_OF_RANGE_OPS;
     );
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_DIGIT_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_DIGIT_ASCII`")]
     pub const HEXADECIMAL_DIGIT_RANGE_ASCII:     AsciiRange<ascii> = Self::HEXADECIMAL_DIGIT_ASCII;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_UPPERCASE_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_UPPERCASE_ASCII`")]
     pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::HEXADECIMAL_UPPERCASE_ASCII;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_LOWERCASE_ASCII`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_LOWERCASE_ASCII`")]
     pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII: AsciiRange<ascii> = Self::HEXADECIMAL_LOWERCASE_ASCII;
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_DIGIT`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_DIGIT`")]
     pub const HEXADECIMAL_DIGIT_RANGE:     AsciiRange<utf32> = Self::HEXADECIMAL_DIGIT;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_UPPERCASE`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_UPPERCASE`")]
     pub const HEXADECIMAL_UPPERCASE_RANGE: AsciiRange<utf32> = Self::HEXADECIMAL_UPPERCASE;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_LOWERCASE`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_LOWERCASE`")]
     pub const HEXADECIMAL_LOWERCASE_RANGE: AsciiRange<utf32> = Self::HEXADECIMAL_LOWERCASE;
 
     pub const HEXADECIMAL_RANGES_ASCII: [AsciiRange<ascii>; 3] = [
-        Self::HEXADECIMAL_DIGIT_RANGE_ASCII,
-        Self::HEXADECIMAL_UPPERCASE_RANGE_ASCII,
-        Self::HEXADECIMAL_LOWERCASE_RANGE_ASCII,
+        Self::HEXADECIMAL_DIGIT_ASCII,
+        Self::HEXADECIMAL_UPPERCASE_ASCII,
+        Self::HEXADECIMAL_LOWERCASE_ASCII,
     ];
 
     pub const HEXADECIMAL_RANGES: [AsciiRange<utf32>; 3] = [
-        Self::HEXADECIMAL_DIGIT_RANGE,
-        Self::HEXADECIMAL_UPPERCASE_RANGE,
-        Self::HEXADECIMAL_LOWERCASE_RANGE,
+        Self::HEXADECIMAL_DIGIT,
+        Self::HEXADECIMAL_UPPERCASE,
+        Self::HEXADECIMAL_LOWERCASE,
     ];
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_DIGIT_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_DIGIT_ASCII_OPS`")]
     pub const HEXADECIMAL_DIGIT_RANGE_ASCII_OPS:     RangeInclusive<ascii> = Self::HEXADECIMAL_DIGIT_ASCII_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_UPPERCASE_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_UPPERCASE_ASCII_OPS`")]
     pub const HEXADECIMAL_UPPERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::HEXADECIMAL_UPPERCASE_ASCII_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_LOWERCASE_ASCII_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_LOWERCASE_ASCII_OPS`")]
     pub const HEXADECIMAL_LOWERCASE_RANGE_ASCII_OPS: RangeInclusive<ascii> = Self::HEXADECIMAL_LOWERCASE_ASCII_OPS;
 
     pub const HEXADECIMAL_RANGES_ASCII_OPS: [RangeInclusive<ascii>; 3] = [
@@ -356,11 +352,11 @@ impl Base {
         Self::HEXADECIMAL_LOWERCASE_ASCII_OPS,
     ];
 
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_DIGIT_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_DIGIT_OPS`")]
     pub const HEXADECIMAL_DIGIT_RANGE_OPS:     RangeInclusive<utf32> = Self::HEXADECIMAL_DIGIT_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_UPPERCASE_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_UPPERCASE_OPS`")]
     pub const HEXADECIMAL_UPPERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::HEXADECIMAL_UPPERCASE_OPS;
-    #[deprecated(since = "0.1.1-dev", note = "will be renamed to `HEXADECIMAL_LOWERCASE_OPS`")]
+    #[deprecated(since = "0.1.1", note = "will be renamed to `HEXADECIMAL_LOWERCASE_OPS`")]
     pub const HEXADECIMAL_LOWERCASE_RANGE_OPS: RangeInclusive<utf32> = Self::HEXADECIMAL_LOWERCASE_OPS;
 
     pub const HEXADECIMAL_RANGES_OPS: [RangeInclusive<utf32>; 3] = [
@@ -553,7 +549,7 @@ pub const OUT_OF_RANGE: Offset = OffsetEnum::OutOfRange as u8;
 pub const BASE_MIN: OffsetCustomBase = OffsetEnum::BaseMin as u8;
 pub const BASE_MAX: OffsetCustomBase = OffsetEnum::BaseMax as u8;
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum AsciiDigit {
@@ -564,7 +560,7 @@ pub enum AsciiDigit {
     Other,
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -576,7 +572,7 @@ pub enum Digit {
     Other      = AsciiDigit::Other as u8,
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -590,7 +586,7 @@ pub enum AsciiDigitCustomBase {
     BaseMax,
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -604,8 +600,6 @@ pub enum DigitCustomBase {
     BaseMax    = AsciiDigitCustomBase::BaseMax as u8,
 }
 
-// NOTE(stefano): find a way of making these functions have the same signature as the freestanding
-// versions
 impl Base {
     #[must_use]
     #[inline]
@@ -631,7 +625,7 @@ impl Base {
         };
     }
 
-    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+    #[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
     #[must_use]
     #[inline]
     pub const fn check(self, character: ascii) -> AsciiDigit {
@@ -644,7 +638,7 @@ impl Base {
         };
     }
 
-    #[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+    #[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
     #[must_use]
     #[inline]
     pub const fn parse(self, character: ascii) -> Digit {
@@ -671,14 +665,14 @@ pub const fn parse_offset(character: ascii, base: Base) -> DigitOffset {
     return base.parse_offset(character);
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check(character: ascii, base: Base) -> AsciiDigit {
     return base.check(character);
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse(character: ascii, base: Base) -> Digit {
@@ -823,7 +817,7 @@ pub const fn parse_binary_offset(character: ascii) -> DigitOffset {
     return character - offset;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_binary(character: ascii) -> AsciiDigit {
@@ -837,7 +831,7 @@ pub const fn check_binary(character: ascii) -> AsciiDigit {
     };
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_binary(character: ascii) -> Digit {
@@ -989,7 +983,7 @@ pub const fn parse_octal_offset(character: ascii) -> DigitOffset {
     return character - offset;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_octal(character: ascii) -> AsciiDigit {
@@ -1003,7 +997,7 @@ pub const fn check_octal(character: ascii) -> AsciiDigit {
     };
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_octal(character: ascii) -> Digit {
@@ -1137,7 +1131,7 @@ pub const fn parse_decimal_offset(character: ascii) -> DigitOffset {
     return character - offset;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_decimal(character: ascii) -> AsciiDigit {
@@ -1151,7 +1145,7 @@ pub const fn check_decimal(character: ascii) -> AsciiDigit {
     };
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed in favor of offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will be removed in favor of offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_decimal(character: ascii) -> Digit {
@@ -1353,7 +1347,7 @@ pub const fn parse_hexadecimal_offset(character: ascii) -> DigitOffset {
     return character - offset;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_hexadecimal(character: ascii) -> AsciiDigit {
@@ -1367,7 +1361,7 @@ pub const fn check_hexadecimal(character: ascii) -> AsciiDigit {
     };
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_hexadecimal(character: ascii) -> Digit {
@@ -1509,7 +1503,7 @@ pub const fn parse_custom_offset(character: ascii, base: u8) -> DigitOffsetCusto
     return digit;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
@@ -1537,7 +1531,7 @@ pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
     return AsciiDigitCustomBase::Ok;
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will use offset based checking and parsing")]
+#[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[must_use]
 #[inline]
 pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
@@ -1565,7 +1559,7 @@ pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
     return DigitCustomBase::Ok(digit);
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed to avoid inconsistencies")]
+#[deprecated(since = "0.1.1", note = "will be removed to avoid inconsistencies")]
 #[must_use]
 #[inline]
 pub const fn check_tally(character: ascii, tally_symbol: ascii) -> AsciiDigit {
@@ -1578,7 +1572,7 @@ pub const fn check_tally(character: ascii, tally_symbol: ascii) -> AsciiDigit {
     };
 }
 
-#[deprecated(since = "0.1.1-dev", note = "will be removed to avoid inconsistencies")]
+#[deprecated(since = "0.1.1", note = "will be removed to avoid inconsistencies")]
 #[must_use]
 #[inline]
 pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
@@ -1596,24 +1590,8 @@ pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {
-    macro_rules! test_assert {
-        ($expression:expr, == $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = match $expression {
-                $pattern $(if $guard)? => {},
-                _ => panic!(),
-            };
-        };
-        ($expression:expr, != $pattern:pat $(if $guard:expr)? $(,)?) => {
-            const _: () = match $expression {
-                $pattern $(if $guard)? => panic!(),
-                _ => {},
-            };
-        };
-    }
-
-    // TODO(stefano): add tests for `is_*` functions
-    mod _0_1_1_dev_functionality {
-        use crate::digit::*;
+    mod _0_1_1_functionality {
+        use crate::{digit::*, test_assert};
 
         test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
         test_assert!(check_binary_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
@@ -1778,7 +1756,7 @@ mod tests {
         test_assert!(parse_custom_offset(b'@', 36), == INVALID);
     }
 
-    mod _0_1_1_dev_backwards_compatibility {
+    mod _0_1_1_backwards_compatibility {
         use core::ops::RangeInclusive;
         use crate::{ascii, utf32};
         use crate::digit::{
@@ -2246,7 +2224,7 @@ mod tests {
     }
 
     mod _0_1_0_functionality {
-        use crate::digit::*;
+        use crate::{digit::*, test_assert};
 
         test_assert!(Base::Binary.check(b'1'),      == AsciiDigit::Ok);
         test_assert!(Base::Octal.check(b'7'),       == AsciiDigit::Ok);

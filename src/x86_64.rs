@@ -312,7 +312,6 @@ impl Reg64 {
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
@@ -431,7 +430,6 @@ impl Reg32 {
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
@@ -550,7 +548,6 @@ impl Reg16 {
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
@@ -669,7 +666,6 @@ impl Reg8l {
     }
 
     #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[expect(clippy::allow_attributes, reason = "false positive")]
     #[allow(clippy::enum_glob_use)]
     #[must_use]
     #[inline]
@@ -785,5 +781,88 @@ impl Into<Reg8l> for Reg8h {
     #[inline(always)]
     fn into(self) -> Reg8l {
         return self.as_Reg8l();
+    }
+}
+
+#[cfg(test)]
+#[rustfmt::skip]
+mod tests {
+    mod _0_1_0_backwards_compatibiliy {
+        #[expect(unused_imports)]
+        use crate::x86_64::{
+            Reg64::{self, Rax, Rbx, Rcx, Rdx, Rsi, Rdi, Rbp, Rsp, R8, R9, R10, R11, R12, R13, R14, R15},
+            Reg32::{self, Eax, Ebx, Ecx, Edx, Esi, Edi, Ebp, Esp, R8d, R9d, R10d, R11d, R12d, R13d, R14d, R15d},
+            Reg16::{self, Ax, Bx, Cx, Dx, Si, Di, Bp, Sp, R8w, R9w, R10w, R11w, R12w, R13w, R14w, R15w},
+            Reg8l::{self, Al, Bl, Cl, Dl, Sil, Dil, Bpl, Spl, R8b, R9b, R10b, R11b, R12b, R13b, R14b, R15b},
+            Reg8h::{self, Ah, Bh, Ch, Dh},
+        };
+
+        const _:        fn(Reg64) -> Reg32         = Reg64::as_Reg32;
+        const _:        fn(Reg64) -> Reg32         = Reg64::as_reg32;
+        const _:        fn(Reg64) -> Reg32         = Reg64::into;
+        const _:        fn(Reg64) -> Reg16         = Reg64::as_Reg16;
+        const _:        fn(Reg64) -> Reg16         = Reg64::as_reg16;
+        const _:        fn(Reg64) -> Reg16         = Reg64::into;
+        const _:        fn(Reg64) -> Reg8l         = Reg64::as_Reg8l;
+        const _:        fn(Reg64) -> Reg8l         = Reg64::as_reg8l;
+        const _:        fn(Reg64) -> Reg8l         = Reg64::into;
+        const _: unsafe fn(Reg64) -> Reg8h         = Reg64::as_Reg8h_unsafe;
+        const _: unsafe fn(Reg64) -> Reg8h         = Reg64::as_reg8h_unsafe;
+        const _:        fn(Reg64) -> Option<Reg8h> = Reg64::as_reg8h;
+        const _:        fn(Reg64) -> Option<Reg8h> = Reg64::into;
+
+        const _:        fn(Reg32) -> Reg64         = Reg32::as_Reg64;
+        const _:        fn(Reg32) -> Reg64         = Reg32::as_reg64;
+        const _:        fn(Reg32) -> Reg64         = Reg32::into;
+        const _:        fn(Reg32) -> Reg16         = Reg32::as_Reg16;
+        const _:        fn(Reg32) -> Reg16         = Reg32::as_reg16;
+        const _:        fn(Reg32) -> Reg16         = Reg32::into;
+        const _:        fn(Reg32) -> Reg8l         = Reg32::as_Reg8l;
+        const _:        fn(Reg32) -> Reg8l         = Reg32::as_reg8l;
+        const _:        fn(Reg32) -> Reg8l         = Reg32::into;
+        const _: unsafe fn(Reg32) -> Reg8h         = Reg32::as_Reg8h_unsafe;
+        const _: unsafe fn(Reg32) -> Reg8h         = Reg32::as_reg8h_unsafe;
+        const _:        fn(Reg32) -> Option<Reg8h> = Reg32::as_reg8h;
+        const _:        fn(Reg32) -> Option<Reg8h> = Reg32::into;
+
+        const _:        fn(Reg16) -> Reg64         = Reg16::as_Reg64;
+        const _:        fn(Reg16) -> Reg64         = Reg16::as_reg64;
+        const _:        fn(Reg16) -> Reg64         = Reg16::into;
+        const _:        fn(Reg16) -> Reg32         = Reg16::as_Reg32;
+        const _:        fn(Reg16) -> Reg32         = Reg16::as_reg32;
+        const _:        fn(Reg16) -> Reg32         = Reg16::into;
+        const _:        fn(Reg16) -> Reg8l         = Reg16::as_Reg8l;
+        const _:        fn(Reg16) -> Reg8l         = Reg16::as_reg8l;
+        const _:        fn(Reg16) -> Reg8l         = Reg16::into;
+        const _: unsafe fn(Reg16) -> Reg8h         = Reg16::as_Reg8h_unsafe;
+        const _: unsafe fn(Reg16) -> Reg8h         = Reg16::as_reg8h_unsafe;
+        const _:        fn(Reg16) -> Option<Reg8h> = Reg16::as_reg8h;
+        const _:        fn(Reg16) -> Option<Reg8h> = Reg16::into;
+
+        const _:        fn(Reg8l) -> Reg64         = Reg8l::as_Reg64;
+        const _:        fn(Reg8l) -> Reg64         = Reg8l::as_reg64;
+        const _:        fn(Reg8l) -> Reg64         = Reg8l::into;
+        const _:        fn(Reg8l) -> Reg32         = Reg8l::as_Reg32;
+        const _:        fn(Reg8l) -> Reg32         = Reg8l::as_reg32;
+        const _:        fn(Reg8l) -> Reg32         = Reg8l::into;
+        const _:        fn(Reg8l) -> Reg16         = Reg8l::as_Reg16;
+        const _:        fn(Reg8l) -> Reg16         = Reg8l::as_reg16;
+        const _:        fn(Reg8l) -> Reg16         = Reg8l::into;
+        const _: unsafe fn(Reg8l) -> Reg8h         = Reg8l::as_Reg8h_unsafe;
+        const _: unsafe fn(Reg8l) -> Reg8h         = Reg8l::as_reg8h_unsafe;
+        const _:        fn(Reg8l) -> Option<Reg8h> = Reg8l::as_reg8h;
+        const _:        fn(Reg8l) -> Option<Reg8h> = Reg8l::into;
+
+        const _:        fn(Reg8h) -> Reg64         = Reg8h::as_Reg64;
+        const _:        fn(Reg8h) -> Reg64         = Reg8h::as_reg64;
+        const _:        fn(Reg8h) -> Reg64         = Reg8h::into;
+        const _:        fn(Reg8h) -> Reg32         = Reg8h::as_Reg32;
+        const _:        fn(Reg8h) -> Reg32         = Reg8h::as_reg32;
+        const _:        fn(Reg8h) -> Reg32         = Reg8h::into;
+        const _:        fn(Reg8h) -> Reg16         = Reg8h::as_Reg16;
+        const _:        fn(Reg8h) -> Reg16         = Reg8h::as_reg16;
+        const _:        fn(Reg8h) -> Reg16         = Reg8h::into;
+        const _:        fn(Reg8h) -> Reg8l         = Reg8h::as_reg8l;
+        const _:        fn(Reg8h) -> Reg8l         = Reg8h::into;
     }
 }
