@@ -4,7 +4,6 @@
 // IDEA(stefano): consider removing `Base::range_*`, `Base::check` and `Base::parse` functions to
     // maintain consistency with the corresponding freestanding functions
 // TODO(stefano): add documentations
-// TODO(stefano): remove duplication of constants
 
 use crate::{ascii, utf32};
 use core::ops::RangeInclusive;
@@ -67,8 +66,6 @@ macro_rules! const_range {
         )+
     };
 }
-
-// IDEA(stefano): bring ranges constants out to global scope or to own modules
 
 // binary
 impl Base {
@@ -538,18 +535,20 @@ pub type DigitOffsetCustomBase = u8;
 // Note: this enum exists just to leverage the enum mechanism of assigning discriminants
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
-enum OffsetEnum {
-    Invalid = 128,
+enum OffsetResult {
+    Invalid = 0b1000_0000,
     OutOfRange,
     BaseMin,
     BaseMax,
 }
 
-pub const INVALID: Offset = OffsetEnum::Invalid as u8;
-pub const OUT_OF_RANGE: Offset = OffsetEnum::OutOfRange as u8;
-pub const BASE_MIN: OffsetCustomBase = OffsetEnum::BaseMin as u8;
-pub const BASE_MAX: OffsetCustomBase = OffsetEnum::BaseMax as u8;
+pub const INVALID: Offset = OffsetResult::Invalid as Offset;
+pub const OUT_OF_RANGE: Offset = OffsetResult::OutOfRange as Offset;
+pub const BASE_MIN: OffsetCustomBase = OffsetResult::BaseMin as OffsetCustomBase;
+pub const BASE_MAX: OffsetCustomBase = OffsetResult::BaseMax as OffsetCustomBase;
 
+// IDEA(stefano): only deprecate `Underscore` and `Dot`, merge them with `Other`
+// IDEA(stefano): use the same discriminants and names as `OffsetResult`
 #[deprecated(since = "0.1.1", note = "will use offset based checking and parsing")]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -1508,12 +1507,8 @@ pub const fn parse_custom_offset(character: ascii, base: u8) -> DigitOffsetCusto
 #[must_use]
 #[inline]
 pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
-    if base < Base::MIN {
-        return AsciiDigitCustomBase::BaseMin;
-    }
-    if base > Base::MAX {
-        return AsciiDigitCustomBase::BaseMax;
-    }
+    if base < Base::MIN { return AsciiDigitCustomBase::BaseMin; }
+    if base > Base::MAX { return AsciiDigitCustomBase::BaseMax; }
 
     #[rustfmt::skip]
     let offset = match character {
@@ -1526,9 +1521,7 @@ pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
     };
 
     let digit = character - offset;
-    if digit >= base {
-        return AsciiDigitCustomBase::OutOfRange;
-    }
+    if digit >= base { return AsciiDigitCustomBase::OutOfRange; }
     return AsciiDigitCustomBase::Ok;
 }
 
@@ -1536,12 +1529,8 @@ pub const fn check_custom(character: ascii, base: u8) -> AsciiDigitCustomBase {
 #[must_use]
 #[inline]
 pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
-    if base < Base::MIN {
-        return DigitCustomBase::BaseMin;
-    }
-    if base > Base::MAX {
-        return DigitCustomBase::BaseMax;
-    }
+    if base < Base::MIN { return DigitCustomBase::BaseMin; }
+    if base > Base::MAX { return DigitCustomBase::BaseMax; }
 
     #[rustfmt::skip]
     let offset = match character {
@@ -1554,9 +1543,7 @@ pub const fn parse_custom(character: ascii, base: u8) -> DigitCustomBase {
     };
 
     let digit = character - offset;
-    if digit >= base {
-        return DigitCustomBase::OutOfRange;
-    }
+    if digit >= base { return DigitCustomBase::OutOfRange; }
     return DigitCustomBase::Ok(digit);
 }
 

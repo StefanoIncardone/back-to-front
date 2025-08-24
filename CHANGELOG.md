@@ -13,6 +13,8 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 - More ergonomic digits global constants and bases modules
 - Index iterators
+- More type safe `Base` enum with all possible bases, which would allow for the safe removal of
+    base min and max errors, constants and enum variants
 
 ## Known issues
 
@@ -22,7 +24,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ### Added
 
-- Modularized digits ranges and added more usefull functions, macros and constants:
+- Modularized digits ranges and added more usefull functions, macros and constants
 - Added `check_*_offset` and `parse_*_offset`:
     - introduced `INVALID`, `OUT_OF_RANGE`, `BASE_MIN` and `BASE_MAX` constants
     - introduced `Offset`, `OffsetCustomBase`, `DigitOffset` and `DigitOffsetCustomBase` aliases
@@ -31,7 +33,8 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 - Updated Rust version to 1.89.0
 - Marked `check_*` and `parse_*` and related enums `AsciiDigit`, `Digit`, `AsciiDigitCustomBase` and
-    `DigitCustomBase` as deprecated
+    `DigitCustomBase` as deprecated, to avoid inconsistencies
+- Marked checking and parsing of tally counters as deprecated
 
 ## 0.1.0 - 2025/08/07
 
