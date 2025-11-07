@@ -24,7 +24,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ### Added
 
-- Added more `offset` type aliases
+- Added `uoffset*` and `ioffset*` type aliases
 - Modularized digits ranges and added more usefull functions, macros and constants
 - Added `check_*_offset` and `parse_*_offset`:
     - introduced `INVALID`, `OUT_OF_RANGE`, `BASE_MIN` and `BASE_MAX` constants
@@ -32,6 +32,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ### Changed
 
+- Marked `offset*` type aliases as deprecated
 - Updated Rust version to 1.89.0
 - Marked `check_*` and `parse_*` and related enums `AsciiDigit`, `Digit`, `AsciiDigitCustomBase` and
     `DigitCustomBase` as deprecated, to avoid inconsistencies
