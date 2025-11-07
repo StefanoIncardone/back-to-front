@@ -1,14 +1,15 @@
-use crate::offset32;
+use crate::{offset32, uoffset32};
+
 
 // IDEA(stefano): make generic over the type of start and end
     // - constrain the generic type to be number-like
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 pub struct Span {
     /// Inclusive and less that or equal to [`Self::end()`]
-    pub(crate) start: offset32,
+    pub(crate) start: uoffset32,
 
     /// Non inclusive and greater than [`Self::start()`]
-    pub(crate) end: offset32,
+    pub(crate) end: uoffset32,
 }
 
 // TODO(stefano): add debug_assert/panic/checked/unchecked setters for `start` and `end`
@@ -19,14 +20,14 @@ impl Span {
     #[must_use]
     #[inline(always)]
     #[track_caller]
-    pub const unsafe fn new_unchecked(start: offset32, end: offset32) -> Self {
+    pub const unsafe fn new_unchecked(start: uoffset32, end: uoffset32) -> Self {
         debug_assert!(start <= end, "`start` must be less than or equal to `end`");
         return Self { start, end };
     }
 
     #[must_use]
     #[inline]
-    pub const fn new(start: offset32, end: offset32) -> Option<Self> {
+    pub const fn new(start: uoffset32, end: uoffset32) -> Option<Self> {
         if start > end {
             return None;
         }
@@ -35,13 +36,13 @@ impl Span {
 
     #[must_use]
     #[inline(always)]
-    pub const fn start(self) -> offset32 {
+    pub const fn start(self) -> uoffset32 {
         return self.start;
     }
 
     #[must_use]
     #[inline(always)]
-    pub const fn end(self) -> offset32 {
+    pub const fn end(self) -> uoffset32 {
         return self.end;
     }
 }
@@ -67,6 +68,7 @@ mod tests {
         const _: () = test_assert!(Span::new(1, 0), == None);
     }
 
+    #[expect(deprecated)]
     mod _0_1_0_backwards_compatibility {
         use crate::{offset32, src_code::{
             Line, Span

@@ -24,6 +24,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ### Added
 
+- Added more `offset` type aliases
 - Modularized digits ranges and added more usefull functions, macros and constants
 - Added `check_*_offset` and `parse_*_offset`:
     - introduced `INVALID`, `OUT_OF_RANGE`, `BASE_MIN` and `BASE_MAX` constants
