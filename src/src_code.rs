@@ -1,5 +1,21 @@
-use crate::{offset32, uoffset32};
+use crate::{ascii, offset32, uoffset32};
 
+pub const LF: ascii = b'\n';
+pub const CR: ascii = b'\r';
+pub const LF_STR: &str = "\n";
+pub const CR_STR: &str = "\r";
+pub const CRLF_STR: &str = "\r\n";
+
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[repr(usize)]
+pub enum LineEndLen {
+    LF = LF_STR.len(),
+    CRLF = CRLF_STR.len(),
+}
+
+impl LineEndLen {
+    pub const CR: Self = Self::LF;
+}
 
 // IDEA(stefano): make generic over the type of start and end
     // - constrain the generic type to be number-like
