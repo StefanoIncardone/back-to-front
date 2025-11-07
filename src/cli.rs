@@ -69,3 +69,66 @@ pub const fn split_prefix(arg: &str) -> (FlagPrefix, &str) {
     let split_arg = unsafe { core::str::from_utf8_unchecked(arg_bytes) };
     return (prefix, split_arg);
 }
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AnsiFg {
+    #[default]
+    Default      = 0,
+    Black        = 30,
+    Red          = 31,
+    Green        = 32,
+    Yellow       = 33,
+    Blue         = 34,
+    Magenta      = 35,
+    Cyan         = 36,
+    LightGray    = 37,
+    DarkGray     = 90,
+    LightRed     = 91,
+    LightGreen   = 92,
+    LightYellow  = 93,
+    LightBlue    = 94,
+    LightMagenta = 95,
+    LightCyan    = 96,
+    White        = 97,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AnsiBg {
+    #[default]
+    Default       = 0,
+    Black         = 40,
+    DarkRed       = 41,
+    DarkGreen     = 42,
+    DarkYellow    = 43,
+    DarkBlue      = 44,
+    DarkMagenta   = 45,
+    DarkCyan      = 46,
+    DarkWhite     = 47,
+    BrightBlack   = 100,
+    BrightRed     = 101,
+    BrightGreen   = 102,
+    BrightYellow  = 103,
+    BrightBlue    = 104,
+    BrightMagenta = 105,
+    BrightCyan    = 106,
+    White         = 107,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AnsiCode {
+    #[default]
+    Default      = 0,
+    Bold         = 1,
+    Underline    = 4,
+    NoUnderline  = 24,
+    ReverseText  = 7,
+    PositiveText = 27,
+}
+
+// TODO: backwards compatibility tests
