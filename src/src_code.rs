@@ -1,4 +1,4 @@
-use crate::{ascii, offset32, uoffset32};
+use crate::{ascii, uoffset32};
 
 pub const LF: ascii = b'\n';
 pub const CR: ascii = b'\r';
