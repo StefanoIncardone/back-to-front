@@ -1,8 +1,6 @@
 #![allow(deprecated)]
 #![expect(clippy::pub_use)]
 // IDEA(stefano): add out of range ranges
-// IDEA(stefano): consider removing `Base::range_*`, `Base::check` and `Base::parse` functions to
-    // maintain consistency with the corresponding freestanding functions
 // TODO(stefano): add documentations
 
 use crate::{ascii, utf32};
@@ -501,24 +499,28 @@ impl Base {
     }
 }
 
+#[deprecated(since = "0.1.1", note = "will use Base::range method")]
 #[must_use]
 #[inline(always)]
 pub const fn range(base: Base) -> &'static [AsciiRange<utf32>] {
     return base.range();
 }
 
+#[deprecated(since = "0.1.1", note = "will use Base::range_ops method")]
 #[must_use]
 #[inline(always)]
 pub const fn range_ops(base: Base) -> &'static [RangeInclusive<utf32>] {
     return base.range_ops();
 }
 
+#[deprecated(since = "0.1.1", note = "will use Base::range_ascii method")]
 #[must_use]
 #[inline(always)]
 pub const fn range_ascii(base: Base) -> &'static [AsciiRange<ascii>] {
     return base.range_ascii();
 }
 
+#[deprecated(since = "0.1.1", note = "will use Base::range_ascii_ops method")]
 #[must_use]
 #[inline(always)]
 pub const fn range_ascii_ops(base: Base) -> &'static [RangeInclusive<ascii>] {
@@ -652,13 +654,14 @@ impl Base {
     }
 }
 
+#[deprecated(since = "0.1.1", note = "will use Base::check_offset method")]
 #[must_use]
 #[inline]
 pub const fn check_offset(character: ascii, base: Base) -> Offset {
     return base.check_offset(character);
 }
 
-
+#[deprecated(since = "0.1.1", note = "will use Base::parse_offset method")]
 #[must_use]
 #[inline]
 pub const fn parse_offset(character: ascii, base: Base) -> DigitOffset {
