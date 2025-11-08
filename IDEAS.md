@@ -105,9 +105,6 @@ impl Base {
     pub const Base16: Self = Self::Hexadecimal;
     pub const Base3: Self = Self::Three;
     pub const Base20: Self = Self::Vigesimal;
-
-    pub const MIN: Self = Self::Base2;
-    pub const MAX: Self = Self::Base36;
 }
 
 // Would allow for the removal of errors related to base min and max
@@ -130,8 +127,8 @@ pub enum AsciiDigitCustomBase {
 #[inline]
 pub const fn check_custom_offset(character: ascii, base: Base) -> OffsetCustomBase {
     // cannot happen anymore
-    // if base < Base::MIN { return BASE_MIN; }
-    // if base > Base::MAX { return BASE_MAX; }
+    if base < Base::MIN { return BASE_MIN; }
+    if base > Base::MAX { return BASE_MAX; }
 
     let offset = offset_alphanumerical!(character);
     let digit = character - offset;
@@ -141,88 +138,4 @@ pub const fn check_custom_offset(character: ascii, base: Base) -> OffsetCustomBa
 
 // could also create constants similar to the ones for the common bases, and maybe provide impl
 // macros to reduce the boilerplate
-```
-
-## 0.1.? - More ergononomic offsets
-
-```rust
-#[repr(transparent)]
-pub struct OffsetStruct(i8);
-impl core::ops::Add<u8> for OffsetStruct {
-    type Output = u8;
-    fn add(self, rhs: u8) -> Self::Output {
-        return self.0 + rhs;
-    }
-}
-impl core::ops::Add<i8> for OffsetStruct {
-    type Output = i8;
-    fn add(self, rhs: i8) -> Self::Output {
-        return self.0 as i8 + rhs;
-    }
-}
-impl core::ops::Add<OffsetStruct> for u8 {
-    type Output = OffsetStruct;
-    fn add(self, rhs: OffsetStruct) -> Self::Output {
-        return OffsetStruct(self + rhs.0);
-    }
-}
-impl core::ops::Add<OffsetStruct> for i8 {
-    type Output = OffsetStruct;
-    fn add(self, rhs: OffsetStruct) -> Self::Output {
-        return OffsetStruct(self as u8 + rhs.0);
-    }
-}
-impl core::ops::Sub<u8> for OffsetStruct {
-    type Output = u8;
-    fn sub(self, rhs: u8) -> Self::Output {
-        return self.0 - rhs;
-    }
-}
-impl core::ops::Sub<i8> for OffsetStruct {
-    type Output = i8;
-    fn sub(self, rhs: i8) -> Self::Output {
-        return self.0 as i8 - rhs;
-    }
-}
-impl core::ops::Sub<OffsetStruct> for u8 {
-    type Output = OffsetStruct;
-    fn sub(self, rhs: OffsetStruct) -> Self::Output {
-        return OffsetStruct(self - rhs.0);
-    }
-}
-impl core::ops::Sub<OffsetStruct> for i8 {
-    type Output = OffsetStruct;
-    fn sub(self, rhs: OffsetStruct) -> Self::Output {
-        return OffsetStruct(self as u8 - rhs.0);
-    }
-}
-
-pub type Offset = i8;
-pub type OffsetCustomBase = i8;
-pub type DigitOffset = i8;
-pub type DigitOffsetCustomBase = i8;
-
-// Note: this enum exists just to leverage the enum mechanism of assigning discriminants
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(u8)]
-enum OffsetResult {
-    BaseMax = -4,
-    BaseMin,
-    OutOfRange,
-    Invalid,
-    Ok,
-}
-
-pub const OK: Offset = OffsetResult::Ok as Offset;
-pub const INVALID: Offset = OffsetResult::Invalid as Offset;
-pub const OUT_OF_RANGE: Offset = OffsetResult::OutOfRange as Offset;
-pub const BASE_MIN: OffsetCustomBase = OffsetResult::BaseMin as OffsetCustomBase;
-pub const BASE_MAX: OffsetCustomBase = OffsetResult::BaseMax as OffsetCustomBase;
-
-// less intuitive to use INVALID to check the offset, this is if the offset is a u8
-const _: () = test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-// more intuitive to use OK to check the offset, this is if the offset is i8
-const _: () = test_assert!(check_binary_offset(b'0'), == offset if offset >= OK && (b'0' - offset as u8) == 0);
-// more intuitive to use OK to check the offset, this is if the offset is OffsetStruct
-const _: () = test_assert!(check_binary_offset(b'0'), == offset if offset >= OK && (b'0' - offset) == 0);
 ```
