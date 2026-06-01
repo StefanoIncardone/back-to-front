@@ -139,3 +139,21 @@ pub const fn check_custom_offset(character: ascii, base: Base) -> OffsetCustomBa
 // could also create constants similar to the ones for the common bases, and maybe provide impl
 // macros to reduce the boilerplate
 ```
+
+## ?.?.? - Primitive types names
+
+```rust
+// equivalent to `usize` and `isize`
+type uz8 = u8;
+type iz8 = i8;
+type uz = usize;
+type iz = isize;
+type uoff8 = u8;
+type ioff8 = i8;
+type uoff = usize;
+type ioff = isize;
+
+type u8 = u8;
+type s8 = i8;
+type i8 = i8;
+```
