@@ -1,5 +1,27 @@
-use crate::ascii;
+use crate::{ascii, uoffset16};
 
+#[must_use]
+#[inline(always)]
+const fn get_byte(array: &str, index: usize) -> Option<ascii> {
+    if index >= array.len() {
+        return None;
+    }
+    return Some(array.as_bytes()[index]);
+}
+
+#[track_caller]
+#[must_use]
+#[inline(always)]
+const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
+    assert!(start_index <= end_index, "start index cannot be greater than end index");
+    let slice_len = end_index - start_index;
+    let array_ptr = unsafe { array.as_ptr().add(start_index) };
+    let array_bytes = unsafe { core::slice::from_raw_parts(array_ptr, slice_len) };
+    let array_slice = unsafe { core::str::from_utf8_unchecked(array_bytes) };
+    return array_slice;
+}
+
+#[must_use]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -12,62 +34,107 @@ pub enum FlagPrefix {
 
 impl FlagPrefix {
     pub const MASK: u8 = 0b0000_0011;
-
-    pub const EMPTY_LEN: u8 = 0;
-    pub const DASH_LEN: u8 = 1;
-    pub const DASHDASH_LEN: u8 = 2;
-    pub const SLASH_LEN: u8 = 1;
-}
-
-impl core::fmt::Display for FlagPrefix {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        return match self {
-            Self::Empty => write!(f, ""),
-            Self::Dash => write!(f, "-"),
-            Self::DashDash => write!(f, "--"),
-            Self::Slash => write!(f, "/"),
-        }
-    }
 }
 
 impl FlagPrefix {
     #[must_use]
     #[inline]
-    pub const fn len(self) -> u8 {
+    pub const fn to_str(self) -> &'static str {
         return match self {
-            Self::Empty => Self::EMPTY_LEN,
-            Self::Dash => Self::DASH_LEN,
-            Self::DashDash => Self::DASHDASH_LEN,
-            Self::Slash => Self::SLASH_LEN,
+            Self::Empty => "",
+            Self::Dash => "-",
+            Self::DashDash => "--",
+            Self::Slash => "/",
+        }
+    }
+}
+
+
+#[must_use]
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum FlagSeparator {
+    Empty  = 0b0000_0000,
+    Dash   = 0b0000_0001,
+    Equals = 0b0000_0010,
+    Colon  = 0b0000_0011,
+}
+
+impl FlagSeparator {
+    pub const MASK: u8 = 0b0000_0011;
+}
+
+impl FlagSeparator {
+    #[must_use]
+    #[inline]
+    pub const fn to_str(self) -> &'static str {
+        return match self {
+            Self::Empty => "",
+            Self::Dash => "-",
+            Self::Equals => "=",
+            Self::Colon => ":",
         }
     }
 }
 
 #[must_use]
-#[inline(always)]
-const fn get_byte(array: &str, index: usize) -> Option<ascii> {
-    if index >= array.len() {
-        return None;
-    }
-    return Some(array.as_bytes()[index]);
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+pub struct Arg {
+    pub prefix: FlagPrefix,
+    pub key_text_len: uoffset16,
+    pub separator: FlagSeparator,
 }
 
-#[must_use]
-pub const fn split_prefix(arg: &str) -> (FlagPrefix, &str) {
-    let (prefix, prefix_len) = match get_byte(arg, 0) {
-        Some(b'/') => (FlagPrefix::Slash, FlagPrefix::SLASH_LEN),
-        Some(b'-') => match get_byte(arg, 0) {
-            Some(b'-') => (FlagPrefix::DashDash, FlagPrefix::DASHDASH_LEN),
-            Some(_) | None => (FlagPrefix::Dash, FlagPrefix::DASH_LEN),
-        },
-        Some(_) | None => (FlagPrefix::Empty, FlagPrefix::EMPTY_LEN),
-    };
+impl Arg {
+    #[inline(always)]
+    pub const fn empty() -> Self {
+        return Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty };
+    }
 
-    let arg_ptr = unsafe { arg.as_ptr().add(prefix_len as usize) };
-    let arg_len = arg.len() - prefix_len as usize;
-    let arg_bytes = unsafe { core::slice::from_raw_parts(arg_ptr, arg_len) };
-    let split_arg = unsafe { core::str::from_utf8_unchecked(arg_bytes) };
-    return (prefix, split_arg);
+    pub const fn parse(arg: &str) -> Self {
+        let prefix = match get_byte(arg, 0) {
+            None => return Self::empty(),
+            Some(b'/') => FlagPrefix::Slash,
+            Some(b'-') => match get_byte(arg, 1) {
+                Some(b'-') => FlagPrefix::DashDash,
+                Some(_) | None => FlagPrefix::Dash,
+            },
+            Some(_) => FlagPrefix::Empty,
+        };
+        let prefix_len = prefix.to_str().len();
+
+        let mut separator_index = prefix_len;
+        let mut separator = FlagSeparator::Empty;
+        loop {
+            match get_byte(arg, separator_index) {
+                None => break,
+                Some(b'-') => separator = FlagSeparator::Dash,
+                Some(b':') => separator = FlagSeparator::Colon,
+                Some(b'=') => separator = FlagSeparator::Equals,
+                Some(_) => separator_index += 1,
+            }
+        }
+
+        let key_text_len = separator_index - prefix_len;
+        assert!(key_text_len <= uoffset16::MAX as usize, "key length cannot be greater than u16::MAX");
+        return Self { prefix, key_text_len: key_text_len as uoffset16, separator };
+    }
+
+    #[must_use]
+    /// # Safety
+    /// Expected to be called on the same argument that was previously passed to [`Self::parse`]
+    pub const unsafe fn key_value(self, arg: &str) -> (&str, &str) {
+        let key_start_index = self.prefix.to_str().len();
+        let key_len = self.key_text_len as usize;
+        let key_text = get_slice(arg, key_start_index, key_len);
+
+        let value_start_index = key_start_index + key_len + self.separator.to_str().len();
+        let value_len = arg.len() - value_start_index;
+        let value_text = get_slice(arg, value_start_index, value_len);
+
+        return (key_text, value_text);
+    }
 }
 
 #[rustfmt::skip]

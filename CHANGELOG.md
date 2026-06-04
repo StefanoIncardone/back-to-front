@@ -20,6 +20,12 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 - Digit ranges macros are also importable from the root module
 
+## 0.1.2 -
+
+### Changed
+
+- Improved arguments parsing
+
 ## 0.1.1 - 2025/11/08
 
 ### Added
