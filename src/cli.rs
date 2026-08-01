@@ -1,3 +1,4 @@
+use core::fmt::Display;
 use crate::{ascii, uoffset16};
 
 #[must_use]
@@ -22,6 +23,49 @@ const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
 }
 
 #[must_use]
+pub const fn bits(masks: &[u8]) -> u8 {
+    let mut mask = 0;
+
+    let mut sub_mask_index = 0;
+    while sub_mask_index < masks.len() {
+        let sub_mask = masks[sub_mask_index];
+        sub_mask_index += 1;
+
+        let collides = mask & sub_mask > 0;
+        assert!(!collides, "two bits collided");
+
+        mask |= sub_mask;
+    }
+
+    return mask;
+}
+
+#[must_use]
+pub const fn mask(masks: &[u8]) -> u8 {
+    let mut mask = 0;
+
+    let mut sub_mask_index = 0;
+    while sub_mask_index < masks.len() {
+        let sub_mask = masks[sub_mask_index];
+        sub_mask_index += 1;
+        mask |= sub_mask;
+    }
+
+    return mask;
+}
+
+#[must_use]
+pub const fn mask_shift(mask: u8) -> u8 {
+    return (u8::BITS - mask.leading_zeros()) as u8;
+}
+
+
+pub trait Mask: Sized {
+    const MASK: u8;
+    const MASK_SHIFT: u8 = mask_shift(Self::MASK);
+}
+
+#[must_use]
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[repr(u8)]
@@ -32,11 +76,21 @@ pub enum FlagPrefix {
     Slash    = 0b0000_0011,
 }
 
-impl FlagPrefix {
-    pub const MASK: u8 = 0b0000_0011;
+impl Mask for FlagPrefix {
+    const MASK: u8 = mask(&[
+        Self::Empty as u8,
+        Self::Dash as u8,
+        Self::DashDash as u8,
+        Self::Slash as u8,
+    ]);
 }
 
 impl FlagPrefix {
+    #[must_use]
+    pub const fn combine(self, tag: u8) -> u8 {
+        return bits(&[self as u8, tag << Self::MASK_SHIFT]);
+    }
+
     #[must_use]
     #[inline]
     pub const fn to_str(self) -> &'static str {
@@ -46,6 +100,13 @@ impl FlagPrefix {
             Self::DashDash => "--",
             Self::Slash => "/",
         }
+    }
+}
+
+impl Display for FlagPrefix {
+    #[inline(always)]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        return f.write_str(self.to_str());
     }
 }
 
@@ -61,8 +122,13 @@ pub enum FlagSeparator {
     Colon  = 0b0000_0011,
 }
 
-impl FlagSeparator {
-    pub const MASK: u8 = 0b0000_0011;
+impl Mask for FlagSeparator {
+    const MASK: u8 = mask(&[
+        Self::Empty as u8,
+        Self::Dash as u8,
+        Self::Equals as u8,
+        Self::Colon as u8,
+    ]);
 }
 
 impl FlagSeparator {
@@ -78,6 +144,14 @@ impl FlagSeparator {
     }
 }
 
+impl Display for FlagSeparator {
+    #[inline(always)]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        return f.write_str(self.to_str());
+    }
+}
+
+
 #[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct Arg {
@@ -92,7 +166,9 @@ impl Arg {
         return Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty };
     }
 
-    pub const fn parse(arg: &str) -> Self {
+    pub const fn parse(mut arg: &str) -> Self {
+        arg = arg.trim_ascii();
+
         let prefix = match get_byte(arg, 0) {
             None => return Self::empty(),
             Some(b'/') => FlagPrefix::Slash,
@@ -134,6 +210,14 @@ impl Arg {
         let value_text = get_slice(arg, value_start_index, value_len);
 
         return (key_text, value_text);
+    }
+
+    #[must_use]
+    pub const fn is_empty(self) -> bool {
+        if let Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty } = self {
+            return true;
+        }
+        return false;
     }
 }
 
