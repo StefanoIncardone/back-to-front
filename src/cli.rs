@@ -14,10 +14,12 @@ const fn get_byte(array: &str, index: usize) -> Option<ascii> {
 #[must_use]
 #[inline(always)]
 const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
+    assert!(start_index <= array.len(), "start index overflow");
     assert!(start_index <= end_index, "start index cannot be greater than end index");
-    let slice_len = end_index - start_index;
+
+    let array_len = end_index - start_index;
     let array_ptr = unsafe { array.as_ptr().add(start_index) };
-    let array_bytes = unsafe { core::slice::from_raw_parts(array_ptr, slice_len) };
+    let array_bytes = unsafe { core::slice::from_raw_parts(array_ptr, array_len) };
     let array_slice = unsafe { core::str::from_utf8_unchecked(array_bytes) };
     return array_slice;
 }
@@ -73,7 +75,6 @@ pub enum FlagPrefix {
     Empty    = 0b0000_0000,
     Dash     = 0b0000_0001,
     DashDash = 0b0000_0010,
-    Slash    = 0b0000_0011,
 }
 
 impl Mask for FlagPrefix {
@@ -81,7 +82,6 @@ impl Mask for FlagPrefix {
         Self::Empty as u8,
         Self::Dash as u8,
         Self::DashDash as u8,
-        Self::Slash as u8,
     ]);
 }
 
@@ -98,7 +98,6 @@ impl FlagPrefix {
             Self::Empty => "",
             Self::Dash => "-",
             Self::DashDash => "--",
-            Self::Slash => "/",
         }
     }
 }
@@ -154,6 +153,14 @@ impl Display for FlagSeparator {
 
 #[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+pub enum ArgResult {
+    Ok(Arg),
+    MaxLen,
+}
+
+
+#[must_use]
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct Arg {
     pub prefix: FlagPrefix,
     pub key_text_len: uoffset16,
@@ -166,12 +173,11 @@ impl Arg {
         return Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty };
     }
 
-    pub const fn parse(mut arg: &str) -> Self {
+    pub const fn parse(mut arg: &str) -> ArgResult {
         arg = arg.trim_ascii();
 
         let prefix = match get_byte(arg, 0) {
-            None => return Self::empty(),
-            Some(b'/') => FlagPrefix::Slash,
+            None => return ArgResult::Ok(Self::empty()),
             Some(b'-') => match get_byte(arg, 1) {
                 Some(b'-') => FlagPrefix::DashDash,
                 Some(_) | None => FlagPrefix::Dash,
@@ -181,33 +187,67 @@ impl Arg {
         let prefix_len = prefix.to_str().len();
 
         let mut separator_index = prefix_len;
-        let mut separator = FlagSeparator::Empty;
-        loop {
+        let separator = loop {
             match get_byte(arg, separator_index) {
-                None => break,
-                Some(b'-') => separator = FlagSeparator::Dash,
-                Some(b':') => separator = FlagSeparator::Colon,
-                Some(b'=') => separator = FlagSeparator::Equals,
+                None =>       break FlagSeparator::Empty,
+                Some(b'-') => break FlagSeparator::Dash,
+                Some(b':') => break FlagSeparator::Colon,
+                Some(b'=') => break FlagSeparator::Equals,
                 Some(_) => separator_index += 1,
             }
-        }
+        };
 
         let key_text_len = separator_index - prefix_len;
-        assert!(key_text_len <= uoffset16::MAX as usize, "key length cannot be greater than u16::MAX");
-        return Self { prefix, key_text_len: key_text_len as uoffset16, separator };
+        if key_text_len > uoffset16::MAX as usize {
+            return ArgResult::MaxLen;
+        }
+        return ArgResult::Ok(Self { prefix, key_text_len: key_text_len as uoffset16, separator });
+    }
+
+
+    #[must_use]
+    pub const fn start_of_key_index(self) -> u16 {
+        return self.prefix.to_str().len() as u16;
+    }
+
+    #[must_use]
+    pub const fn start_of_separator_index(self) -> u16 {
+        let start_of_key_index = self.start_of_key_index();
+        return start_of_key_index + self.key_text_len;
+    }
+
+    #[must_use]
+    pub const fn start_of_value_index(self) -> Option<u16> {
+        if let FlagSeparator::Empty = self.separator {
+            return None;
+        }
+
+        let start_of_separator_index = self.start_of_separator_index();
+        return Some(start_of_separator_index + self.separator.to_str().len() as u16);
+    }
+
+
+    #[must_use]
+    /// # Safety
+    /// Expected to be called on the same argument that was previously passed to [`Self::parse`]
+    pub const unsafe fn key(self, arg: &str) -> &str {
+        let key_start_index = self.start_of_key_index() as usize;
+        let key_end_index = key_start_index + self.key_text_len as usize;
+        let key_text = get_slice(arg, key_start_index, key_end_index);
+        return key_text;
     }
 
     #[must_use]
     /// # Safety
     /// Expected to be called on the same argument that was previously passed to [`Self::parse`]
     pub const unsafe fn key_value(self, arg: &str) -> (&str, &str) {
-        let key_start_index = self.prefix.to_str().len();
-        let key_len = self.key_text_len as usize;
-        let key_text = get_slice(arg, key_start_index, key_len);
+        let key_start_index = self.start_of_key_index() as usize;
+        let key_end_index = key_start_index + self.key_text_len as usize;
+        let key_text = get_slice(arg, key_start_index, key_end_index);
 
-        let value_start_index = key_start_index + key_len + self.separator.to_str().len();
-        let value_len = arg.len() - value_start_index;
-        let value_text = get_slice(arg, value_start_index, value_len);
+        let value_start_index = key_end_index + self.separator.to_str().len();
+        let value_end_index = arg.len();
+        let value_text = get_slice(arg, value_start_index, value_end_index);
 
         return (key_text, value_text);
     }
