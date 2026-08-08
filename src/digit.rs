@@ -25,6 +25,12 @@ impl<I: Ascii> AsciiRange<I> {
     }
 }
 
+impl<I: Ascii + core::fmt::Display> core::fmt::Display for AsciiRange<I> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        return write!(f, "{}..{}", self.start, self.end);
+    }
+}
+
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Base {
@@ -538,13 +544,13 @@ pub type DigitOffsetCustomBase = u8;
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 enum OffsetResult {
-    Invalid = 0b1000_0000,
+    NotADigit = 0b1000_0000,
     OutOfRange,
     BaseMin,
     BaseMax,
 }
 
-pub const INVALID: Offset = OffsetResult::Invalid as Offset;
+pub const NOT_A_DIGIT: Offset = OffsetResult::NotADigit as Offset;
 pub const OUT_OF_RANGE: Offset = OffsetResult::OutOfRange as Offset;
 pub const BASE_MIN: OffsetCustomBase = OffsetResult::BaseMin as OffsetCustomBase;
 pub const BASE_MAX: OffsetCustomBase = OffsetResult::BaseMax as OffsetCustomBase;
@@ -801,7 +807,7 @@ macro_rules! offset_binary {
         match $ch {
             range_binary_digit_ascii!()        => Base::BINARY_ASCII_OFFSET,
             range_binary_out_of_range_ascii!() => return OUT_OF_RANGE,
-            _                                  => return INVALID,
+            _                                  => return NOT_A_DIGIT,
         }
     }
 }
@@ -968,7 +974,7 @@ macro_rules! offset_octal {
         match $ch {
             range_octal_digit_ascii!()        => Base::OCTAL_ASCII_OFFSET,
             range_octal_out_of_range_ascii!() => return OUT_OF_RANGE,
-            _                                 => return INVALID,
+            _                                 => return NOT_A_DIGIT,
         }
     }
 }
@@ -1116,7 +1122,7 @@ macro_rules! offset_decimal {
         match $ch {
             range_decimal_digit_ascii!()        => Base::DECIMAL_ASCII_OFFSET,
             range_decimal_out_of_range_ascii!() => return OUT_OF_RANGE,
-            _                                   => return INVALID,
+            _                                   => return NOT_A_DIGIT,
         }
     }
 }
@@ -1332,7 +1338,7 @@ macro_rules! offset_hexadecimal {
             range_hexadecimal_uppercase_ascii!()    => Base::HEXADECIMAL_UPPERCASE_ASCII_OFFSET,
             range_hexadecimal_lowercase_ascii!()    => Base::HEXADECIMAL_LOWERCASE_ASCII_OFFSET,
             range_hexadecimal_out_of_range_ascii!() => return OUT_OF_RANGE,
-            _                                       => return INVALID,
+            _                                       => return NOT_A_DIGIT,
         }
     }
 }
@@ -1477,7 +1483,7 @@ macro_rules! offset_alphanumerical {
             range_digit_ascii!()     => Base::DIGIT_ASCII_OFFSET,
             range_uppercase_ascii!() => Base::UPPERCASE_ASCII_OFFSET,
             range_lowercase_ascii!() => Base::LOWERCASE_ASCII_OFFSET,
-            _                        => return INVALID,
+            _                        => return NOT_A_DIGIT,
         }
     }
 }
@@ -1583,39 +1589,39 @@ mod tests {
     mod _0_1_1_functionality {
         use crate::{digit::*, test_assert};
 
-        const _: () = test_assert!(check_binary_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-        const _: () = test_assert!(check_binary_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
+        const _: () = test_assert!(check_binary_offset(b'0'), == offset if offset < NOT_A_DIGIT && (b'0' - offset) == 0);
+        const _: () = test_assert!(check_binary_offset(b'1'), == offset if offset < NOT_A_DIGIT && (b'1' - offset) == 1);
         const _: () = test_assert!(check_binary_offset(b'2'), == offset if offset == OUT_OF_RANGE);
         const _: () = test_assert!(check_binary_offset(b'a'), == offset if offset == OUT_OF_RANGE);
         const _: () = test_assert!(check_binary_offset(b'Z'), == offset if offset == OUT_OF_RANGE);
-        const _: () = test_assert!(check_binary_offset(b'_'), == offset if offset == INVALID);
-        const _: () = test_assert!(check_binary_offset(b'.'), == offset if offset == INVALID);
-        const _: () = test_assert!(check_binary_offset(b'@'), == offset if offset == INVALID);
+        const _: () = test_assert!(check_binary_offset(b'_'), == offset if offset == NOT_A_DIGIT);
+        const _: () = test_assert!(check_binary_offset(b'.'), == offset if offset == NOT_A_DIGIT);
+        const _: () = test_assert!(check_binary_offset(b'@'), == offset if offset == NOT_A_DIGIT);
 
         const _: () = test_assert!(parse_binary_offset(b'0'), == 0);
         const _: () = test_assert!(parse_binary_offset(b'1'), == 1);
         const _: () = test_assert!(parse_binary_offset(b'2'), == digit if digit == OUT_OF_RANGE);
         const _: () = test_assert!(parse_binary_offset(b'a'), == digit if digit == OUT_OF_RANGE);
         const _: () = test_assert!(parse_binary_offset(b'Z'), == digit if digit == OUT_OF_RANGE);
-        const _: () = test_assert!(parse_binary_offset(b'_'), == digit if digit == INVALID);
-        const _: () = test_assert!(parse_binary_offset(b'.'), == digit if digit == INVALID);
-        const _: () = test_assert!(parse_binary_offset(b'@'), == digit if digit == INVALID);
+        const _: () = test_assert!(parse_binary_offset(b'_'), == digit if digit == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_binary_offset(b'.'), == digit if digit == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_binary_offset(b'@'), == digit if digit == NOT_A_DIGIT);
 
-        const _: () = test_assert!(check_octal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-        const _: () = test_assert!(check_octal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-        const _: () = test_assert!(check_octal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-        const _: () = test_assert!(check_octal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-        const _: () = test_assert!(check_octal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-        const _: () = test_assert!(check_octal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-        const _: () = test_assert!(check_octal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-        const _: () = test_assert!(check_octal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
+        const _: () = test_assert!(check_octal_offset(b'0'), == offset if offset < NOT_A_DIGIT && (b'0' - offset) == 0);
+        const _: () = test_assert!(check_octal_offset(b'1'), == offset if offset < NOT_A_DIGIT && (b'1' - offset) == 1);
+        const _: () = test_assert!(check_octal_offset(b'2'), == offset if offset < NOT_A_DIGIT && (b'2' - offset) == 2);
+        const _: () = test_assert!(check_octal_offset(b'3'), == offset if offset < NOT_A_DIGIT && (b'3' - offset) == 3);
+        const _: () = test_assert!(check_octal_offset(b'4'), == offset if offset < NOT_A_DIGIT && (b'4' - offset) == 4);
+        const _: () = test_assert!(check_octal_offset(b'5'), == offset if offset < NOT_A_DIGIT && (b'5' - offset) == 5);
+        const _: () = test_assert!(check_octal_offset(b'6'), == offset if offset < NOT_A_DIGIT && (b'6' - offset) == 6);
+        const _: () = test_assert!(check_octal_offset(b'7'), == offset if offset < NOT_A_DIGIT && (b'7' - offset) == 7);
         const _: () = test_assert!(check_octal_offset(b'8'), == OUT_OF_RANGE);
         const _: () = test_assert!(check_octal_offset(b'9'), == OUT_OF_RANGE);
         const _: () = test_assert!(check_octal_offset(b'a'), == OUT_OF_RANGE);
         const _: () = test_assert!(check_octal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(check_octal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(check_octal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(check_octal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(check_octal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_octal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_octal_offset(b'@'), == NOT_A_DIGIT);
 
         const _: () = test_assert!(parse_octal_offset(b'0'), == 0);
         const _: () = test_assert!(parse_octal_offset(b'1'), == 1);
@@ -1629,25 +1635,25 @@ mod tests {
         const _: () = test_assert!(parse_octal_offset(b'9'), == OUT_OF_RANGE);
         const _: () = test_assert!(parse_octal_offset(b'a'), == OUT_OF_RANGE);
         const _: () = test_assert!(parse_octal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(parse_octal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(parse_octal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(parse_octal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(parse_octal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_octal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_octal_offset(b'@'), == NOT_A_DIGIT);
 
-        const _: () = test_assert!(check_decimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-        const _: () = test_assert!(check_decimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-        const _: () = test_assert!(check_decimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-        const _: () = test_assert!(check_decimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-        const _: () = test_assert!(check_decimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-        const _: () = test_assert!(check_decimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-        const _: () = test_assert!(check_decimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-        const _: () = test_assert!(check_decimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
-        const _: () = test_assert!(check_decimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
-        const _: () = test_assert!(check_decimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
+        const _: () = test_assert!(check_decimal_offset(b'0'), == offset if offset < NOT_A_DIGIT && (b'0' - offset) == 0);
+        const _: () = test_assert!(check_decimal_offset(b'1'), == offset if offset < NOT_A_DIGIT && (b'1' - offset) == 1);
+        const _: () = test_assert!(check_decimal_offset(b'2'), == offset if offset < NOT_A_DIGIT && (b'2' - offset) == 2);
+        const _: () = test_assert!(check_decimal_offset(b'3'), == offset if offset < NOT_A_DIGIT && (b'3' - offset) == 3);
+        const _: () = test_assert!(check_decimal_offset(b'4'), == offset if offset < NOT_A_DIGIT && (b'4' - offset) == 4);
+        const _: () = test_assert!(check_decimal_offset(b'5'), == offset if offset < NOT_A_DIGIT && (b'5' - offset) == 5);
+        const _: () = test_assert!(check_decimal_offset(b'6'), == offset if offset < NOT_A_DIGIT && (b'6' - offset) == 6);
+        const _: () = test_assert!(check_decimal_offset(b'7'), == offset if offset < NOT_A_DIGIT && (b'7' - offset) == 7);
+        const _: () = test_assert!(check_decimal_offset(b'8'), == offset if offset < NOT_A_DIGIT && (b'8' - offset) == 8);
+        const _: () = test_assert!(check_decimal_offset(b'9'), == offset if offset < NOT_A_DIGIT && (b'9' - offset) == 9);
         const _: () = test_assert!(check_decimal_offset(b'a'), == OUT_OF_RANGE);
         const _: () = test_assert!(check_decimal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(check_decimal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(check_decimal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(check_decimal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(check_decimal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_decimal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_decimal_offset(b'@'), == NOT_A_DIGIT);
 
         const _: () = test_assert!(parse_decimal_offset(b'0'), == 0);
         const _: () = test_assert!(parse_decimal_offset(b'1'), == 1);
@@ -1661,37 +1667,37 @@ mod tests {
         const _: () = test_assert!(parse_decimal_offset(b'9'), == 9);
         const _: () = test_assert!(parse_decimal_offset(b'a'), == OUT_OF_RANGE);
         const _: () = test_assert!(parse_decimal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(parse_decimal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(parse_decimal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(parse_decimal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(parse_decimal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_decimal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_decimal_offset(b'@'), == NOT_A_DIGIT);
 
-        const _: () = test_assert!(check_hexadecimal_offset(b'0'), == offset if offset < INVALID && (b'0' - offset) == 0);
-        const _: () = test_assert!(check_hexadecimal_offset(b'1'), == offset if offset < INVALID && (b'1' - offset) == 1);
-        const _: () = test_assert!(check_hexadecimal_offset(b'2'), == offset if offset < INVALID && (b'2' - offset) == 2);
-        const _: () = test_assert!(check_hexadecimal_offset(b'3'), == offset if offset < INVALID && (b'3' - offset) == 3);
-        const _: () = test_assert!(check_hexadecimal_offset(b'4'), == offset if offset < INVALID && (b'4' - offset) == 4);
-        const _: () = test_assert!(check_hexadecimal_offset(b'5'), == offset if offset < INVALID && (b'5' - offset) == 5);
-        const _: () = test_assert!(check_hexadecimal_offset(b'6'), == offset if offset < INVALID && (b'6' - offset) == 6);
-        const _: () = test_assert!(check_hexadecimal_offset(b'7'), == offset if offset < INVALID && (b'7' - offset) == 7);
-        const _: () = test_assert!(check_hexadecimal_offset(b'8'), == offset if offset < INVALID && (b'8' - offset) == 8);
-        const _: () = test_assert!(check_hexadecimal_offset(b'9'), == offset if offset < INVALID && (b'9' - offset) == 9);
-        const _: () = test_assert!(check_hexadecimal_offset(b'A'), == offset if offset < INVALID && (b'A' - offset) == 10);
-        const _: () = test_assert!(check_hexadecimal_offset(b'a'), == offset if offset < INVALID && (b'a' - offset) == 10);
-        const _: () = test_assert!(check_hexadecimal_offset(b'B'), == offset if offset < INVALID && (b'B' - offset) == 11);
-        const _: () = test_assert!(check_hexadecimal_offset(b'b'), == offset if offset < INVALID && (b'b' - offset) == 11);
-        const _: () = test_assert!(check_hexadecimal_offset(b'C'), == offset if offset < INVALID && (b'C' - offset) == 12);
-        const _: () = test_assert!(check_hexadecimal_offset(b'c'), == offset if offset < INVALID && (b'c' - offset) == 12);
-        const _: () = test_assert!(check_hexadecimal_offset(b'D'), == offset if offset < INVALID && (b'D' - offset) == 13);
-        const _: () = test_assert!(check_hexadecimal_offset(b'd'), == offset if offset < INVALID && (b'd' - offset) == 13);
-        const _: () = test_assert!(check_hexadecimal_offset(b'E'), == offset if offset < INVALID && (b'E' - offset) == 14);
-        const _: () = test_assert!(check_hexadecimal_offset(b'e'), == offset if offset < INVALID && (b'e' - offset) == 14);
-        const _: () = test_assert!(check_hexadecimal_offset(b'F'), == offset if offset < INVALID && (b'F' - offset) == 15);
-        const _: () = test_assert!(check_hexadecimal_offset(b'f'), == offset if offset < INVALID && (b'f' - offset) == 15);
+        const _: () = test_assert!(check_hexadecimal_offset(b'0'), == offset if offset < NOT_A_DIGIT && (b'0' - offset) == 0);
+        const _: () = test_assert!(check_hexadecimal_offset(b'1'), == offset if offset < NOT_A_DIGIT && (b'1' - offset) == 1);
+        const _: () = test_assert!(check_hexadecimal_offset(b'2'), == offset if offset < NOT_A_DIGIT && (b'2' - offset) == 2);
+        const _: () = test_assert!(check_hexadecimal_offset(b'3'), == offset if offset < NOT_A_DIGIT && (b'3' - offset) == 3);
+        const _: () = test_assert!(check_hexadecimal_offset(b'4'), == offset if offset < NOT_A_DIGIT && (b'4' - offset) == 4);
+        const _: () = test_assert!(check_hexadecimal_offset(b'5'), == offset if offset < NOT_A_DIGIT && (b'5' - offset) == 5);
+        const _: () = test_assert!(check_hexadecimal_offset(b'6'), == offset if offset < NOT_A_DIGIT && (b'6' - offset) == 6);
+        const _: () = test_assert!(check_hexadecimal_offset(b'7'), == offset if offset < NOT_A_DIGIT && (b'7' - offset) == 7);
+        const _: () = test_assert!(check_hexadecimal_offset(b'8'), == offset if offset < NOT_A_DIGIT && (b'8' - offset) == 8);
+        const _: () = test_assert!(check_hexadecimal_offset(b'9'), == offset if offset < NOT_A_DIGIT && (b'9' - offset) == 9);
+        const _: () = test_assert!(check_hexadecimal_offset(b'A'), == offset if offset < NOT_A_DIGIT && (b'A' - offset) == 10);
+        const _: () = test_assert!(check_hexadecimal_offset(b'a'), == offset if offset < NOT_A_DIGIT && (b'a' - offset) == 10);
+        const _: () = test_assert!(check_hexadecimal_offset(b'B'), == offset if offset < NOT_A_DIGIT && (b'B' - offset) == 11);
+        const _: () = test_assert!(check_hexadecimal_offset(b'b'), == offset if offset < NOT_A_DIGIT && (b'b' - offset) == 11);
+        const _: () = test_assert!(check_hexadecimal_offset(b'C'), == offset if offset < NOT_A_DIGIT && (b'C' - offset) == 12);
+        const _: () = test_assert!(check_hexadecimal_offset(b'c'), == offset if offset < NOT_A_DIGIT && (b'c' - offset) == 12);
+        const _: () = test_assert!(check_hexadecimal_offset(b'D'), == offset if offset < NOT_A_DIGIT && (b'D' - offset) == 13);
+        const _: () = test_assert!(check_hexadecimal_offset(b'd'), == offset if offset < NOT_A_DIGIT && (b'd' - offset) == 13);
+        const _: () = test_assert!(check_hexadecimal_offset(b'E'), == offset if offset < NOT_A_DIGIT && (b'E' - offset) == 14);
+        const _: () = test_assert!(check_hexadecimal_offset(b'e'), == offset if offset < NOT_A_DIGIT && (b'e' - offset) == 14);
+        const _: () = test_assert!(check_hexadecimal_offset(b'F'), == offset if offset < NOT_A_DIGIT && (b'F' - offset) == 15);
+        const _: () = test_assert!(check_hexadecimal_offset(b'f'), == offset if offset < NOT_A_DIGIT && (b'f' - offset) == 15);
         const _: () = test_assert!(check_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
         const _: () = test_assert!(check_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(check_hexadecimal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(check_hexadecimal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(check_hexadecimal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(check_hexadecimal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_hexadecimal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_hexadecimal_offset(b'@'), == NOT_A_DIGIT);
 
         const _: () = test_assert!(parse_hexadecimal_offset(b'0'), == 0);
         const _: () = test_assert!(parse_hexadecimal_offset(b'1'), == 1);
@@ -1717,21 +1723,21 @@ mod tests {
         const _: () = test_assert!(parse_hexadecimal_offset(b'f'), == 15);
         const _: () = test_assert!(parse_hexadecimal_offset(b'g'), == OUT_OF_RANGE);
         const _: () = test_assert!(parse_hexadecimal_offset(b'Z'), == OUT_OF_RANGE);
-        const _: () = test_assert!(parse_hexadecimal_offset(b'_'), == INVALID);
-        const _: () = test_assert!(parse_hexadecimal_offset(b'.'), == INVALID);
-        const _: () = test_assert!(parse_hexadecimal_offset(b'@'), == INVALID);
+        const _: () = test_assert!(parse_hexadecimal_offset(b'_'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_hexadecimal_offset(b'.'), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_hexadecimal_offset(b'@'), == NOT_A_DIGIT);
 
         const _: () = test_assert!(check_custom_offset(b'g', 00), == BASE_MIN);
         const _: () = test_assert!(check_custom_offset(b'g', 01), == BASE_MIN);
         const _: () = test_assert!(check_custom_offset(b'g', 02), != BASE_MIN);
         const _: () = test_assert!(check_custom_offset(b'g', 36), != BASE_MAX);
         const _: () = test_assert!(check_custom_offset(b'g', 37), == BASE_MAX);
-        const _: () = test_assert!(check_custom_offset(b'g', 17), == offset if offset < INVALID && (b'g' - offset) == 16);
-        const _: () = test_assert!(check_custom_offset(b'z', 36), == offset if offset < INVALID && (b'z' - offset) == 35);
+        const _: () = test_assert!(check_custom_offset(b'g', 17), == offset if offset < NOT_A_DIGIT && (b'g' - offset) == 16);
+        const _: () = test_assert!(check_custom_offset(b'z', 36), == offset if offset < NOT_A_DIGIT && (b'z' - offset) == 35);
         const _: () = test_assert!(check_custom_offset(b'z', 21), == OUT_OF_RANGE);
-        const _: () = test_assert!(check_custom_offset(b'_', 36), == INVALID);
-        const _: () = test_assert!(check_custom_offset(b'.', 36), == INVALID);
-        const _: () = test_assert!(check_custom_offset(b'@', 36), == INVALID);
+        const _: () = test_assert!(check_custom_offset(b'_', 36), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_custom_offset(b'.', 36), == NOT_A_DIGIT);
+        const _: () = test_assert!(check_custom_offset(b'@', 36), == NOT_A_DIGIT);
 
         const _: () = test_assert!(parse_custom_offset(b'g', 00), == BASE_MIN);
         const _: () = test_assert!(parse_custom_offset(b'g', 01), == BASE_MIN);
@@ -1741,9 +1747,9 @@ mod tests {
         const _: () = test_assert!(parse_custom_offset(b'g', 17), == 16);
         const _: () = test_assert!(parse_custom_offset(b'z', 36), == 35);
         const _: () = test_assert!(parse_custom_offset(b'z', 21), == OUT_OF_RANGE);
-        const _: () = test_assert!(parse_custom_offset(b'_', 36), == INVALID);
-        const _: () = test_assert!(parse_custom_offset(b'.', 36), == INVALID);
-        const _: () = test_assert!(parse_custom_offset(b'@', 36), == INVALID);
+        const _: () = test_assert!(parse_custom_offset(b'_', 36), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_custom_offset(b'.', 36), == NOT_A_DIGIT);
+        const _: () = test_assert!(parse_custom_offset(b'@', 36), == NOT_A_DIGIT);
     }
 
     mod _0_1_1_backwards_compatibility {
@@ -1753,7 +1759,7 @@ mod tests {
             Ascii, AsciiRange,
 
             Offset, OffsetCustomBase, DigitOffset, DigitOffsetCustomBase,
-            BASE_MAX, BASE_MIN, INVALID, OUT_OF_RANGE,
+            BASE_MAX, BASE_MIN, NOT_A_DIGIT, OUT_OF_RANGE,
 
             Base,
 
@@ -2067,7 +2073,7 @@ mod tests {
 
         const _: OffsetCustomBase = BASE_MAX;
         const _: OffsetCustomBase = BASE_MIN;
-        const _: Offset = INVALID;
+        const _: Offset = NOT_A_DIGIT;
         const _: Offset = OUT_OF_RANGE;
 
         const _: () = match b'0' {
