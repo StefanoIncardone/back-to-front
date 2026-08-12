@@ -22,6 +22,10 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ## 0.1.2 -
 
+### Added
+
+- Added `to_str()` methods to registers
+
 ### Changed
 
 - Improved arguments parsing

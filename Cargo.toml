@@ -145,3 +145,5 @@ manual_swap = "allow"
 ptr_as_ptr = "allow"
 get_last_with_len = "allow"
 get_first = "allow"
+
+items_after_statements = "allow" # BUG(stefano): does not work
