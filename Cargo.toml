@@ -2,7 +2,7 @@
 name = "back-to-front"
 version = "0.1.2-dev"
 edition = "2024"
-rust-version = "1.89.0"
+rust-version = "1.98.0"
 authors = ["Stefano Incardone"]
 categories = ["command-line-utilities"]
 keywords = ["compiler utility"]
@@ -119,6 +119,8 @@ no_effect_underscore_binding = "warn"
 len_without_is_empty = "allow"
 allow_attributes_without_reason = "allow"
 allow_attributes = "allow"
+question_mark = "allow"
+upper_case_acronyms = "allow"
 
 # doesn't solve the problem, i.e.:
 # ```rust
@@ -145,5 +147,12 @@ manual_swap = "allow"
 ptr_as_ptr = "allow"
 get_last_with_len = "allow"
 get_first = "allow"
+else_if_without_else = "allow"
+collapsible_else_if = "allow"
+collapsible_if = "allow"
+
+disallowed_names = "allow" # why is this even a lint?
+inline_trait_bounds = "allow"
 
 items_after_statements = "allow" # BUG(stefano): does not work
+doc_paragraphs_missing_punctuation = "allow"

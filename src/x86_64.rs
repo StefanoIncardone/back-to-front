@@ -829,6 +829,7 @@ impl Into<Reg8l> for Reg8h {
     }
 }
 
+#[expect(clippy::inline_modules)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {

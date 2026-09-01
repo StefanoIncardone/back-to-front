@@ -3,7 +3,7 @@ pub mod digit;
 pub mod src_code;
 pub mod x86_64;
 
-#[expect(non_camel_case_types, reason = "alias to primitive types")]
+#[expect(non_camel_case_types, clippy::inline_modules, reason = "alias to primitive types")]
 mod __primitives {
     pub type utf32 = char;
     pub type ascii = u8;

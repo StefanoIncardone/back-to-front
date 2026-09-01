@@ -25,6 +25,7 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 ### Added
 
 - Added `to_str()` methods to registers
+- Added `cli::AnsiFlag` enum
 
 ### Changed
 

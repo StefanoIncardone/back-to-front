@@ -65,7 +65,7 @@ impl Span {
 
 pub type Line = Span;
 
-#[expect(clippy::should_panic_without_expect, unused_imports)]
+#[expect(clippy::should_panic_without_expect, unused_imports, clippy::inline_modules)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {

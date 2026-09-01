@@ -1582,7 +1582,7 @@ pub const fn parse_tally(character: ascii, tally_symbol: ascii) -> Digit {
     };
 }
 
-#[expect(unreachable_patterns, dead_code)]
+#[expect(unreachable_patterns, dead_code, clippy::inline_modules, unused_imports)]
 #[cfg(test)]
 #[rustfmt::skip]
 mod tests {

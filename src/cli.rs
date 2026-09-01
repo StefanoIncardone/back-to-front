@@ -24,6 +24,9 @@ const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
     return array_slice;
 }
 
+/// # Panics
+///
+/// If two bits in the mask set collide
 #[must_use]
 pub const fn bits(masks: &[u8]) -> u8 {
     let mut mask = 0;
@@ -320,6 +323,19 @@ pub enum AnsiCode {
     NoUnderline  = 24,
     ReverseText  = 7,
     PositiveText = 27,
+}
+
+#[rustfmt::skip]
+#[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
+#[repr(u8)]
+pub enum AnsiFlag {
+    #[default]
+    Default      = 0b000_00000,
+    Bold         = 0b000_00001,
+    Underline    = 0b000_00010,
+    NoUnderline  = 0b000_00100,
+    ReverseText  = 0b000_01000,
+    PositiveText = 0b000_10000,
 }
 
 // TODO: backwards compatibility tests
