@@ -1,5 +1,5 @@
+use crate::{ascii, usize16};
 use core::fmt::Display;
-use crate::{ascii, uoffset16};
 
 #[must_use]
 #[inline(always)]
@@ -64,7 +64,6 @@ pub const fn mask_shift(mask: u8) -> u8 {
     return (u8::BITS - mask.leading_zeros()) as u8;
 }
 
-
 pub trait Mask: Sized {
     const MASK: u8;
     const MASK_SHIFT: u8 = mask_shift(Self::MASK);
@@ -101,7 +100,7 @@ impl FlagPrefix {
             Self::Empty => "",
             Self::Dash => "-",
             Self::DashDash => "--",
-        }
+        };
     }
 }
 
@@ -111,7 +110,6 @@ impl Display for FlagPrefix {
         return f.write_str(self.to_str());
     }
 }
-
 
 #[must_use]
 #[rustfmt::skip]
@@ -142,7 +140,7 @@ impl FlagSeparator {
             Self::Dash => "-",
             Self::Equals => "=",
             Self::Colon => ":",
-        }
+        };
     }
 }
 
@@ -153,7 +151,6 @@ impl Display for FlagSeparator {
     }
 }
 
-
 #[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub enum ArgResult {
@@ -161,12 +158,11 @@ pub enum ArgResult {
     MaxLen,
 }
 
-
 #[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct Arg {
     pub prefix: FlagPrefix,
-    pub key_text_len: uoffset16,
+    pub key_text_len: usize16,
     pub separator: FlagSeparator,
 }
 
@@ -192,7 +188,7 @@ impl Arg {
         let mut separator_index = prefix_len;
         let separator = loop {
             match get_byte(arg, separator_index) {
-                None =>       break FlagSeparator::Empty,
+                None => break FlagSeparator::Empty,
                 Some(b'-') => break FlagSeparator::Dash,
                 Some(b':') => break FlagSeparator::Colon,
                 Some(b'=') => break FlagSeparator::Equals,
@@ -201,12 +197,11 @@ impl Arg {
         };
 
         let key_text_len = separator_index - prefix_len;
-        if key_text_len > uoffset16::MAX as usize {
+        if key_text_len > usize16::MAX as usize {
             return ArgResult::MaxLen;
         }
-        return ArgResult::Ok(Self { prefix, key_text_len: key_text_len as uoffset16, separator });
+        return ArgResult::Ok(Self { prefix, key_text_len: key_text_len as usize16, separator });
     }
-
 
     #[must_use]
     pub const fn start_of_key_index(self) -> u16 {
@@ -228,7 +223,6 @@ impl Arg {
         let start_of_separator_index = self.start_of_separator_index();
         return Some(start_of_separator_index + self.separator.to_str().len() as u16);
     }
-
 
     #[must_use]
     /// # Safety
@@ -337,5 +331,3 @@ pub enum AnsiFlag {
     ReverseText  = 0b000_01000,
     PositiveText = 0b000_10000,
 }
-
-// TODO: backwards compatibility tests

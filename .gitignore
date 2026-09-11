@@ -1,9 +1,3 @@
-*.tldr
-
-# vscode settings, tasks and launch configurations
-.vscode
-
-# rust build artifacts
 target
 
-src/saved_for_later
+saved_for_later

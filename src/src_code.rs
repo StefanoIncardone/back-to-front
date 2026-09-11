@@ -1,34 +1,71 @@
-use crate::{ascii, uoffset32};
+use crate::{ascii, usize32};
 
-pub const LF: ascii = b'\n';
-pub const CR: ascii = b'\r';
-pub const LF_STR: &str = "\n";
-pub const CR_STR: &str = "\r";
-pub const CRLF_STR: &str = "\r\n";
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(usize)]
-pub enum LineEndLen {
-    LF = LF_STR.len(),
-    CRLF = CRLF_STR.len(),
+#[repr(u8)]
+pub enum LineEnd {
+    LF = Self::LF_STR.len() as u8,
+    CRLF = Self::CRLF_STR.len() as u8,
 }
 
-impl LineEndLen {
+impl LineEnd {
     pub const CR: Self = Self::LF;
+
+    pub const LF_CHAR: ascii = b'\n';
+    pub const CR_CHAR: ascii = b'\r';
+    pub const LF_STR: &str = "\n";
+    pub const CR_STR: &str = "\r";
+    pub const CRLF_STR: &str = "\r\n";
 }
+
+impl LineEnd {
+    #[must_use]
+    #[inline(always)]
+    pub const fn len(self) -> usize {
+        return self as usize;
+    }
+
+    #[must_use]
+    #[inline(always)]
+    pub const fn to_str(self) -> &'static str {
+        #[rustfmt::skip]
+        return match self {
+            Self::LF   => Self::LF_STR,
+            Self::CRLF => Self::CRLF_STR,
+        };
+    }
+}
+
 
 // IDEA(stefano): make generic over the type of start and end
-    // - constrain the generic type to be number-like
+// - constrain the generic type to be number-like
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
 pub struct Span {
     /// Inclusive and less that or equal to [`Self::end()`]
-    pub(crate) start: uoffset32,
+    pub(crate) start: usize32,
 
     /// Non inclusive and greater than [`Self::start()`]
-    pub(crate) end: uoffset32,
+    pub(crate) end: usize32,
 }
 
 // TODO(stefano): add debug_assert/panic/checked/unchecked setters for `start` and `end`
+// Getters
+impl Span {
+    /// Inclusive and less that or equal to [`Self::end()`]
+    #[must_use]
+    #[inline(always)]
+    pub const fn start(self) -> usize32 {
+        return self.start;
+    }
+
+    /// Non inclusive and greater than [`Self::start()`]
+    #[must_use]
+    #[inline(always)]
+    pub const fn end(self) -> usize32 {
+        return self.end;
+    }
+}
+
 impl Span {
     /// # Safety
     ///
@@ -36,63 +73,19 @@ impl Span {
     #[must_use]
     #[inline(always)]
     #[track_caller]
-    pub const unsafe fn new_unchecked(start: uoffset32, end: uoffset32) -> Self {
+    pub const unsafe fn new_unchecked(start: usize32, end: usize32) -> Self {
         debug_assert!(start <= end, "`start` must be less than or equal to `end`");
         return Self { start, end };
     }
 
     #[must_use]
     #[inline]
-    pub const fn new(start: uoffset32, end: uoffset32) -> Option<Self> {
+    pub const fn new(start: usize32, end: usize32) -> Option<Self> {
         if start > end {
             return None;
         }
         return Some(Self { start, end });
     }
-
-    #[must_use]
-    #[inline(always)]
-    pub const fn start(self) -> uoffset32 {
-        return self.start;
-    }
-
-    #[must_use]
-    #[inline(always)]
-    pub const fn end(self) -> uoffset32 {
-        return self.end;
-    }
 }
 
 pub type Line = Span;
-
-#[expect(clippy::should_panic_without_expect, unused_imports, clippy::inline_modules)]
-#[cfg(test)]
-#[rustfmt::skip]
-mod tests {
-    mod _0_1_0_functionality {
-        use crate::{src_code::Span, test_assert};
-
-        const _: () = test_assert!(unsafe { Span::new_unchecked(0, 0) }, == Span { start: 0, end: 0 });
-
-        #[should_panic]
-        #[test]
-        const fn span_new_unchecked_should_panic() {
-            let _ = unsafe { Span::new_unchecked(1, 0) };
-        }
-
-        const _: () = test_assert!(Span::new(0, 0), == Some(Span { start: 0, end: 0 }));
-        const _: () = test_assert!(Span::new(1, 0), == None);
-    }
-
-    #[expect(deprecated)]
-    mod _0_1_0_backwards_compatibility {
-        use crate::{offset32, src_code::{
-            Line, Span
-        }};
-
-        const _: unsafe fn(offset32, offset32) -> Span         = Span::new_unchecked;
-        const _:        fn(offset32, offset32) -> Option<Span> = Span::new;
-        const _:        fn(Span) -> offset32                   = Span::start;
-        const _:        fn(Span) -> offset32                   = Span::end;
-    }
-}

@@ -52,8 +52,8 @@ restriction = { level = "warn", priority = -1 }
 cargo = { level = "warn", priority = -1 }
 
 # still not convinced on the benefits of either approaches
-self_named_module_files = "allow"
-mod_module_files = "warn"
+self_named_module_files = "warn"
+mod_module_files = "allow"
 
 module_name_repetitions = "allow" # unrealiable
 struct_field_names = "allow" # unreliable
@@ -153,6 +153,7 @@ collapsible_if = "allow"
 
 disallowed_names = "allow" # why is this even a lint?
 inline_trait_bounds = "allow"
+inline_modules = "allow"
 
 items_after_statements = "allow" # BUG(stefano): does not work
 doc_paragraphs_missing_punctuation = "allow"

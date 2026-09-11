@@ -11,7 +11,6 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 
 ## Unrealeased
 
-- More ergonomic digits global constants and bases modules
 - Index iterators
 - More type safe `Base` enum with all possible bases, which would allow for the safe removal of
     base min and max errors, constants and enum variants
@@ -30,6 +29,12 @@ but may switch to [CalVer Versioning](https://calver.org/) in the future.
 ### Changed
 
 - Improved arguments parsing
+- Renamed `offset*` aliases to `usize*`/`isize*`
+- Better `digit` modules organization
+
+### Removed
+
+- Removed deprecations to keep the code simple
 
 ## 0.1.1 - 2025/11/08
 
