@@ -12,13 +12,13 @@ impl Ascii for ascii {}
 impl Ascii for utf32 {}
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[must_use]
 pub struct AsciiRange<I: Ascii> {
     pub start: I,
     pub end: I,
 }
 
 impl<I: Ascii> AsciiRange<I> {
-    #[must_use]
     #[inline(always)]
     pub const fn new(start: I, end: I) -> Self {
         return Self { start, end };
@@ -26,27 +26,23 @@ impl<I: Ascii> AsciiRange<I> {
 }
 
 impl<I: Ascii> AsciiRange<I> {
-    #[must_use]
     #[inline(always)]
     pub const fn from_range_inclusive(value: RangeInclusive<I>) -> Self {
         return Self { start: *value.start(), end: *value.end() };
     }
 
-    #[must_use]
-    #[inline(always)]
+    #[must_use] #[inline(always)]
     pub const fn to_range_inclusive(self) -> RangeInclusive<I> {
         return RangeInclusive::new(self.start, self.end);
     }
 }
 
 impl AsciiRange<ascii> {
-    #[must_use]
     #[inline(always)]
     pub const fn from_utf32(other: AsciiRange<utf32>) -> Self {
         return other.to_ascii();
     }
 
-    #[must_use]
     #[inline(always)]
     pub const fn to_utf32(self) -> AsciiRange<utf32> {
         return AsciiRange { start: self.start as utf32, end: self.end as utf32 };
@@ -54,13 +50,11 @@ impl AsciiRange<ascii> {
 }
 
 impl AsciiRange<utf32> {
-    #[must_use]
     #[inline(always)]
     pub const fn from_ascii(other: AsciiRange<ascii>) -> Self {
         return other.to_utf32();
     }
 
-    #[must_use]
     #[inline(always)]
     pub const fn to_ascii(self) -> AsciiRange<ascii> {
         return AsciiRange { start: self.start as ascii, end: self.end as ascii };
@@ -89,12 +83,12 @@ impl<I: Ascii + core::fmt::Display> core::fmt::Display for AsciiRange<I> {
 
 
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Base {
-    Binary = 0b10,
-    Octal = 0o10,
+    Binary      = 0b10,
+    Octal       = 0o10,
     #[default]
-    Decimal = 10,
+    Decimal     = 10,
     Hexadecimal = 0x10,
 }
 
@@ -105,7 +99,6 @@ impl Base {
 
 #[rustfmt::skip]
 impl Base {
-    #[must_use]
     #[inline]
     pub const fn range(self) -> &'static [AsciiRange<ascii>] {
         return match self {
@@ -116,7 +109,6 @@ impl Base {
         };
     }
 
-    #[must_use]
     #[inline]
     pub const fn range_utf32(self) -> &'static [AsciiRange<utf32>] {
         return match self {
@@ -127,8 +119,7 @@ impl Base {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn range_ops(self) -> &'static [RangeInclusive<ascii>] {
         return match self {
             Self::Binary      => &binary::RANGES_OPS,
@@ -138,8 +129,7 @@ impl Base {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn range_ops_utf32(self) -> &'static [RangeInclusive<utf32>] {
         return match self {
             Self::Binary      => &binary::RANGES_OPS_UTF32,
@@ -152,14 +142,14 @@ impl Base {
 
 
 // Parsing
-pub type Offset = ascii;
+pub type Offset           = ascii;
 pub type OffsetCustomBase = ascii;
-pub type Digit = u8;
-pub type DigitCustomBase = u8;
+pub type Digit            = u8;
+pub type DigitCustomBase  = u8;
 
 // Note: this enum exists just to leverage the enum mechanism of assigning discriminants
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 enum OffsetResult {
     NotADigit = 0b1000_0000,
     OutOfRange,
@@ -167,14 +157,13 @@ enum OffsetResult {
     BaseMax,
 }
 
-pub const NOT_A_DIGIT: Offset = OffsetResult::NotADigit as Offset;
-pub const OUT_OF_RANGE: Offset = OffsetResult::OutOfRange as Offset;
-pub const BASE_MIN: OffsetCustomBase = OffsetResult::BaseMin as OffsetCustomBase;
-pub const BASE_MAX: OffsetCustomBase = OffsetResult::BaseMax as OffsetCustomBase;
+pub const NOT_A_DIGIT:  Offset           = OffsetResult::NotADigit as Offset;
+pub const OUT_OF_RANGE: Offset           = OffsetResult::OutOfRange as Offset;
+pub const BASE_MIN:     OffsetCustomBase = OffsetResult::BaseMin as OffsetCustomBase;
+pub const BASE_MAX:     OffsetCustomBase = OffsetResult::BaseMax as OffsetCustomBase;
 
 impl Base {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(self, ch: ascii) -> Offset {
         #[rustfmt::skip]
         return match self {
@@ -185,8 +174,7 @@ impl Base {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(self, ch: ascii) -> Digit {
         #[rustfmt::skip]
         return match self {
@@ -210,22 +198,22 @@ pub mod binary {
     pub const UPPERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'A',          end: b'Z' };
     pub const LOWERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'a',          end: b'z' };
 
-    pub const RANGES:       [AsciiRange<ascii>; 1] = [DIGIT];
-    pub const RANGES_UTF32: [AsciiRange<utf32>; 1] = [DIGIT.to_utf32()];
+    pub const RANGES:           [AsciiRange<ascii>; 1]     = [DIGIT];
+    pub const RANGES_UTF32:     [AsciiRange<utf32>; 1]     = [DIGIT.to_utf32()];
 
     pub const RANGES_OPS:       [RangeInclusive<ascii>; 1] = [DIGIT.to_range_inclusive()];
     pub const RANGES_OPS_UTF32: [RangeInclusive<utf32>; 1] = [DIGIT.to_utf32().to_range_inclusive()];
 
     //# Ranges constants
 
-    pub const DIGIT_START:                  u8 = DIGIT.start;
-    pub const DIGIT_END:                    u8 = DIGIT.end;
-    pub const DIGIT_OUT_OF_RANGE_START:     u8 = DIGIT_OUT_OF_RANGE.start;
-    pub const DIGIT_OUT_OF_RANGE_END:       u8 = DIGIT_OUT_OF_RANGE.end;
-    pub const UPPERCASE_OUT_OF_RANGE_START: u8 = UPPERCASE_OUT_OF_RANGE.start;
-    pub const UPPERCASE_OUT_OF_RANGE_END:   u8 = UPPERCASE_OUT_OF_RANGE.end;
-    pub const LOWERCASE_OUT_OF_RANGE_START: u8 = LOWERCASE_OUT_OF_RANGE.start;
-    pub const LOWERCASE_OUT_OF_RANGE_END:   u8 = LOWERCASE_OUT_OF_RANGE.end;
+    pub const DIGIT_START:                        u8    = DIGIT.start;
+    pub const DIGIT_END:                          u8    = DIGIT.end;
+    pub const DIGIT_OUT_OF_RANGE_START:           u8    = DIGIT_OUT_OF_RANGE.start;
+    pub const DIGIT_OUT_OF_RANGE_END:             u8    = DIGIT_OUT_OF_RANGE.end;
+    pub const UPPERCASE_OUT_OF_RANGE_START:       u8    = UPPERCASE_OUT_OF_RANGE.start;
+    pub const UPPERCASE_OUT_OF_RANGE_END:         u8    = UPPERCASE_OUT_OF_RANGE.end;
+    pub const LOWERCASE_OUT_OF_RANGE_START:       u8    = LOWERCASE_OUT_OF_RANGE.start;
+    pub const LOWERCASE_OUT_OF_RANGE_END:         u8    = LOWERCASE_OUT_OF_RANGE.end;
 
     pub const DIGIT_START_UTF32:                  utf32 = DIGIT_START as utf32;
     pub const DIGIT_END_UTF32:                    utf32 = DIGIT_END as utf32;
@@ -281,8 +269,7 @@ pub mod binary {
 
     //# Parsing
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(ch: ascii) -> Offset {
         return match ch {
             binary_digit!()        => DIGIT_OFFSET,
@@ -291,8 +278,7 @@ pub mod binary {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(ch: ascii) -> Digit {
         let offset = match ch {
             binary_digit!()        => DIGIT_OFFSET,
@@ -315,22 +301,22 @@ pub mod octal {
     pub const UPPERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'A',          end: b'Z' };
     pub const LOWERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'a',          end: b'z' };
 
-    pub const RANGES:       [AsciiRange<ascii>; 1] = [DIGIT];
-    pub const RANGES_UTF32: [AsciiRange<utf32>; 1] = [DIGIT.to_utf32()];
+    pub const RANGES:           [AsciiRange<ascii>; 1]     = [DIGIT];
+    pub const RANGES_UTF32:     [AsciiRange<utf32>; 1]     = [DIGIT.to_utf32()];
 
     pub const RANGES_OPS:       [RangeInclusive<ascii>; 1] = [DIGIT.to_range_inclusive()];
     pub const RANGES_OPS_UTF32: [RangeInclusive<utf32>; 1] = [DIGIT.to_utf32().to_range_inclusive()];
 
     //# Ranges constants
 
-    pub const DIGIT_START:                  u8 = DIGIT.start;
-    pub const DIGIT_END:                    u8 = DIGIT.end;
-    pub const DIGIT_OUT_OF_RANGE_START:     u8 = DIGIT_OUT_OF_RANGE.start;
-    pub const DIGIT_OUT_OF_RANGE_END:       u8 = DIGIT_OUT_OF_RANGE.end;
-    pub const UPPERCASE_OUT_OF_RANGE_START: u8 = UPPERCASE_OUT_OF_RANGE.start;
-    pub const UPPERCASE_OUT_OF_RANGE_END:   u8 = UPPERCASE_OUT_OF_RANGE.end;
-    pub const LOWERCASE_OUT_OF_RANGE_START: u8 = LOWERCASE_OUT_OF_RANGE.start;
-    pub const LOWERCASE_OUT_OF_RANGE_END:   u8 = LOWERCASE_OUT_OF_RANGE.end;
+    pub const DIGIT_START:                        u8    = DIGIT.start;
+    pub const DIGIT_END:                          u8    = DIGIT.end;
+    pub const DIGIT_OUT_OF_RANGE_START:           u8    = DIGIT_OUT_OF_RANGE.start;
+    pub const DIGIT_OUT_OF_RANGE_END:             u8    = DIGIT_OUT_OF_RANGE.end;
+    pub const UPPERCASE_OUT_OF_RANGE_START:       u8    = UPPERCASE_OUT_OF_RANGE.start;
+    pub const UPPERCASE_OUT_OF_RANGE_END:         u8    = UPPERCASE_OUT_OF_RANGE.end;
+    pub const LOWERCASE_OUT_OF_RANGE_START:       u8    = LOWERCASE_OUT_OF_RANGE.start;
+    pub const LOWERCASE_OUT_OF_RANGE_END:         u8    = LOWERCASE_OUT_OF_RANGE.end;
 
     pub const DIGIT_START_UTF32:                  utf32 = DIGIT_START as utf32;
     pub const DIGIT_END_UTF32:                    utf32 = DIGIT_END as utf32;
@@ -385,8 +371,7 @@ pub mod octal {
 
     //# Parsing
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(ch: ascii) -> Offset {
         return match ch {
             octal_digit!()        => DIGIT_OFFSET,
@@ -395,8 +380,7 @@ pub mod octal {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(ch: ascii) -> Digit {
         let offset = match ch {
             octal_digit!()        => DIGIT_OFFSET,
@@ -418,20 +402,20 @@ pub mod decimal {
     pub const UPPERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'A', end: b'Z' };
     pub const LOWERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'a', end: b'z' };
 
-    pub const RANGES:       [AsciiRange<ascii>; 1] = [DIGIT];
-    pub const RANGES_UTF32: [AsciiRange<utf32>; 1] = [DIGIT.to_utf32()];
+    pub const RANGES:           [AsciiRange<ascii>; 1]     = [DIGIT];
+    pub const RANGES_UTF32:     [AsciiRange<utf32>; 1]     = [DIGIT.to_utf32()];
 
     pub const RANGES_OPS:       [RangeInclusive<ascii>; 1] = [DIGIT.to_range_inclusive()];
     pub const RANGES_OPS_UTF32: [RangeInclusive<utf32>; 1] = [DIGIT.to_utf32().to_range_inclusive()];
 
     //# Ranges constants
 
-    pub const DIGIT_START:                  u8 = DIGIT.start;
-    pub const DIGIT_END:                    u8 = DIGIT.end;
-    pub const UPPERCASE_OUT_OF_RANGE_START: u8 = UPPERCASE_OUT_OF_RANGE.start;
-    pub const UPPERCASE_OUT_OF_RANGE_END:   u8 = UPPERCASE_OUT_OF_RANGE.end;
-    pub const LOWERCASE_OUT_OF_RANGE_START: u8 = LOWERCASE_OUT_OF_RANGE.start;
-    pub const LOWERCASE_OUT_OF_RANGE_END:   u8 = LOWERCASE_OUT_OF_RANGE.end;
+    pub const DIGIT_START:                        u8    = DIGIT.start;
+    pub const DIGIT_END:                          u8    = DIGIT.end;
+    pub const UPPERCASE_OUT_OF_RANGE_START:       u8    = UPPERCASE_OUT_OF_RANGE.start;
+    pub const UPPERCASE_OUT_OF_RANGE_END:         u8    = UPPERCASE_OUT_OF_RANGE.end;
+    pub const LOWERCASE_OUT_OF_RANGE_START:       u8    = LOWERCASE_OUT_OF_RANGE.start;
+    pub const LOWERCASE_OUT_OF_RANGE_END:         u8    = LOWERCASE_OUT_OF_RANGE.end;
 
     pub const DIGIT_START_UTF32:                  utf32 = DIGIT_START as utf32;
     pub const DIGIT_END_UTF32:                    utf32 = DIGIT_END as utf32;
@@ -474,8 +458,7 @@ pub mod decimal {
 
     //# Parsing
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(ch: ascii) -> Offset {
         return match ch {
             decimal_digit!()        => DIGIT_OFFSET,
@@ -484,8 +467,7 @@ pub mod decimal {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(ch: ascii) -> Digit {
         let offset = match ch {
             decimal_digit!()        => DIGIT_OFFSET,
@@ -509,24 +491,24 @@ pub mod hexadecimal {
     pub const UPPERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'A', end: b'Z' };
     pub const LOWERCASE_OUT_OF_RANGE: AsciiRange<ascii> = AsciiRange { start: b'a', end: b'z' };
 
-    pub const RANGES:       [AsciiRange<ascii>; 3] = [DIGIT,            UPPERCASE,            LOWERCASE];
-    pub const RANGES_UTF32: [AsciiRange<utf32>; 3] = [DIGIT.to_utf32(), UPPERCASE.to_utf32(), LOWERCASE.to_utf32()];
+    pub const RANGES:           [AsciiRange<ascii>; 3]     = [DIGIT,                                 UPPERCASE,                                 LOWERCASE];
+    pub const RANGES_UTF32:     [AsciiRange<utf32>; 3]     = [DIGIT.to_utf32(),                      UPPERCASE.to_utf32(),                      LOWERCASE.to_utf32()];
 
     pub const RANGES_OPS:       [RangeInclusive<ascii>; 3] = [DIGIT.to_range_inclusive(),            UPPERCASE.to_range_inclusive(),            LOWERCASE.to_range_inclusive()];
     pub const RANGES_OPS_UTF32: [RangeInclusive<utf32>; 3] = [DIGIT.to_utf32().to_range_inclusive(), UPPERCASE.to_utf32().to_range_inclusive(), LOWERCASE.to_utf32().to_range_inclusive()];
 
     //# Ranges constants
 
-    pub const DIGIT_START:                  u8 = DIGIT.start;
-    pub const DIGIT_END:                    u8 = DIGIT.end;
-    pub const UPPERCASE_START:              u8 = UPPERCASE.start;
-    pub const UPPERCASE_END:                u8 = UPPERCASE.end;
-    pub const LOWERCASE_START:              u8 = LOWERCASE.start;
-    pub const LOWERCASE_END:                u8 = LOWERCASE.end;
-    pub const UPPERCASE_OUT_OF_RANGE_START: u8 = UPPERCASE_OUT_OF_RANGE.start;
-    pub const UPPERCASE_OUT_OF_RANGE_END:   u8 = UPPERCASE_OUT_OF_RANGE.end;
-    pub const LOWERCASE_OUT_OF_RANGE_START: u8 = LOWERCASE_OUT_OF_RANGE.start;
-    pub const LOWERCASE_OUT_OF_RANGE_END:   u8 = LOWERCASE_OUT_OF_RANGE.end;
+    pub const DIGIT_START:                        u8    = DIGIT.start;
+    pub const DIGIT_END:                          u8    = DIGIT.end;
+    pub const UPPERCASE_START:                    u8    = UPPERCASE.start;
+    pub const UPPERCASE_END:                      u8    = UPPERCASE.end;
+    pub const LOWERCASE_START:                    u8    = LOWERCASE.start;
+    pub const LOWERCASE_END:                      u8    = LOWERCASE.end;
+    pub const UPPERCASE_OUT_OF_RANGE_START:       u8    = UPPERCASE_OUT_OF_RANGE.start;
+    pub const UPPERCASE_OUT_OF_RANGE_END:         u8    = UPPERCASE_OUT_OF_RANGE.end;
+    pub const LOWERCASE_OUT_OF_RANGE_START:       u8    = LOWERCASE_OUT_OF_RANGE.start;
+    pub const LOWERCASE_OUT_OF_RANGE_END:         u8    = LOWERCASE_OUT_OF_RANGE.end;
 
     pub const DIGIT_START_UTF32:                  utf32 = DIGIT_START as utf32;
     pub const DIGIT_END_UTF32:                    utf32 = DIGIT_END as utf32;
@@ -585,8 +567,7 @@ pub mod hexadecimal {
 
     //# Parsing
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(ch: ascii) -> Offset {
         return match ch {
             hexadecimal_digit!()        => DIGIT_OFFSET,
@@ -595,8 +576,7 @@ pub mod hexadecimal {
         };
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(ch: ascii) -> Digit {
         let offset = match ch {
             hexadecimal_digit!()        => DIGIT_OFFSET,
@@ -618,17 +598,17 @@ pub mod any {
     pub const UPPERCASE: AsciiRange<ascii> = AsciiRange { start: b'A', end: b'Z' };
     pub const LOWERCASE: AsciiRange<ascii> = AsciiRange { start: b'a', end: b'z' };
 
-    pub const RANGES:         [AsciiRange<ascii>; 3] = [DIGIT, UPPERCASE, LOWERCASE];
-    pub const DIGIT_RANGES:   [AsciiRange<ascii>; 1] = [DIGIT];
-    pub const LETTERS_RANGES: [AsciiRange<ascii>; 2] = [       UPPERCASE, LOWERCASE];
+    pub const RANGES:                   [AsciiRange<ascii>; 3]     = [DIGIT,                                 UPPERCASE,                                 LOWERCASE];
+    pub const DIGIT_RANGES:             [AsciiRange<ascii>; 1]     = [DIGIT];
+    pub const LETTERS_RANGES:           [AsciiRange<ascii>; 2]     = [                                       UPPERCASE,                                 LOWERCASE];
 
-    pub const RANGES_UTF32:         [AsciiRange<utf32>; 3] = [DIGIT.to_utf32(), UPPERCASE.to_utf32(), LOWERCASE.to_utf32()];
-    pub const DIGIT_RANGES_UTF32:   [AsciiRange<utf32>; 1] = [DIGIT.to_utf32()];
-    pub const LETTERS_RANGES_UTF32: [AsciiRange<utf32>; 2] = [                  UPPERCASE.to_utf32(), LOWERCASE.to_utf32()];
+    pub const RANGES_UTF32:             [AsciiRange<utf32>; 3]     = [DIGIT.to_utf32(),                      UPPERCASE.to_utf32(),                      LOWERCASE.to_utf32()];
+    pub const DIGIT_RANGES_UTF32:       [AsciiRange<utf32>; 1]     = [DIGIT.to_utf32()];
+    pub const LETTERS_RANGES_UTF32:     [AsciiRange<utf32>; 2]     = [                                       UPPERCASE.to_utf32(),                      LOWERCASE.to_utf32()];
 
-    pub const RANGES_OPS:         [RangeInclusive<ascii>; 3] = [DIGIT.to_range_inclusive(), UPPERCASE.to_range_inclusive(), LOWERCASE.to_range_inclusive()];
-    pub const DIGIT_RANGES_OPS:   [RangeInclusive<ascii>; 1] = [DIGIT.to_range_inclusive()];
-    pub const LETTERS_RANGES_OPS: [RangeInclusive<ascii>; 2] = [                            UPPERCASE.to_range_inclusive(), LOWERCASE.to_range_inclusive()];
+    pub const RANGES_OPS:               [RangeInclusive<ascii>; 3] = [DIGIT.to_range_inclusive(),            UPPERCASE.to_range_inclusive(),            LOWERCASE.to_range_inclusive()];
+    pub const DIGIT_RANGES_OPS:         [RangeInclusive<ascii>; 1] = [DIGIT.to_range_inclusive()];
+    pub const LETTERS_RANGES_OPS:       [RangeInclusive<ascii>; 2] = [                                       UPPERCASE.to_range_inclusive(),            LOWERCASE.to_range_inclusive()];
 
     pub const RANGES_OPS_UTF32:         [RangeInclusive<utf32>; 3] = [DIGIT.to_utf32().to_range_inclusive(), UPPERCASE.to_utf32().to_range_inclusive(), LOWERCASE.to_utf32().to_range_inclusive()];
     pub const DIGIT_RANGES_OPS_UTF32:   [RangeInclusive<utf32>; 1] = [DIGIT.to_utf32().to_range_inclusive()];
@@ -636,19 +616,19 @@ pub mod any {
 
     //# Ranges constants
 
-    pub const DIGIT_START:                  u8 = DIGIT.start;
-    pub const DIGIT_END:                    u8 = DIGIT.end;
-    pub const UPPERCASE_START:              u8 = UPPERCASE.start;
-    pub const UPPERCASE_END:                u8 = UPPERCASE.end;
-    pub const LOWERCASE_START:              u8 = LOWERCASE.start;
-    pub const LOWERCASE_END:                u8 = LOWERCASE.end;
+    pub const DIGIT_START:           u8    = DIGIT.start;
+    pub const DIGIT_END:             u8    = DIGIT.end;
+    pub const UPPERCASE_START:       u8    = UPPERCASE.start;
+    pub const UPPERCASE_END:         u8    = UPPERCASE.end;
+    pub const LOWERCASE_START:       u8    = LOWERCASE.start;
+    pub const LOWERCASE_END:         u8    = LOWERCASE.end;
 
-    pub const DIGIT_START_UTF32:                  utf32 = DIGIT_START as utf32;
-    pub const DIGIT_END_UTF32:                    utf32 = DIGIT_END as utf32;
-    pub const UPPERCASE_START_UTF32:              utf32 = UPPERCASE_START as utf32;
-    pub const UPPERCASE_END_UTF32:                utf32 = UPPERCASE_END as utf32;
-    pub const LOWERCASE_START_UTF32:              utf32 = LOWERCASE_START as utf32;
-    pub const LOWERCASE_END_UTF32:                utf32 = LOWERCASE_END as utf32;
+    pub const DIGIT_START_UTF32:     utf32 = DIGIT_START as utf32;
+    pub const DIGIT_END_UTF32:       utf32 = DIGIT_END as utf32;
+    pub const UPPERCASE_START_UTF32: utf32 = UPPERCASE_START as utf32;
+    pub const UPPERCASE_END_UTF32:   utf32 = UPPERCASE_END as utf32;
+    pub const LOWERCASE_START_UTF32: utf32 = LOWERCASE_START as utf32;
+    pub const LOWERCASE_END_UTF32:   utf32 = LOWERCASE_END as utf32;
 
     pub const DIGIT_OFFSET:     u8 = DIGIT_START;
     pub const UPPERCASE_OFFSET: u8 = UPPERCASE_START - Base::Decimal as u8;
@@ -670,57 +650,45 @@ pub mod any {
 
     //# Methods
 
-    #[must_use] #[inline] pub const fn is_digit(ch: ascii)          -> bool { return matches!(ch, digit!()); }
-    #[must_use] #[inline] pub const fn is_uppercase(ch: ascii)      -> bool { return matches!(ch, uppercase!()); }
-    #[must_use] #[inline] pub const fn is_lowercase(ch: ascii)      -> bool { return matches!(ch, lowercase!()); }
-    #[must_use] #[inline] pub const fn is_letter(ch: ascii)         -> bool { return is_uppercase(ch) || is_lowercase(ch); }
-    #[must_use] #[inline] pub const fn is(ch: ascii)                -> bool { return is_digit(ch) || is_letter(ch); }
+    #[must_use] #[inline] pub const fn is_digit(ch: ascii)     -> bool { return matches!(ch, digit!()); }
+    #[must_use] #[inline] pub const fn is_uppercase(ch: ascii) -> bool { return matches!(ch, uppercase!()); }
+    #[must_use] #[inline] pub const fn is_lowercase(ch: ascii) -> bool { return matches!(ch, lowercase!()); }
+    #[must_use] #[inline] pub const fn is_letter(ch: ascii)    -> bool { return is_uppercase(ch) || is_lowercase(ch); }
+    #[must_use] #[inline] pub const fn is(ch: ascii)           -> bool { return is_digit(ch) || is_letter(ch); }
 
     //# Parsing
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn check(ch: ascii, base: u8) -> OffsetCustomBase {
-        if base < Base::MIN {
-            return BASE_MIN;
-        }
-        if base > Base::MAX {
-            return BASE_MAX;
-        }
+        if base < Base::MIN { return BASE_MIN; }
+        if base > Base::MAX { return BASE_MAX; }
 
         let offset = match ch {
-            digit!() => DIGIT_OFFSET,
+            digit!()     => DIGIT_OFFSET,
             uppercase!() => UPPERCASE_OFFSET,
             lowercase!() => LOWERCASE_OFFSET,
-            _ => return NOT_A_DIGIT,
+            _            => return NOT_A_DIGIT,
         };
+
         let digit = ch - offset;
-        if digit >= base {
-            return OUT_OF_RANGE;
-        }
+        if digit >= base { return OUT_OF_RANGE; }
         return offset;
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn parse(ch: ascii, base: u8) -> DigitCustomBase {
-        if base < Base::MIN {
-            return BASE_MIN;
-        }
-        if base > Base::MAX {
-            return BASE_MAX;
-        }
+        if base < Base::MIN { return BASE_MIN; }
+        if base > Base::MAX { return BASE_MAX; }
 
         let offset = match ch {
-            digit!() => DIGIT_OFFSET,
+            digit!()     => DIGIT_OFFSET,
             uppercase!() => UPPERCASE_OFFSET,
             lowercase!() => LOWERCASE_OFFSET,
-            _ => return NOT_A_DIGIT,
+            _            => return NOT_A_DIGIT,
         };
+
         let digit = ch - offset;
-        if digit >= base {
-            return OUT_OF_RANGE;
-        }
+        if digit >= base { return OUT_OF_RANGE; }
         return digit;
     }
 }

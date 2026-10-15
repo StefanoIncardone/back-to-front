@@ -2,7 +2,7 @@ use core::fmt::Display;
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Reg64 {
     Rax = 0,
     Rbx = 1,
@@ -25,8 +25,7 @@ pub enum Reg64 {
 }
 
 impl Reg64 {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         #[rustfmt::skip]
         return match self {
@@ -61,7 +60,7 @@ impl Display for Reg64 {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Reg32 {
     Eax  = Reg64::Rax as u8,
     Ebx  = Reg64::Rbx as u8,
@@ -84,8 +83,7 @@ pub enum Reg32 {
 }
 
 impl Reg32 {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         #[rustfmt::skip]
         return match self {
@@ -120,7 +118,7 @@ impl Display for Reg32 {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Reg16 {
     Ax   = Reg64::Rax as u8,
     Bx   = Reg64::Rbx as u8,
@@ -143,8 +141,7 @@ pub enum Reg16 {
 }
 
 impl Reg16 {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         #[rustfmt::skip]
         return match self {
@@ -179,7 +176,7 @@ impl Display for Reg16 {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Reg8l {
     Al   = Reg64::Rax as u8,
     Bl   = Reg64::Rbx as u8,
@@ -202,8 +199,7 @@ pub enum Reg8l {
 }
 
 impl Reg8l {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         #[rustfmt::skip]
         return match self {
@@ -237,7 +233,7 @@ impl Display for Reg8l {
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum Reg8h {
     Ah = Reg64::Rax as u8,
     Bh = Reg64::Rbx as u8,
@@ -246,8 +242,7 @@ pub enum Reg8h {
 }
 
 impl Reg8h {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         return match self {
             Self::Ah => "ah",
@@ -266,15 +261,12 @@ impl Display for Reg8h {
 }
 
 impl Reg64 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg32(self) -> Reg32 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg32`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg32(self) -> Reg32 {
         return self.as_Reg32();
@@ -289,15 +281,12 @@ impl Into<Reg32> for Reg64 {
 }
 
 impl Reg64 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg16(self) -> Reg16 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg16`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg16(self) -> Reg16 {
         return self.as_Reg16();
@@ -312,15 +301,12 @@ impl Into<Reg16> for Reg64 {
 }
 
 impl Reg64 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg8l(self) -> Reg8l {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8l`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg8l(self) -> Reg8l {
         return self.as_Reg8l();
@@ -338,8 +324,6 @@ impl Reg64 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
         return unsafe { core::mem::transmute(self) };
@@ -350,27 +334,23 @@ impl Reg64 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
         return unsafe { self.as_Reg8h_unsafe() };
     }
 
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[allow(clippy::enum_glob_use)]
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         use Reg64::*;
         return match self {
-            Rax | Rbx | Rcx | Rdx => Some(unsafe { self.as_Reg8h_unsafe() }),
+            Rax | Rbx | Rcx | Rdx                                               => Some(unsafe { self.as_Reg8h_unsafe() }),
             Rsi | Rdi | Rbp | Rsp | R8 | R9 | R10 | R11 | R12 | R13 | R14 | R15 => None,
         };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8h`]
-    #[must_use]
-    #[inline(always)]
+    #[must_use] #[inline(always)]
     pub const fn as_reg8h(self) -> Option<Reg8h> {
         return self.as_Reg8h();
     }
@@ -384,15 +364,12 @@ impl Into<Option<Reg8h>> for Reg64 {
 }
 
 impl Reg32 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg64(self) -> Reg64 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg64`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg64(self) -> Reg64 {
         return self.as_Reg64();
@@ -407,15 +384,12 @@ impl Into<Reg64> for Reg32 {
 }
 
 impl Reg32 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg16(self) -> Reg16 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg16`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg16(self) -> Reg16 {
         return self.as_Reg16();
@@ -430,15 +404,12 @@ impl Into<Reg16> for Reg32 {
 }
 
 impl Reg32 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg8l(self) -> Reg8l {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8l`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg8l(self) -> Reg8l {
         return self.as_Reg8l();
@@ -456,8 +427,6 @@ impl Reg32 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
         return unsafe { core::mem::transmute(self) };
@@ -468,27 +437,23 @@ impl Reg32 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
         return unsafe { self.as_Reg8h_unsafe() };
     }
 
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[allow(clippy::enum_glob_use)]
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         use Reg32::*;
         return match self {
-            Eax | Ebx | Ecx | Edx => Some(unsafe { self.as_Reg8h_unsafe() }),
+            Eax | Ebx | Ecx | Edx                                                       => Some(unsafe { self.as_Reg8h_unsafe() }),
             Esi | Edi | Ebp | Esp | R8d | R9d | R10d | R11d | R12d | R13d | R14d | R15d => None,
         };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8h`]
-    #[must_use]
-    #[inline(always)]
+    #[must_use] #[inline(always)]
     pub const fn as_reg8h(self) -> Option<Reg8h> {
         return self.as_Reg8h();
     }
@@ -502,15 +467,12 @@ impl Into<Option<Reg8h>> for Reg32 {
 }
 
 impl Reg16 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg64(self) -> Reg64 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg64`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg64(self) -> Reg64 {
         return self.as_Reg64();
@@ -525,15 +487,12 @@ impl Into<Reg64> for Reg16 {
 }
 
 impl Reg16 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg32(self) -> Reg32 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg32`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg32(self) -> Reg32 {
         return self.as_Reg32();
@@ -548,15 +507,12 @@ impl Into<Reg32> for Reg16 {
 }
 
 impl Reg16 {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg8l(self) -> Reg8l {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8l`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg8l(self) -> Reg8l {
         return self.as_Reg8l();
@@ -574,8 +530,6 @@ impl Reg16 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
         return unsafe { core::mem::transmute(self) };
@@ -586,27 +540,23 @@ impl Reg16 {
     /// # Safety
     ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
         return unsafe { self.as_Reg8h_unsafe() };
     }
 
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[allow(clippy::enum_glob_use)]
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         use Reg16::*;
         return match self {
-            Ax | Bx | Cx | Dx => Some(unsafe { self.as_Reg8h_unsafe() }),
+            Ax | Bx | Cx | Dx                                                       => Some(unsafe { self.as_Reg8h_unsafe() }),
             Si | Di | Bp | Sp | R8w | R9w | R10w | R11w | R12w | R13w | R14w | R15w => None,
         };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8h`]
-    #[must_use]
-    #[inline(always)]
+    #[must_use] #[inline(always)]
     pub const fn as_reg8h(self) -> Option<Reg8h> {
         return self.as_Reg8h();
     }
@@ -620,15 +570,12 @@ impl Into<Option<Reg8h>> for Reg16 {
 }
 
 impl Reg8l {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg64(self) -> Reg64 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg64`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg64(self) -> Reg64 {
         return self.as_Reg64();
@@ -643,15 +590,12 @@ impl Into<Reg64> for Reg8l {
 }
 
 impl Reg8l {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg32(self) -> Reg32 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg32`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg32(self) -> Reg32 {
         return self.as_Reg32();
@@ -666,15 +610,12 @@ impl Into<Reg32> for Reg8l {
 }
 
 impl Reg8l {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg16(self) -> Reg16 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg16`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg16(self) -> Reg16 {
         return self.as_Reg16();
@@ -692,8 +633,6 @@ impl Reg8l {
     /// # Safety
     ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
         return unsafe { core::mem::transmute(self) };
@@ -704,16 +643,13 @@ impl Reg8l {
     /// # Safety
     ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
-    #[must_use]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
         return unsafe { self.as_Reg8h_unsafe() };
     }
 
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
     #[allow(clippy::enum_glob_use)]
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn as_Reg8h(self) -> Option<Reg8h> {
         use Reg8l::*;
         return match self {
@@ -723,8 +659,7 @@ impl Reg8l {
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8h`]
-    #[must_use]
-    #[inline(always)]
+    #[must_use] #[inline(always)]
     pub const fn as_reg8h(self) -> Option<Reg8h> {
         return self.as_Reg8h();
     }
@@ -738,15 +673,12 @@ impl Into<Option<Reg8h>> for Reg8l {
 }
 
 impl Reg8h {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg64(self) -> Reg64 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg64`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg64(self) -> Reg64 {
         return self.as_Reg64();
@@ -761,15 +693,12 @@ impl Into<Reg64> for Reg8h {
 }
 
 impl Reg8h {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg32(self) -> Reg32 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg32`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg32(self) -> Reg32 {
         return self.as_Reg32();
@@ -784,15 +713,12 @@ impl Into<Reg32> for Reg8h {
 }
 
 impl Reg8h {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg16(self) -> Reg16 {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg16`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg16(self) -> Reg16 {
         return self.as_Reg16();
@@ -807,15 +733,12 @@ impl Into<Reg16> for Reg8h {
 }
 
 impl Reg8h {
-    #[expect(non_snake_case, reason = "more similar to `as` operator")]
-    #[must_use]
     #[inline(always)]
     pub const fn as_Reg8l(self) -> Reg8l {
         return unsafe { core::mem::transmute(self) };
     }
 
     /// 'Idiomatic' name alias of [`Self::as_Reg8l`]
-    #[must_use]
     #[inline(always)]
     pub const fn as_reg8l(self) -> Reg8l {
         return self.as_Reg8l();

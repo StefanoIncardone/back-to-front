@@ -44,6 +44,9 @@ unused_results = "forbid"
 private_bounds = "forbid"
 private_interfaces = "forbid"
 unused_must_use = "forbid"
+non_snake_case = "allow"
+non_camel_case_types = "allow"
+non_upper_case_globals = "allow"
 
 [lints.clippy] # to be used once in a while
 nursery = { level = "warn", priority = -1 }
@@ -157,3 +160,5 @@ inline_modules = "allow"
 
 items_after_statements = "allow" # BUG(stefano): does not work
 doc_paragraphs_missing_punctuation = "allow"
+let_underscore_must_use = "allow"
+enum_variant_names = "allow"

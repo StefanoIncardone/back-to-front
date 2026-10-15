@@ -1,8 +1,7 @@
 use crate::{ascii, usize16};
 use core::fmt::Display;
 
-#[must_use]
-#[inline(always)]
+#[must_use] #[inline(always)]
 const fn get_byte(array: &str, index: usize) -> Option<ascii> {
     if index >= array.len() {
         return None;
@@ -10,9 +9,7 @@ const fn get_byte(array: &str, index: usize) -> Option<ascii> {
     return Some(array.as_bytes()[index]);
 }
 
-#[track_caller]
-#[must_use]
-#[inline(always)]
+#[must_use] #[inline(always)] #[track_caller]
 const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
     assert!(start_index <= array.len(), "start index overflow");
     assert!(start_index <= end_index, "start index cannot be greater than end index");
@@ -93,8 +90,7 @@ impl FlagPrefix {
         return bits(&[self as u8, tag << Self::MASK_SHIFT]);
     }
 
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         return match self {
             Self::Empty => "",
@@ -132,14 +128,13 @@ impl Mask for FlagSeparator {
 }
 
 impl FlagSeparator {
-    #[must_use]
-    #[inline]
+    #[must_use] #[inline]
     pub const fn to_str(self) -> &'static str {
         return match self {
-            Self::Empty => "",
-            Self::Dash => "-",
+            Self::Empty  => "",
+            Self::Dash   => "-",
             Self::Equals => "=",
-            Self::Colon => ":",
+            Self::Colon  => ":",
         };
     }
 }
@@ -151,15 +146,15 @@ impl Display for FlagSeparator {
     }
 }
 
-#[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[must_use]
 pub enum ArgResult {
     Ok(Arg),
     MaxLen,
 }
 
-#[must_use]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+#[must_use]
 pub struct Arg {
     pub prefix: FlagPrefix,
     pub key_text_len: usize16,
@@ -188,11 +183,11 @@ impl Arg {
         let mut separator_index = prefix_len;
         let separator = loop {
             match get_byte(arg, separator_index) {
-                None => break FlagSeparator::Empty,
+                None =>       break FlagSeparator::Empty,
                 Some(b'-') => break FlagSeparator::Dash,
                 Some(b':') => break FlagSeparator::Colon,
                 Some(b'=') => break FlagSeparator::Equals,
-                Some(_) => separator_index += 1,
+                Some(_) =>    separator_index += 1,
             }
         };
 
@@ -216,17 +211,15 @@ impl Arg {
 
     #[must_use]
     pub const fn start_of_value_index(self) -> Option<u16> {
-        if let FlagSeparator::Empty = self.separator {
-            return None;
-        }
+        if let FlagSeparator::Empty = self.separator { return None; }
 
         let start_of_separator_index = self.start_of_separator_index();
         return Some(start_of_separator_index + self.separator.to_str().len() as u16);
     }
 
-    #[must_use]
     /// # Safety
     /// Expected to be called on the same argument that was previously passed to [`Self::parse`]
+    #[must_use]
     pub const unsafe fn key(self, arg: &str) -> &str {
         let key_start_index = self.start_of_key_index() as usize;
         let key_end_index = key_start_index + self.key_text_len as usize;
@@ -234,9 +227,9 @@ impl Arg {
         return key_text;
     }
 
-    #[must_use]
     /// # Safety
     /// Expected to be called on the same argument that was previously passed to [`Self::parse`]
+    #[must_use]
     pub const unsafe fn key_value(self, arg: &str) -> (&str, &str) {
         let key_start_index = self.start_of_key_index() as usize;
         let key_end_index = key_start_index + self.key_text_len as usize;
@@ -251,16 +244,13 @@ impl Arg {
 
     #[must_use]
     pub const fn is_empty(self) -> bool {
-        if let Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty } = self {
-            return true;
-        }
-        return false;
+        return matches!(self, Self { prefix: FlagPrefix::Empty, key_text_len: 0, separator: FlagSeparator::Empty });
     }
 }
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum AnsiFg {
     #[default]
     Default      = 0,
@@ -284,7 +274,7 @@ pub enum AnsiFg {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum AnsiBg {
     #[default]
     Default       = 0,
@@ -308,7 +298,7 @@ pub enum AnsiBg {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum AnsiCode {
     #[default]
     Default      = 0,
@@ -321,7 +311,7 @@ pub enum AnsiCode {
 
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, Eq)]
-#[repr(u8)]
+#[must_use] #[repr(u8)]
 pub enum AnsiFlag {
     #[default]
     Default      = 0b000_00000,
