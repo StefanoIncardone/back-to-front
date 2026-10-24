@@ -162,3 +162,8 @@ items_after_statements = "allow" # BUG(stefano): does not work
 doc_paragraphs_missing_punctuation = "allow"
 let_underscore_must_use = "allow"
 enum_variant_names = "allow"
+
+# keeps consistency with these two cases:
+# - `if foo { return None; }`
+# - `if foo { panic!(); }`
+manual_assert = "allow"

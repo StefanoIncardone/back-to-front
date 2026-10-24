@@ -2,6 +2,8 @@ pub mod cli;
 pub mod digit;
 pub mod src_code;
 pub mod x86_64;
+pub mod text;
+pub mod slice;
 
 
 pub type utf32 = char;

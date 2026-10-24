@@ -1,25 +1,4 @@
-use crate::{ascii, usize16};
-use core::fmt::Display;
-
-#[must_use] #[inline(always)]
-const fn get_byte(array: &str, index: usize) -> Option<ascii> {
-    if index >= array.len() {
-        return None;
-    }
-    return Some(array.as_bytes()[index]);
-}
-
-#[must_use] #[inline(always)] #[track_caller]
-const fn get_slice(array: &str, start_index: usize, end_index: usize) -> &str {
-    assert!(start_index <= array.len(), "start index overflow");
-    assert!(start_index <= end_index, "start index cannot be greater than end index");
-
-    let array_len = end_index - start_index;
-    let array_ptr = unsafe { array.as_ptr().add(start_index) };
-    let array_bytes = unsafe { core::slice::from_raw_parts(array_ptr, array_len) };
-    let array_slice = unsafe { core::str::from_utf8_unchecked(array_bytes) };
-    return array_slice;
-}
+use crate::{text, usize16};
 
 /// # Panics
 ///
@@ -100,7 +79,7 @@ impl FlagPrefix {
     }
 }
 
-impl Display for FlagPrefix {
+impl core::fmt::Display for FlagPrefix {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -139,7 +118,7 @@ impl FlagSeparator {
     }
 }
 
-impl Display for FlagSeparator {
+impl core::fmt::Display for FlagSeparator {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -170,9 +149,9 @@ impl Arg {
     pub const fn parse(mut arg: &str) -> ArgResult {
         arg = arg.trim_ascii();
 
-        let prefix = match get_byte(arg, 0) {
+        let prefix = match text::byte(arg, 0) {
             None => return ArgResult::Ok(Self::empty()),
-            Some(b'-') => match get_byte(arg, 1) {
+            Some(b'-') => match text::byte(arg, 1) {
                 Some(b'-') => FlagPrefix::DashDash,
                 Some(_) | None => FlagPrefix::Dash,
             },
@@ -182,7 +161,7 @@ impl Arg {
 
         let mut separator_index = prefix_len;
         let separator = loop {
-            match get_byte(arg, separator_index) {
+            match text::byte(arg, separator_index) {
                 None =>       break FlagSeparator::Empty,
                 Some(b'-') => break FlagSeparator::Dash,
                 Some(b':') => break FlagSeparator::Colon,
@@ -223,7 +202,7 @@ impl Arg {
     pub const unsafe fn key(self, arg: &str) -> &str {
         let key_start_index = self.start_of_key_index() as usize;
         let key_end_index = key_start_index + self.key_text_len as usize;
-        let key_text = get_slice(arg, key_start_index, key_end_index);
+        let key_text = text::slice(arg, key_start_index, key_end_index);
         return key_text;
     }
 
@@ -233,11 +212,11 @@ impl Arg {
     pub const unsafe fn key_value(self, arg: &str) -> (&str, &str) {
         let key_start_index = self.start_of_key_index() as usize;
         let key_end_index = key_start_index + self.key_text_len as usize;
-        let key_text = get_slice(arg, key_start_index, key_end_index);
+        let key_text = text::slice(arg, key_start_index, key_end_index);
 
         let value_start_index = key_end_index + self.separator.to_str().len();
         let value_end_index = arg.len();
-        let value_text = get_slice(arg, value_start_index, value_end_index);
+        let value_text = text::slice(arg, value_start_index, value_end_index);
 
         return (key_text, value_text);
     }

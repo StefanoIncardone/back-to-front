@@ -1,5 +1,3 @@
-use core::fmt::Display;
-
 #[rustfmt::skip]
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 #[must_use] #[repr(u8)]
@@ -51,7 +49,7 @@ impl Reg64 {
     }
 }
 
-impl Display for Reg64 {
+impl core::fmt::Display for Reg64 {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -109,7 +107,7 @@ impl Reg32 {
     }
 }
 
-impl Display for Reg32 {
+impl core::fmt::Display for Reg32 {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -167,7 +165,7 @@ impl Reg16 {
     }
 }
 
-impl Display for Reg16 {
+impl core::fmt::Display for Reg16 {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -225,7 +223,7 @@ impl Reg8l {
     }
 }
 
-impl Display for Reg8l {
+impl core::fmt::Display for Reg8l {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -253,7 +251,7 @@ impl Reg8h {
     }
 }
 
-impl Display for Reg8h {
+impl core::fmt::Display for Reg8h {
     #[inline(always)]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         return f.write_str(self.to_str());
@@ -322,7 +320,6 @@ impl Into<Reg8l> for Reg64 {
 
 impl Reg64 {
     /// # Safety
-    ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
@@ -332,7 +329,6 @@ impl Reg64 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
-    ///
     /// can only safely convert from [`Reg64::Rax`], [`Reg64::Rbx`], [`Reg64::Rcx`] and [`Reg64::Rdx`]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
@@ -425,7 +421,6 @@ impl Into<Reg8l> for Reg32 {
 
 impl Reg32 {
     /// # Safety
-    ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
@@ -435,7 +430,6 @@ impl Reg32 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
-    ///
     /// can only safely convert from [`Reg32::Eax`], [`Reg32::Ebx`], [`Reg32::Ecx`] and [`Reg32::Edx`]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
@@ -528,7 +522,6 @@ impl Into<Reg8l> for Reg16 {
 
 impl Reg16 {
     /// # Safety
-    ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
@@ -538,7 +531,6 @@ impl Reg16 {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
-    ///
     /// can only safely convert from [`Reg16::Ax`], [`Reg16::Bx`], [`Reg16::Cx`] and [`Reg16::Dx`]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {
@@ -631,7 +623,6 @@ impl Into<Reg16> for Reg8l {
 
 impl Reg8l {
     /// # Safety
-    ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
     #[inline(always)]
     pub const unsafe fn as_Reg8h_unsafe(self) -> Reg8h {
@@ -641,7 +632,6 @@ impl Reg8l {
     /// 'Idiomatic' name alias of [`Self::as_Reg8h_unsafe`]
     ///
     /// # Safety
-    ///
     /// can only safely convert from [`Reg8l::Al`], [`Reg8l::Bl`], [`Reg8l::Cl`] and [`Reg8l::Dl`]
     #[inline(always)]
     pub const unsafe fn as_reg8h_unsafe(self) -> Reg8h {

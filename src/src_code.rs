@@ -65,7 +65,6 @@ impl Span {
 
 impl Span {
     /// # Safety
-    ///
     /// `start` must be less than or equal to `end`
     #[inline(always)] #[track_caller]
     pub const unsafe fn new_unchecked(start: usize32, end: usize32) -> Self {
